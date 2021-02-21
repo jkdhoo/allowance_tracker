@@ -10,23 +10,17 @@ import androidx.databinding.DataBindingUtil
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.hooware.allowancetracker.AllowanceApp
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.databinding.ActivityAuthenticationBinding
 import com.hooware.allowancetracker.overview.OverviewActivity
 import org.koin.android.ext.android.inject
 import timber.log.Timber
-import org.koin.core.context.unloadKoinModules
-import org.koin.core.context.loadKoinModules
-import kotlin.system.exitProcess
 
 /**
  * This class should be the starting point of the app, It asks the users to sign in / register, and redirects the
  * signed in users to the OverviewActivity.
  */
 class AuthActivity : AppCompatActivity() {
-
-    private val app = AllowanceApp()
 
     private val viewModel: AuthViewModel by inject()
 
@@ -42,7 +36,7 @@ class AuthActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var loggingOut = intent.getBooleanExtra("logging_out", false)
+        var isNotLoggingOut = intent.getBooleanExtra("fresh_auth_start", true)
         val binding: ActivityAuthenticationBinding = DataBindingUtil.setContentView(
             this,
             R.layout.activity_authentication
@@ -53,7 +47,7 @@ class AuthActivity : AppCompatActivity() {
         viewModel.authenticationState.observe(this, { authenticationState ->
             when (authenticationState) {
                 AuthViewModel.AuthenticationState.AUTHENTICATED -> {
-                    if (!loggingOut) {
+                    if (isNotLoggingOut) {
                         Timber.i("Authenticated, routing to Reminders")
                         val reminderActivityIntent =
                             Intent(applicationContext, OverviewActivity::class.java)
@@ -66,17 +60,20 @@ class AuthActivity : AppCompatActivity() {
                         binding.root, this.getString(R.string.login_unsuccessful_msg),
                         Snackbar.LENGTH_LONG
                     ).show()
-                    loggingOut = false
+                    isNotLoggingOut = true
                 }
                 else -> {
                     Timber.i("Unable to act on authentication state $authenticationState")
-                    loggingOut = false
+                    isNotLoggingOut = true
                 }
             }
         })
     }
 
-
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finishAffinity()
+    }
 
     private fun launchSignInFlow() {
         val providers = arrayListOf(
@@ -91,10 +88,5 @@ class AuthActivity : AppCompatActivity() {
                 .setTheme(R.style.Theme_AllowanceTracker_Auth)
                 .build()
         )
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        finishAffinity()
     }
 }

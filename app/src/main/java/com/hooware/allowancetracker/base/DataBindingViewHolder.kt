@@ -10,8 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 class DataBindingViewHolder<T>(private val binding: ViewDataBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(child: T) {
-        binding.setVariable(BR.child , child)
+    fun bind(item: T) {
+        binding.setVariable(BR.item , item)
         binding.executePendingBindings()
     }
 }

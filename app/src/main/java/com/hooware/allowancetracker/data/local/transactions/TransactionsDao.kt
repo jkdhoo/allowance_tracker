@@ -25,6 +25,13 @@ interface TransactionsDao {
     suspend fun getTransactionById(transactionId: String): TransactionTO?
 
     /**
+     * @param name the name of the child in the transaction
+     * @return the transaction object with the transactionId
+     */
+    @Query("SELECT * FROM transactions where name = :name")
+    suspend fun getTransactionsByChild(name: String): List<TransactionTO>
+
+    /**
      * Insert a transaction in the database. If the transaction already exists, replace it.
      *
      * @param transaction the transaction to be inserted.
@@ -37,5 +44,11 @@ interface TransactionsDao {
      */
     @Query("DELETE FROM transactions")
     suspend fun deleteAllTransactions()
+
+    /**
+     * Delete all transactions by child.
+     */
+    @Query("DELETE FROM transactions where name = :name")
+    suspend fun deleteAllTransactionsByChild(name: String)
 
 }

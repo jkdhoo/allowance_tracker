@@ -52,7 +52,7 @@ class OverviewFragment : BaseFragment() {
                 else -> {
                     Timber.i("User logged out, returning to Auth Activity")
                     val authActivityIntent = Intent(this.requireContext(), AuthActivity::class.java)
-                    authActivityIntent.putExtra("logging_out", true)
+                    authActivityIntent.putExtra("fresh_auth_start", false)
                     startActivity(authActivityIntent)
                 }
             }
@@ -81,10 +81,10 @@ class OverviewFragment : BaseFragment() {
         _viewModel.loadChildren()
     }
 
-//    private fun navigateToAddReminder() {
-//        _viewModel.navigationCommand.postValue(NavigationCommand.To(ChildrenListFragmentDirections.toSaveChild()))
+//    private fun navigateToAddChild() {
+//        _viewModel.navigationCommand.postValue(NavigationCommand.To(OverviewFragmentDirections.toSaveChild()))
 //    }
-//
+
     private fun setupRecyclerView() {
         val adapter = ChildrenListAdapter {}
         binding.childrenRecyclerView.setup(adapter)

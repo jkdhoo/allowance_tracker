@@ -38,4 +38,10 @@ interface ChildrenDao {
     @Query("DELETE FROM children")
     suspend fun deleteAllChildren()
 
+    /**
+     * Delete child.
+     */
+    @Query("DELETE FROM children where entry_id = :childId")
+    suspend fun deleteChild(childId: String)
+
 }
