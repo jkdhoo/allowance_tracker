@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Allowance Tracker</string>
+    <string name="login_unsuccessful_msg">Login unsuccessful</string>
+    <string name="login_button">Login</string>
+    <string name="login_title">Allowance\nTracker</string>
+    <string name="transactions_cleared">Transactions cleared!</string>
+    <string name="children_cleared">Children cleared!</string>
+    <string name="logout">Logout</string>
+    <string name="add_a_child">You have not yet added a child.\nClick the + button!</string>
+    <string name="cd_add_new_child">Add New Child</string>
+</resources>
