@@ -10,6 +10,7 @@ import com.firebase.ui.auth.AuthUI
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.auth.AuthActivity
 import com.hooware.allowancetracker.base.BaseFragment
+import com.hooware.allowancetracker.base.NavigationCommand
 import com.hooware.allowancetracker.children.ChildrenListAdapter
 import com.hooware.allowancetracker.databinding.FragmentOverviewBinding
 import com.hooware.allowancetracker.utils.setDisplayHomeAsUpEnabled
@@ -57,8 +58,12 @@ class OverviewFragment : BaseFragment() {
                 }
             }
         })
-
-        _viewModel.loadChildren()
+        binding.refreshLayout.setOnRefreshListener {
+            _viewModel.loadChildren()
+            if (binding.refreshLayout.isRefreshing) {
+                binding.refreshLayout.isRefreshing = false
+            }
+        }
         return binding.root
     }
 
@@ -66,7 +71,7 @@ class OverviewFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
         setupRecyclerView()
-//        binding.addReminderFAB.setOnClickListener { navigateToAddChild() }
+        binding.addChildFAB.setOnClickListener { navigateToAddChild() }
         activity?.onBackPressedDispatcher?.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
@@ -81,9 +86,9 @@ class OverviewFragment : BaseFragment() {
         _viewModel.loadChildren()
     }
 
-//    private fun navigateToAddChild() {
-//        _viewModel.navigationCommand.postValue(NavigationCommand.To(OverviewFragmentDirections.toSaveChild()))
-//    }
+    private fun navigateToAddChild() {
+        _viewModel.navigationCommand.postValue(NavigationCommand.To(OverviewFragmentDirections.actionOverviewFragmentToSaveChildFragment()))
+    }
 
     private fun setupRecyclerView() {
         val adapter = ChildrenListAdapter {}

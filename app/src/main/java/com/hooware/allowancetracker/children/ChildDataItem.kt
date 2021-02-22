@@ -8,7 +8,7 @@ import java.util.*
  */
 data class ChildDataItem(
     var name: String?,
-    var age: Int?,
+    var age: String?,
     var birthday: String?,
     val id: String = UUID.randomUUID().toString()
 ) : Serializable

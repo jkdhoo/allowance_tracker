@@ -29,7 +29,7 @@ interface ChildrenDao {
      *
      * @param child the child to be inserted.
      */
-    @Insert(onConflict = OnConflictStrategy.ABORT)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveChild(child: ChildTO)
 
     /**

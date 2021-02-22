@@ -19,7 +19,7 @@ import java.util.*
 @Entity(tableName = "children")
 data class ChildTO(
     @ColumnInfo(name = "name") var name: String?,
-    @ColumnInfo(name = "age") var age: Int?,
+    @ColumnInfo(name = "age") var age: String?,
     @ColumnInfo(name = "birthday") var birthday: String?,
     @PrimaryKey @ColumnInfo(name = "entry_id") val id: String = UUID.randomUUID().toString()
 )

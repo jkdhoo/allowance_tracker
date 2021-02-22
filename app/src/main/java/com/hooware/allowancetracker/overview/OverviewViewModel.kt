@@ -1,20 +1,23 @@
 package com.hooware.allowancetracker.overview
 
 import android.app.Application
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.auth.FirebaseUserLiveData
 import com.hooware.allowancetracker.base.BaseViewModel
+import com.hooware.allowancetracker.base.NavigationCommand
 import com.hooware.allowancetracker.children.ChildDataItem
 import com.hooware.allowancetracker.data.local.DataSource
 import com.hooware.allowancetracker.data.to.ChildTO
 import com.hooware.allowancetracker.data.to.ResultTO
 import com.hooware.allowancetracker.data.to.TransactionTO
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
-class OverviewViewModel(app: Application, private val dataSource: DataSource) :
+class OverviewViewModel(val app: Application, private val dataSource: DataSource) :
     BaseViewModel(app) {
 
     enum class AuthenticationState {
@@ -29,25 +32,29 @@ class OverviewViewModel(app: Application, private val dataSource: DataSource) :
         }
     }
 
+    val childName = MutableLiveData<String>()
+    val childAge = MutableLiveData<String>()
+    val childBirthday = MutableLiveData<String>()
+
     // lists that hold the data to be displayed on the UI
     val transactionsList = MutableLiveData<List<TransactionDataItem>>()
     val childrenList = MutableLiveData<List<ChildDataItem>>()
 
     fun clearAllTransactions() {
-        showLoading.value = true
+        showTransactionsLoading.value = true
         viewModelScope.launch {
             dataSource.deleteAllTransactions()
-            showLoading.value = false
+            showTransactionsLoading.value = false
             showToast.value = getApplication<Application>().getString(R.string.transactions_cleared)
         }
         loadTransactions()
     }
 
     fun clearAllChildren() {
-        showLoading.value = true
+        showChildrenLoading.value = true
         viewModelScope.launch {
             dataSource.deleteAllChildren()
-            showLoading.value = false
+            showChildrenLoading.postValue(false)
             showToast.value = getApplication<Application>().getString(R.string.children_cleared)
         }
         loadChildren()
@@ -58,11 +65,11 @@ class OverviewViewModel(app: Application, private val dataSource: DataSource) :
      * or show error if any
      */
     fun loadTransactions() {
-        showLoading.value = true
+        showTransactionsLoading.value = true
         viewModelScope.launch {
             //interacting with the dataSource has to be through a coroutine
             val result = dataSource.getTransactions()
-            showLoading.postValue(false)
+            showTransactionsLoading.postValue(false)
             when (result) {
                 is ResultTO.Success<*> -> {
                     val dataList = ArrayList<TransactionDataItem>()
@@ -92,11 +99,13 @@ class OverviewViewModel(app: Application, private val dataSource: DataSource) :
      * or show error if any
      */
     fun loadChildren() {
-        showLoading.value = true
+        showChildrenLoading.value = true
         viewModelScope.launch {
             //interacting with the dataSource has to be through a coroutine
-            val result = dataSource.getTransactions()
-            showLoading.postValue(false)
+            val result = dataSource.getChildren()
+            Timber.i("Getting children")
+            showChildrenLoading.value = false
+            Timber.i("Stopping load")
             when (result) {
                 is ResultTO.Success<*> -> {
                     val dataList = ArrayList<ChildDataItem>()
@@ -129,5 +138,35 @@ class OverviewViewModel(app: Application, private val dataSource: DataSource) :
 
     private fun invalidateShowNoChildData() {
         showNoChildData.value = childrenList.value == null || childrenList.value!!.isEmpty()
+    }
+
+    fun validateAndSaveReminder(child: ChildDataItem) {
+        if (validateEnteredChild(child)) {
+            saveChild(child)
+        }
+    }
+
+    private fun saveChild(child: ChildDataItem) {
+        showChildrenLoading.value = true
+        viewModelScope.launch {
+            dataSource.saveChild(
+                ChildTO(
+                    child.name,
+                    child.age,
+                    child.birthday
+                )
+            )
+            showChildrenLoading.postValue(false)
+            showToast.value = app.getString(R.string.child_saved)
+        }
+        navigationCommand.value = NavigationCommand.Back
+    }
+
+    private fun validateEnteredChild(child: ChildDataItem): Boolean {
+        if (child.name.isNullOrEmpty()) {
+            showSnackBarInt.value = R.string.err_enter_name
+            return false
+        }
+        return true
     }
 }

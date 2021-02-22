@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.databinding.ActivityOverviewBinding
-import kotlin.system.exitProcess
 
 class OverviewActivity : AppCompatActivity() {
 
