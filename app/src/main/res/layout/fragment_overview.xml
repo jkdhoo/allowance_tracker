@@ -33,16 +33,16 @@
 
             <TextView
                 android:id="@+id/noChildDataTextView"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fadeVisible="@{viewModel.showNoChildData.booleanValue()}"
                 android:gravity="center"
                 android:text="@string/add_a_child"
-                android:textSize="@dimen/text_size_large" />
+                android:textSize="@dimen/text_size_large"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -60,13 +60,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_normal"
-                app:srcCompat="@drawable/ic_add"
+                android:contentDescription="@string/cd_add_new_child"
                 app:fabSize="normal"
                 app:layout_anchor="@id/childrenRecyclerView"
                 app:layout_anchorGravity="bottom|right|end"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:contentDescription="@string/cd_add_new_child" />
+                app:srcCompat="@drawable/ic_add" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

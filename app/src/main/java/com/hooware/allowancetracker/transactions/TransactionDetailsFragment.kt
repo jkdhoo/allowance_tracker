@@ -30,7 +30,12 @@ class TransactionDetailsFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_transaction_details, container, false)
+            DataBindingUtil.inflate(
+                inflater,
+                R.layout.fragment_transaction_details,
+                container,
+                false
+            )
 
         setDisplayHomeAsUpEnabled(true)
         setHasOptionsMenu(true)

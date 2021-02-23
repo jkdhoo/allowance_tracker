@@ -85,7 +85,13 @@ class OverviewFragment : BaseFragment() {
     private fun setupRecyclerView() {
         val adapter = ChildrenListAdapter { selectedChild ->
             _viewModel.editChildDetails.value = false
-            _viewModel.navigationCommand.postValue(NavigationCommand.To(OverviewFragmentDirections.actionShowDetail(selectedChild)))
+            _viewModel.navigationCommand.postValue(
+                NavigationCommand.To(
+                    OverviewFragmentDirections.actionShowDetail(
+                        selectedChild
+                    )
+                )
+            )
         }
 
         binding.childrenRecyclerView.setup(adapter)

@@ -31,8 +31,6 @@ class ChildDetailsFragment : BaseFragment() {
     ): View {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_child_details, container, false)
-
-
         setDisplayHomeAsUpEnabled(true)
         setHasOptionsMenu(true)
         binding.viewModel = _viewModel
@@ -62,7 +60,7 @@ class ChildDetailsFragment : BaseFragment() {
             }
         }
         binding.initiateEditChild.setOnClickListener {
-                _viewModel.editChildDetails.value = true
+            _viewModel.editChildDetails.value = true
         }
         binding.addTransactionFAB.setOnClickListener {
             navigateToAddTransaction()
@@ -78,19 +76,23 @@ class ChildDetailsFragment : BaseFragment() {
 
     private fun setupRecyclerView() {
         val adapter = TransactionsListAdapter { selectedTransaction ->
-            _viewModel.navigationCommand.postValue(NavigationCommand.To(
-                ChildDetailsFragmentDirections.actionShowDetail(selectedTransaction)
-            ))
+            _viewModel.navigationCommand.postValue(
+                NavigationCommand.To(
+                    ChildDetailsFragmentDirections.actionShowDetail(selectedTransaction)
+                )
+            )
         }
         binding.transactionsRecyclerView.setup(adapter)
     }
 
     private fun navigateToAddTransaction() {
-        _viewModel.navigationCommand.postValue(NavigationCommand.To(
-            ChildDetailsFragmentDirections.actionAddTransaction(
-                selectedChild
+        _viewModel.navigationCommand.postValue(
+            NavigationCommand.To(
+                ChildDetailsFragmentDirections.actionAddTransaction(
+                    selectedChild
+                )
             )
-        ))
+        )
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {

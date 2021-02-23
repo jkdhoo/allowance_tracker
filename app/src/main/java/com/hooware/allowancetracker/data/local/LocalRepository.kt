@@ -26,13 +26,14 @@ class LocalRepository(
      * Get the transactions list from the local db
      * @return Result the holds a Success with all the transactions or an Error object with the error message
      */
-    override suspend fun getTransactions(): ResultTO<List<TransactionTO>> = withContext(ioDispatcher) {
-        return@withContext try {
-            ResultTO.Success(transactionsDao.getTransactions())
-        } catch (ex: Exception) {
-            ResultTO.Error(ex.localizedMessage)
+    override suspend fun getTransactions(): ResultTO<List<TransactionTO>> =
+        withContext(ioDispatcher) {
+            return@withContext try {
+                ResultTO.Success(transactionsDao.getTransactions())
+            } catch (ex: Exception) {
+                ResultTO.Error(ex.localizedMessage)
+            }
         }
-    }
 
     /**
      * Get the children list from the local db
@@ -74,27 +75,29 @@ class LocalRepository(
      * @param id to be used to get the transaction
      * @return Result holds a Success object with the Transaction or an Error object with the error message
      */
-    override suspend fun getTransaction(id: String): ResultTO<TransactionTO> = withContext(ioDispatcher) {
-        try {
-            val transaction = transactionsDao.getTransactionById(id)
-            if (transaction != null) {
-                return@withContext ResultTO.Success(transaction)
-            } else {
-                return@withContext ResultTO.Error("Reminder not found!")
+    override suspend fun getTransaction(id: String): ResultTO<TransactionTO> =
+        withContext(ioDispatcher) {
+            try {
+                val transaction = transactionsDao.getTransactionById(id)
+                if (transaction != null) {
+                    return@withContext ResultTO.Success(transaction)
+                } else {
+                    return@withContext ResultTO.Error("Reminder not found!")
+                }
+            } catch (e: Exception) {
+                return@withContext ResultTO.Error(e.localizedMessage)
             }
-        } catch (e: Exception) {
-            return@withContext ResultTO.Error(e.localizedMessage)
         }
-    }
 
-    override suspend fun getTransactionsByChild(id: String): ResultTO<List<TransactionTO>> = withContext(ioDispatcher) {
-        try {
-            val transactions = transactionsDao.getTransactionsByChild(id)
-            return@withContext ResultTO.Success(transactions)
-        } catch (e: Exception) {
-            return@withContext ResultTO.Error(e.localizedMessage)
+    override suspend fun getTransactionsByChild(id: String): ResultTO<List<TransactionTO>> =
+        withContext(ioDispatcher) {
+            try {
+                val transactions = transactionsDao.getTransactionsByChild(id)
+                return@withContext ResultTO.Success(transactions)
+            } catch (e: Exception) {
+                return@withContext ResultTO.Error(e.localizedMessage)
+            }
         }
-    }
 
     /**
      * Get a child by its id

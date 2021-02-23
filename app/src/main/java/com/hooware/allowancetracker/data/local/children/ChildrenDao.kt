@@ -31,6 +31,7 @@ interface ChildrenDao {
 
     @Update
     suspend fun updateChild(child: ChildTO)
+
     /**
      * Delete all children.
      */

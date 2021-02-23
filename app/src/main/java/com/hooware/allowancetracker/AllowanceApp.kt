@@ -32,7 +32,7 @@ class AllowanceApp : Application() {
             viewModel {
                 OverviewViewModel(get(), get() as DataSource)
             }
-            single { AuthViewModel(get())}
+            single { AuthViewModel(get()) }
             single { LocalRepository(get() as TransactionsDao, get() as ChildrenDao) as DataSource }
             single { LocalDB.createChildrenDao(this@AllowanceApp) }
             single { LocalDB.createTransactionsDao(this@AllowanceApp) }
@@ -55,9 +55,9 @@ class AllowanceApp : Application() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val updated = task.result
-                    Timber.i( "Config params updated: $updated")
+                    Timber.i("Config params updated: $updated")
                 } else {
-                    Timber.i( "Config param update failed.")
+                    Timber.i("Config param update failed.")
                 }
             }
     }

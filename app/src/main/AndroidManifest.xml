@@ -16,20 +16,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AllowanceTracker"
         tools:ignore="AllowBackup">
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".auth.AuthActivity"
+        <activity
+            android:name=".auth.AuthActivity"
             android:theme="@style/Theme.AllowanceTracker.Auth">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".overview.OverviewActivity"
+        <activity
+            android:name=".overview.OverviewActivity"
             android:theme="@style/Theme.AllowanceTracker" />
     </application>
-
 </manifest>

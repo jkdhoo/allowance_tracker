@@ -140,7 +140,8 @@ class OverviewViewModel(val app: Application, private val dataSource: DataSource
      * Inform the user that there's not any data if the remindersList is empty
      */
     private fun invalidateShowNoTransactionData() {
-        showNoTransactionData.value = transactionsList.value == null || transactionsList.value!!.isEmpty()
+        showNoTransactionData.value =
+            transactionsList.value == null || transactionsList.value!!.isEmpty()
     }
 
     private fun invalidateShowNoChildData() {
