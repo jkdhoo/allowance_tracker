@@ -1,9 +1,6 @@
 package com.hooware.allowancetracker.data.local.children
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.hooware.allowancetracker.data.to.ChildTO
 
 /**
@@ -32,6 +29,8 @@ interface ChildrenDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveChild(child: ChildTO)
 
+    @Update
+    suspend fun updateChild(child: ChildTO)
     /**
      * Delete all children.
      */

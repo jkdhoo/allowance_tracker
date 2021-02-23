@@ -1,7 +1,6 @@
 package com.hooware.allowancetracker.overview
 
 import android.app.Application
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
@@ -14,7 +13,9 @@ import com.hooware.allowancetracker.data.local.DataSource
 import com.hooware.allowancetracker.data.to.ChildTO
 import com.hooware.allowancetracker.data.to.ResultTO
 import com.hooware.allowancetracker.data.to.TransactionTO
+import com.hooware.allowancetracker.network.Network
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import timber.log.Timber
 
 class OverviewViewModel(val app: Application, private val dataSource: DataSource) :
@@ -35,19 +36,23 @@ class OverviewViewModel(val app: Application, private val dataSource: DataSource
     val childName = MutableLiveData<String>()
     val childAge = MutableLiveData<String>()
     val childBirthday = MutableLiveData<String>()
+    val transactionDescription = MutableLiveData<String>()
+    val transactionAmount = MutableLiveData<String>()
+    val transactionDate = MutableLiveData<String>()
+    var editChildDetails = MutableLiveData<Boolean>()
 
     // lists that hold the data to be displayed on the UI
     val transactionsList = MutableLiveData<List<TransactionDataItem>>()
     val childrenList = MutableLiveData<List<ChildDataItem>>()
 
-    fun clearAllTransactions() {
+    fun clearAllTransactions(id: String) {
         showTransactionsLoading.value = true
         viewModelScope.launch {
             dataSource.deleteAllTransactions()
             showTransactionsLoading.value = false
             showToast.value = getApplication<Application>().getString(R.string.transactions_cleared)
         }
-        loadTransactions()
+        loadTransactions(id)
     }
 
     fun clearAllChildren() {
@@ -64,12 +69,14 @@ class OverviewViewModel(val app: Application, private val dataSource: DataSource
      * Get all the transactions from the DataSource and add them to the transactionsList to be shown on the UI,
      * or show error if any
      */
-    fun loadTransactions() {
+    fun loadTransactions(id: String) {
         showTransactionsLoading.value = true
         viewModelScope.launch {
             //interacting with the dataSource has to be through a coroutine
-            val result = dataSource.getTransactions()
-            showTransactionsLoading.postValue(false)
+            val result = dataSource.getTransactionsByChild(id)
+            Timber.i("Getting transactions")
+            showTransactionsLoading.value = false
+            Timber.i("Stopping load")
             when (result) {
                 is ResultTO.Success<*> -> {
                     val dataList = ArrayList<TransactionDataItem>()
@@ -140,9 +147,15 @@ class OverviewViewModel(val app: Application, private val dataSource: DataSource
         showNoChildData.value = childrenList.value == null || childrenList.value!!.isEmpty()
     }
 
-    fun validateAndSaveReminder(child: ChildDataItem) {
+    fun validateAndSaveChild(child: ChildDataItem) {
         if (validateEnteredChild(child)) {
             saveChild(child)
+        }
+    }
+
+    fun validateAndUpdateChild(child: ChildDataItem) {
+        if (validateEnteredChild(child)) {
+            updateChild(child)
         }
     }
 
@@ -162,11 +175,36 @@ class OverviewViewModel(val app: Application, private val dataSource: DataSource
         navigationCommand.value = NavigationCommand.Back
     }
 
+    private fun updateChild(child: ChildDataItem) {
+        showChildrenLoading.value = true
+        viewModelScope.launch {
+            dataSource.updateChild(
+                ChildTO(
+                    child.name,
+                    child.age,
+                    child.birthday,
+                    child.id,
+                )
+            )
+            showChildrenLoading.postValue(false)
+            showToast.value = app.getString(R.string.child_updated)
+        }
+        editChildDetails.value = false
+    }
+
     private fun validateEnteredChild(child: ChildDataItem): Boolean {
         if (child.name.isNullOrEmpty()) {
             showSnackBarInt.value = R.string.err_enter_name
             return false
         }
         return true
+    }
+
+    fun refreshQuotes() {
+        viewModelScope.launch {
+            val responseString = Network.quote.getQuoteAsync("en", "inspire").await()
+            val responseJson = JSONObject(responseString)
+            Timber.i("$responseJson")
+        }
     }
 }

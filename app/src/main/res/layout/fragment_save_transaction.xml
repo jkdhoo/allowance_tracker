@@ -7,6 +7,9 @@
         <variable
             name="viewModel"
             type="com.hooware.allowancetracker.overview.OverviewViewModel" />
+        <variable
+            name="selectedChild"
+            type="com.hooware.allowancetracker.children.ChildDataItem" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -15,72 +18,73 @@
         android:background="@color/white">
 
         <TextView
-            android:id="@+id/child_name_title"
+            android:id="@+id/transaction_child_name_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:text="@string/child_name_title"
-            android:layout_margin="@dimen/margin_normal"
+            android:layout_marginTop="@dimen/margin_normal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/edit_child_name"
+        <TextView
+            android:id="@+id/transaction_child_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_normal"
-            android:autofillHints="name"
-            android:hint="@string/hint_edit_child_name"
-            android:inputType="text"
-            android:text="@={viewModel.childName}"
+            android:layout_marginStart="@dimen/margin_normal"
+            android:layout_marginEnd="@dimen/margin_normal"
+            android:layout_marginBottom="@dimen/margin_normal"
+            android:text="@{selectedChild.name}"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/child_name_title"
+            app:layout_constraintTop_toBottomOf="@id/transaction_child_name_title"
             tools:text="Laavingonn" />
 
         <TextView
-            android:id="@+id/child_age_title"
+            android:id="@+id/transaction_description_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:text="@string/child_age_title"
-            android:layout_margin="@dimen/margin_normal"
+            android:text="@string/transaction_description_title"
+            android:layout_marginTop="@dimen/margin_normal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/edit_child_name" />
+            app:layout_constraintTop_toBottomOf="@id/transaction_child_name" />
 
         <EditText
-            android:id="@+id/edit_child_age"
+            android:id="@+id/transaction_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_normal"
-            android:autofillHints="age"
-            android:hint="@string/hint_edit_child_age"
-            android:inputType="number"
-            android:text="@={viewModel.childAge}"
+            android:layout_marginStart="@dimen/margin_normal"
+            android:layout_marginEnd="@dimen/margin_normal"
+            android:layout_marginBottom="@dimen/margin_normal"
+            android:autofillHints="text"
+            android:hint="@string/hint_edit_transaction_description"
+            android:inputType="text"
+            android:text="@={viewModel.transactionDescription}"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/child_age_title"
-            tools:text="10" />
+            app:layout_constraintTop_toBottomOf="@id/transaction_description_title" />
 
         <TextView
-            android:id="@+id/child_birthday_title"
+            android:id="@+id/transaction_amount_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:text="@string/child_birthday_title"
-            android:layout_margin="@dimen/margin_normal"
+            android:text="@string/transaction_amount_title"
+            android:layout_marginTop="@dimen/margin_normal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/edit_child_age" />
+            app:layout_constraintTop_toBottomOf="@id/transaction_description" />
 
         <EditText
-            android:id="@+id/edit_child_birthday"
+            android:id="@+id/transaction_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_normal"
-            android:autofillHints="date"
-            android:hint="@string/hint_edit_child_birthday"
-            android:inputType="date"
-            android:text="@={viewModel.childBirthday}"
+            android:layout_marginStart="@dimen/margin_normal"
+            android:layout_marginEnd="@dimen/margin_normal"
+            android:layout_marginBottom="@dimen/margin_normal"
+            android:autofillHints="amount"
+            android:hint="@string/hint_edit_transaction_amount"
+            android:inputType="number"
+            android:text="@={viewModel.transactionAmount}"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/child_birthday_title"
+            app:layout_constraintTop_toBottomOf="@id/transaction_amount_title"
             tools:text="08/02/2010"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

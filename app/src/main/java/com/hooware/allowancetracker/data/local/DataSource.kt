@@ -10,6 +10,7 @@ import com.hooware.allowancetracker.data.to.ResultTO
 interface DataSource {
     //TransactionsDao
     suspend fun getTransactions(): ResultTO<List<TransactionTO>>
+    suspend fun getTransactionsByChild(id: String): ResultTO<List<TransactionTO>>
     suspend fun saveTransaction(transaction: TransactionTO)
     suspend fun getTransaction(id: String): ResultTO<TransactionTO>
     suspend fun deleteAllTransactions()
@@ -17,6 +18,7 @@ interface DataSource {
     //ChildrenDao
     suspend fun getChildren(): ResultTO<List<ChildTO>>
     suspend fun saveChild(child: ChildTO)
+    suspend fun updateChild(child: ChildTO)
     suspend fun getChild(id: String): ResultTO<ChildTO>
     suspend fun deleteAllChildren()
 }

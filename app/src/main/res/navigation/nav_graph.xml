@@ -9,19 +9,53 @@
         android:id="@+id/overviewActivity"
         android:name="com.hooware.allowancetracker.overview.OverviewActivity"
         android:label=""
-        tools:layout="@layout/activity_overview"/>
+        tools:layout="@layout/activity_overview" />
     <fragment
         android:id="@+id/overviewFragment"
         android:name="com.hooware.allowancetracker.overview.OverviewFragment"
         android:label="Overview"
         tools:layout="@layout/fragment_overview">
         <action
-            android:id="@+id/action_overviewFragment_to_saveChildFragment"
+            android:id="@+id/action_addChild"
             app:destination="@id/saveChildFragment" />
+        <action
+            android:id="@+id/action_showDetail"
+            app:destination="@id/childDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/saveChildFragment"
         android:name="com.hooware.allowancetracker.overview.SaveChildFragment"
         android:label="New Child"
-        tools:layout="@layout/fragment_save_child"/>
+        tools:layout="@layout/fragment_save_child" />
+    <fragment
+        android:id="@+id/childDetailsFragment"
+        android:name="com.hooware.allowancetracker.children.ChildDetailsFragment"
+        android:label="Transactions"
+        tools:layout="@layout/fragment_child_details">
+        <argument
+            android:name="selectedChild"
+            app:argType="com.hooware.allowancetracker.children.ChildDataItem" />
+        <action
+            android:id="@+id/action_showDetail"
+            app:destination="@id/transactionDetailsFragment" />
+        <action
+            android:id="@+id/action_addTransaction"
+            app:destination="@id/saveTransactionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/transactionDetailsFragment"
+        android:name="com.hooware.allowancetracker.transactions.TransactionDetailsFragment"
+        android:label="Transactions">
+        <argument
+            android:name="selectedTransaction"
+            app:argType="com.hooware.allowancetracker.transactions.TransactionDataItem" />
+    </fragment>
+    <fragment
+        android:id="@+id/saveTransactionFragment"
+        android:name="com.hooware.allowancetracker.transactions.SaveTransactionFragment"
+        android:label="Transactions">
+        <argument
+            android:name="selectedChild"
+            app:argType="com.hooware.allowancetracker.children.ChildDataItem" />
+    </fragment>
 </navigation>

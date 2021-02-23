@@ -7,13 +7,24 @@
     <string name="children_cleared">Children cleared!</string>
     <string name="logout">Logout</string>
     <string name="add_a_child">You have not yet added a child.\nClick the + button!</string>
+    <string name="add_a_transaction">You have not yet added any allowance.\nClick the + button!</string>
     <string name="cd_add_new_child">Add New Child</string>
+    <string name="cd_add_new_transaction">Add New Transaction</string>
     <string name="child_name_title">Name</string>
     <string name="child_age_title">Age</string>
+    <string name="transaction_description_title">Description</string>
+    <string name="transaction_amount_title">Amount</string>
+    <string name="transaction_date_title">Date</string>
     <string name="child_birthday_title">Birthday</string>
     <string name="err_enter_name">You must enter a child\'s name to save.</string>
     <string name="child_saved">Child Saved!</string>
+    <string name="child_updated">Child Updated!</string>
     <string name="hint_edit_child_name">Your child\'s name (required)</string>
     <string name="hint_edit_child_age">Your child\'s age (optional)</string>
     <string name="hint_edit_child_birthday">Your child\'s birthday (optional)</string>
+    <string name="hint_edit_transaction_description">The transaction description</string>
+    <string name="hint_edit_transaction_amount">The transaction amount</string>
+    <string name="hint_edit_transaction_date">The transaction date</string>
+    <string name="cd_saveChild">Click to save</string>
+    <string name="cd_editChild">Clidk to edit child information</string>
 </resources>

@@ -64,6 +64,11 @@ class LocalRepository(
             childrenDao.saveChild(child)
         }
 
+    override suspend fun updateChild(child: ChildTO) =
+        withContext(ioDispatcher) {
+            childrenDao.updateChild(child)
+        }
+
     /**
      * Get a transaction by its id
      * @param id to be used to get the transaction
@@ -77,6 +82,15 @@ class LocalRepository(
             } else {
                 return@withContext ResultTO.Error("Reminder not found!")
             }
+        } catch (e: Exception) {
+            return@withContext ResultTO.Error(e.localizedMessage)
+        }
+    }
+
+    override suspend fun getTransactionsByChild(id: String): ResultTO<List<TransactionTO>> = withContext(ioDispatcher) {
+        try {
+            val transactions = transactionsDao.getTransactionsByChild(id)
+            return@withContext ResultTO.Success(transactions)
         } catch (e: Exception) {
             return@withContext ResultTO.Error(e.localizedMessage)
         }

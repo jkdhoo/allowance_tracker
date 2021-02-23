@@ -18,7 +18,6 @@ import com.hooware.allowancetracker.utils.setTitle
 import com.hooware.allowancetracker.utils.setup
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
-import kotlin.system.exitProcess
 
 class OverviewFragment : BaseFragment() {
 
@@ -33,18 +32,10 @@ class OverviewFragment : BaseFragment() {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_overview, container, false)
         binding.viewModel = _viewModel
-
         setHasOptionsMenu(true)
 
         setDisplayHomeAsUpEnabled(false)
         setTitle(getString(R.string.app_name))
-
-        binding.refreshLayout.setOnRefreshListener {
-            _viewModel.loadChildren()
-            if (binding.refreshLayout.isRefreshing) {
-                binding.refreshLayout.isRefreshing = false
-            }
-        }
 
         Timber.i("Observe Authentication State")
         _viewModel.authenticationState.observe(this.requireActivity(), { authenticationState ->
@@ -64,6 +55,7 @@ class OverviewFragment : BaseFragment() {
                 binding.refreshLayout.isRefreshing = false
             }
         }
+        _viewModel.refreshQuotes()
         return binding.root
     }
 
@@ -87,11 +79,15 @@ class OverviewFragment : BaseFragment() {
     }
 
     private fun navigateToAddChild() {
-        _viewModel.navigationCommand.postValue(NavigationCommand.To(OverviewFragmentDirections.actionOverviewFragmentToSaveChildFragment()))
+        _viewModel.navigationCommand.postValue(NavigationCommand.To(OverviewFragmentDirections.actionAddChild()))
     }
 
     private fun setupRecyclerView() {
-        val adapter = ChildrenListAdapter {}
+        val adapter = ChildrenListAdapter { selectedChild ->
+            _viewModel.editChildDetails.value = false
+            _viewModel.navigationCommand.postValue(NavigationCommand.To(OverviewFragmentDirections.actionShowDetail(selectedChild)))
+        }
+
         binding.childrenRecyclerView.setup(adapter)
     }
 

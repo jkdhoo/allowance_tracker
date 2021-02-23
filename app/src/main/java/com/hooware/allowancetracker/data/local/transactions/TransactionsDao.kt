@@ -28,8 +28,8 @@ interface TransactionsDao {
      * @param name the name of the child in the transaction
      * @return the transaction object with the transactionId
      */
-    @Query("SELECT * FROM transactions where name = :name")
-    suspend fun getTransactionsByChild(name: String): List<TransactionTO>
+    @Query("SELECT * FROM transactions where name = :childId")
+    suspend fun getTransactionsByChild(childId: String): List<TransactionTO>
 
     /**
      * Insert a transaction in the database. If the transaction already exists, replace it.
