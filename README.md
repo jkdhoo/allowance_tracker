@@ -11,7 +11,7 @@ Allowance Organizer – Initial Design
 -	Login w/Firebase
 -	Welcome Screen w/ info
 -	Ability to create “Children”
--	Ability to add/remove/adjust allowance amounts
+-	Ability to add allowance amounts
 -	Room DB to hold all information
 -	Notifications after adding allowance
 
