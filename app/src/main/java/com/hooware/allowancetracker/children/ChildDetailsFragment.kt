@@ -11,8 +11,6 @@ import com.hooware.allowancetracker.base.BaseFragment
 import com.hooware.allowancetracker.base.NavigationCommand
 import com.hooware.allowancetracker.databinding.FragmentChildDetailsBinding
 import com.hooware.allowancetracker.overview.OverviewViewModel
-import com.hooware.allowancetracker.children.ChildDetailsFragmentArgs
-import com.hooware.allowancetracker.children.ChildDetailsFragmentDirections
 import com.hooware.allowancetracker.transactions.TransactionsListAdapter
 import com.hooware.allowancetracker.utils.setDisplayHomeAsUpEnabled
 import com.hooware.allowancetracker.utils.setup
@@ -78,7 +76,10 @@ class ChildDetailsFragment : BaseFragment() {
         val adapter = TransactionsListAdapter { selectedTransaction ->
             _viewModel.navigationCommand.postValue(
                 NavigationCommand.To(
-                    ChildDetailsFragmentDirections.actionShowDetail(selectedTransaction)
+                    ChildDetailsFragmentDirections.actionShowDetail(
+                        selectedTransaction,
+                        selectedChild
+                    )
                 )
             )
         }

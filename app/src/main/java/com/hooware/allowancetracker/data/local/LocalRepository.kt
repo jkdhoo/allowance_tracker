@@ -1,10 +1,12 @@
 package com.hooware.allowancetracker.data.local
 
 import com.hooware.allowancetracker.data.local.children.ChildrenDao
+import com.hooware.allowancetracker.data.local.quotes.QuoteDao
 import com.hooware.allowancetracker.data.local.transactions.TransactionsDao
 import com.hooware.allowancetracker.data.to.ChildTO
 import com.hooware.allowancetracker.data.to.TransactionTO
 import com.hooware.allowancetracker.data.to.ResultTO
+import com.hooware.allowancetracker.network.QuoteResponseTO
 import kotlinx.coroutines.*
 
 /**
@@ -19,6 +21,7 @@ import kotlinx.coroutines.*
 class LocalRepository(
     private val transactionsDao: TransactionsDao,
     private val childrenDao: ChildrenDao,
+    private val quoteDao: QuoteDao,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : DataSource {
 
@@ -134,4 +137,25 @@ class LocalRepository(
             childrenDao.deleteAllChildren()
         }
     }
+
+    override suspend fun getQuote(): ResultTO<QuoteResponseTO> = withContext(ioDispatcher) {
+        try {
+            val quote = quoteDao.getQuote()
+            return@withContext ResultTO.Success(quote)
+        } catch (e: Exception) {
+            return@withContext ResultTO.Error(e.localizedMessage)
+        }
+    }
+
+    override suspend fun deleteQuote() {
+        withContext(ioDispatcher) {
+            quoteDao.deleteQuote()
+        }
+    }
+
+    override suspend fun saveQuote(quote: QuoteResponseTO) =
+        withContext(ioDispatcher) {
+            quoteDao.deleteQuote()
+            quoteDao.saveQuote(quote)
+        }
 }

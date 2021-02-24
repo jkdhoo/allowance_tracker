@@ -3,6 +3,7 @@ package com.hooware.allowancetracker.data.local
 import com.hooware.allowancetracker.data.to.ChildTO
 import com.hooware.allowancetracker.data.to.TransactionTO
 import com.hooware.allowancetracker.data.to.ResultTO
+import com.hooware.allowancetracker.network.QuoteResponseTO
 
 /**
  * Main entry point for accessing transactions data.
@@ -21,4 +22,9 @@ interface DataSource {
     suspend fun updateChild(child: ChildTO)
     suspend fun getChild(id: String): ResultTO<ChildTO>
     suspend fun deleteAllChildren()
+
+    //QuoteDao
+    suspend fun getQuote(): ResultTO<QuoteResponseTO>
+    suspend fun deleteQuote()
+    suspend fun saveQuote(quote: QuoteResponseTO)
 }

@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.hooware.allowancetracker.data.local.children.ChildrenDao
 import com.hooware.allowancetracker.data.local.children.ChildrenDatabase
+import com.hooware.allowancetracker.data.local.quotes.QuoteDao
+import com.hooware.allowancetracker.data.local.quotes.QuoteDatabase
 import com.hooware.allowancetracker.data.local.transactions.TransactionsDao
 import com.hooware.allowancetracker.data.local.transactions.TransactionsDatabase
 
@@ -31,6 +33,16 @@ object LocalDB {
             context.applicationContext,
             ChildrenDatabase::class.java, "children.db"
         ).build().childrenDao()
+    }
+
+    /**
+     *  static method that creates a child class and returns the DAO of the child
+     */
+    fun createQuoteDao(context: Context): QuoteDao {
+        return Room.databaseBuilder(
+            context.applicationContext,
+            QuoteDatabase::class.java, "quote.db"
+        ).build().quoteDao()
     }
 
 }

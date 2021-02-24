@@ -20,7 +20,7 @@ import java.util.*
 data class TransactionTO(
     @ColumnInfo(name = "name") var name: String?,
     @ColumnInfo(name = "details") var details: String?,
-    @ColumnInfo(name = "amount") var amount: Double?,
+    @ColumnInfo(name = "amount") var amount: String?,
     @ColumnInfo(name = "date") val date: String?,
     @PrimaryKey @ColumnInfo(name = "entry_id") val id: String = UUID.randomUUID().toString()
 )

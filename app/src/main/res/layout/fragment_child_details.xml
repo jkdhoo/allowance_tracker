@@ -22,24 +22,19 @@
         <!-- Static -->
         <TextView
             android:id="@+id/child_name_title"
+            style="@style/TextViewStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_normal"
-            android:layout_marginTop="@dimen/margin_normal"
-            android:layout_marginEnd="@dimen/margin_normal"
             android:text="@string/child_name_title"
-            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Fade Group - Edit Name -->
         <EditText
             android:id="@+id/_edit_child_name"
+            style="@style/EditTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_normal"
-            android:layout_marginEnd="@dimen/margin_normal"
-            android:layout_marginBottom="@dimen/margin_normal"
             android:autofillHints="name"
             android:enabled="true"
             android:fadeVisible="@{viewModel.editChildDetails.booleanValue()}"
@@ -52,11 +47,9 @@
 
         <TextView
             android:id="@+id/edit_child_name"
+            style="@style/EditTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_normal"
-            android:layout_marginEnd="@dimen/margin_normal"
-            android:layout_marginBottom="@dimen/margin_normal"
             android:fadeVisible="@{!viewModel.editChildDetails.booleanValue()}"
             android:text="@{selectedChild.name}"
             app:layout_constraintStart_toStartOf="parent"
@@ -66,38 +59,30 @@
         <!-- Fade Group - Age Title -->
         <TextView
             android:id="@+id/child_age_title"
+            style="@style/TextViewStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_normal"
-            android:layout_marginTop="@dimen/margin_normal"
-            android:layout_marginEnd="@dimen/margin_normal"
             android:fadeVisible="@{!viewModel.editChildDetails.booleanValue()}"
             android:text="@string/child_age_title"
-            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/edit_child_name" />
 
         <TextView
             android:id="@+id/_child_age_title"
+            style="@style/TextViewStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_normal"
-            android:layout_marginTop="@dimen/margin_normal"
-            android:layout_marginEnd="@dimen/margin_normal"
             android:fadeVisible="@{viewModel.editChildDetails.booleanValue()}"
             android:text="@string/child_age_title"
-            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/_edit_child_name" />
 
         <!-- Fade Group - Edit Age -->
         <EditText
             android:id="@+id/_edit_child_age"
+            style="@style/EditTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_normal"
-            android:layout_marginEnd="@dimen/margin_normal"
-            android:layout_marginBottom="@dimen/margin_normal"
             android:autofillHints="age"
             android:enabled="true"
             android:fadeVisible="@{viewModel.editChildDetails.booleanValue()}"
@@ -110,11 +95,9 @@
 
         <TextView
             android:id="@+id/edit_child_age"
+            style="@style/EditTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_normal"
-            android:layout_marginEnd="@dimen/margin_normal"
-            android:layout_marginBottom="@dimen/margin_normal"
             android:fadeVisible="@{!viewModel.editChildDetails.booleanValue()}"
             android:text="@{selectedChild.age}"
             app:layout_constraintStart_toStartOf="parent"
@@ -122,37 +105,29 @@
 
         <TextView
             android:id="@+id/child_birthday_title"
+            style="@style/TextViewStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_normal"
-            android:layout_marginTop="@dimen/margin_normal"
-            android:layout_marginEnd="@dimen/margin_normal"
             android:fadeVisible="@{!viewModel.editChildDetails.booleanValue()}"
             android:text="@string/child_birthday_title"
-            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/edit_child_age" />
 
         <TextView
             android:id="@+id/_child_birthday_title"
+            style="@style/TextViewStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_normal"
-            android:layout_marginTop="@dimen/margin_normal"
-            android:layout_marginEnd="@dimen/margin_normal"
             android:fadeVisible="@{viewModel.editChildDetails.booleanValue()}"
             android:text="@string/child_birthday_title"
-            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/_edit_child_age" />
 
         <EditText
             android:id="@+id/_edit_child_birthday"
+            style="@style/EditTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_normal"
-            android:layout_marginEnd="@dimen/margin_normal"
-            android:layout_marginBottom="@dimen/margin_normal"
             android:autofillHints="date"
             android:enabled="true"
             android:fadeVisible="@{viewModel.editChildDetails.booleanValue()}"
@@ -165,11 +140,9 @@
 
         <TextView
             android:id="@+id/edit_child_birthday"
+            style="@style/EditTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_normal"
-            android:layout_marginEnd="@dimen/margin_normal"
-            android:layout_marginBottom="@dimen/margin_normal"
             android:fadeVisible="@{!viewModel.editChildDetails.booleanValue()}"
             android:text="@{selectedChild.birthday}"
             app:layout_constraintStart_toStartOf="parent"
@@ -178,7 +151,7 @@
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:fadeVisible="@{!viewModel.editChildDetails.booleanValue()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -187,15 +160,16 @@
             tools:context=".children.ChildDetailsFragment">
 
             <androidx.core.widget.NestedScrollView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_marginTop="@dimen/margin_normal"
                 android:fillViewport="true">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/transactionsRecyclerView"
+                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    app:layout_constrainedHeight="true"
                     android:liveData="@{viewModel.transactionsList}" />
             </androidx.core.widget.NestedScrollView>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

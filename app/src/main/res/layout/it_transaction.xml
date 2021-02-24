@@ -8,6 +8,9 @@
         <variable
             name="item"
             type="com.hooware.allowancetracker.transactions.TransactionDataItem" />
+        <variable
+            name="selectedChild"
+            type="com.hooware.allowancetracker.children.ChildDataItem" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -28,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/padding_small"
                 android:layout_marginLeft="@dimen/padding_small"
-                android:text="@{item.name}"
+                android:text="@{selectedChild.name}"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_size_normal"
                 app:layout_constraintStart_toStartOf="parent"
@@ -39,7 +42,7 @@
                 android:id="@+id/description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{item.age}"
+                android:text="@{item.amount}"
                 android:textSize="@dimen/text_size_small"
                 app:layout_constraintStart_toStartOf="@id/title"
                 app:layout_constraintTop_toBottomOf="@id/title"
@@ -49,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@{item.birthday}"
+                android:text="@{item.details}"
                 android:textColor="@color/colorAccent"
                 android:textSize="@dimen/text_size_small"
                 app:layout_constraintBottom_toBottomOf="@+id/description"

@@ -49,6 +49,9 @@
         <argument
             android:name="selectedTransaction"
             app:argType="com.hooware.allowancetracker.transactions.TransactionDataItem" />
+        <argument
+            android:name="selectedChild"
+            app:argType="com.hooware.allowancetracker.children.ChildDataItem" />
     </fragment>
     <fragment
         android:id="@+id/saveTransactionFragment"

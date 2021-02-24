@@ -12,130 +12,64 @@
         <variable
             name="selectedTransaction"
             type="com.hooware.allowancetracker.transactions.TransactionDataItem" />
+
+        <variable
+            name="selectedChild"
+            type="com.hooware.allowancetracker.children.ChildDataItem" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.motion.widget.MotionLayout
+        android:id="@+id/motion_layout_transaction_details"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white">
+        android:background="@color/white"
+        app:layoutDescription="@xml/rise_in"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context=".transactions.TransactionDetailsFragment"
+        tools:showIn="@layout/fragment_transaction_details">
 
         <TextView
-            android:id="@+id/child_name_title"
+            android:id="@+id/transaction_details_name_title"
+            style="@style/TextViewStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_normal"
-            android:layout_marginEnd="@dimen/margin_normal"
-            android:layout_marginBottom="@dimen/margin_normal"
-            android:text="@string/child_name_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <!--        <EditText-->
-        <!--            android:id="@+id/edit_child_name"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_margin="@dimen/margin_normal"-->
-        <!--            android:autofillHints="name"-->
-        <!--            android:hint="@string/hint_edit_child_name"-->
-        <!--            android:inputType="text"-->
-        <!--            android:text="@={selectedChild.name}"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@id/child_name_title"-->
-        <!--            tools:text="Laavingonn" />-->
+            android:text="@string/child_name_title" />
 
         <TextView
-            android:id="@+id/edit_child_name"
+            android:id="@+id/transaction_details_child_name"
+            style="@style/EditTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_normal"
-            android:text="@{selectedTransaction.name}"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/child_name_title"
+            android:text="@{selectedChild.name}"
             tools:text="Laavingonn" />
 
         <TextView
-            android:id="@+id/child_age_title"
+            android:id="@+id/transaction_details_amount_title"
+            style="@style/TextViewStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_normal"
-            android:text="@string/child_age_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/edit_child_name" />
-
-        <!--        <EditText-->
-        <!--            android:id="@+id/edit_child_age"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_margin="@dimen/margin_normal"-->
-        <!--            android:autofillHints="age"-->
-        <!--            android:hint="@string/hint_edit_child_age"-->
-        <!--            android:inputType="number"-->
-        <!--            android:text="@={selectedChild.age}"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@id/child_age_title"-->
-        <!--            tools:text="10" />-->
+            android:text="@string/transaction_amount_title" />
 
         <TextView
-            android:id="@+id/edit_child_age"
+            android:id="@+id/transaction_details_amount"
+            style="@style/EditTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_normal"
-            android:text="@{selectedTransaction.age}"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/child_age_title" />
+            android:text="@{selectedTransaction.amount}" />
 
         <TextView
-            android:id="@+id/child_birthday_title"
+            android:id="@+id/transaction_details_description_title"
+            style="@style/TextViewStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_normal"
-            android:text="@string/child_birthday_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/edit_child_age" />
-
-        <!--        <EditText-->
-        <!--            android:id="@+id/edit_child_birthday"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_margin="@dimen/margin_normal"-->
-        <!--            android:autofillHints="date"-->
-        <!--            android:hint="@string/hint_edit_child_age"-->
-        <!--            android:inputType="date"-->
-        <!--            android:text="@={selectedChild.birthday}"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@id/child_birthday_title"-->
-        <!--            tools:text="08/02/2010"/>-->
+            android:text="@string/transaction_description_title" />
 
         <TextView
-            android:id="@+id/edit_child_birthday"
+            android:id="@+id/transaction_details_description"
+            style="@style/EditTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_normal"
-            android:text="@{selectedTransaction.birthday}"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/child_birthday_title" />
+            android:text="@{selectedTransaction.details}" />
 
-        <!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-        <!--            android:id="@+id/saveChild"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_margin="@dimen/margin_normal"-->
-        <!--            android:src="@drawable/ic_save"-->
-        <!--            app:fabSize="normal"-->
-        <!--            app:layout_anchorGravity="bottom|right|end"-->
-        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            android:contentDescription="@string/cd_saveChild" />-->
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:fadeVisible="@{viewModel.showTransactionsLoading.booleanValue()}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.motion.widget.MotionLayout>
 </layout>

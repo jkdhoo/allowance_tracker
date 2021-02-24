@@ -8,7 +8,8 @@ import java.util.*
  */
 data class TransactionDataItem(
     var name: String?,
-    var age: String?,
-    var birthday: String?,
+    var details: String?,
+    var amount: String?,
+    var date: String?,
     val id: String = UUID.randomUUID().toString()
 ) : Serializable

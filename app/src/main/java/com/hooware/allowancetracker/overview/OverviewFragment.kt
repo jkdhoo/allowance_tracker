@@ -55,7 +55,7 @@ class OverviewFragment : BaseFragment() {
                 binding.refreshLayout.isRefreshing = false
             }
         }
-        _viewModel.refreshQuotes()
+        _viewModel.refreshQuotes(binding.quoteBackground)
         return binding.root
     }
 
@@ -87,9 +87,7 @@ class OverviewFragment : BaseFragment() {
             _viewModel.editChildDetails.value = false
             _viewModel.navigationCommand.postValue(
                 NavigationCommand.To(
-                    OverviewFragmentDirections.actionShowDetail(
-                        selectedChild
-                    )
+                    OverviewFragmentDirections.actionShowDetail(selectedChild)
                 )
             )
         }

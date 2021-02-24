@@ -10,13 +10,9 @@ import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.base.BaseFragment
 import com.hooware.allowancetracker.base.NavigationCommand
 import com.hooware.allowancetracker.children.ChildDataItem
-import com.hooware.allowancetracker.children.ChildrenListAdapter
-import com.hooware.allowancetracker.databinding.FragmentChildDetailsBinding
 import com.hooware.allowancetracker.databinding.FragmentTransactionDetailsBinding
-import com.hooware.allowancetracker.overview.OverviewFragmentDirections
 import com.hooware.allowancetracker.overview.OverviewViewModel
 import com.hooware.allowancetracker.utils.setDisplayHomeAsUpEnabled
-import com.hooware.allowancetracker.utils.setup
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -24,6 +20,8 @@ class TransactionDetailsFragment : BaseFragment() {
 
     override val _viewModel: OverviewViewModel by viewModel()
     private lateinit var binding: FragmentTransactionDetailsBinding
+    lateinit var selectedChild: ChildDataItem
+    lateinit var selectedTransaction: TransactionDataItem
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,24 +39,13 @@ class TransactionDetailsFragment : BaseFragment() {
         setHasOptionsMenu(true)
         binding.viewModel = _viewModel
         binding.lifecycleOwner = this
-//        val selectedTransaction = TransactionDetailsFragmentArgs.fromBundle(requireArguments()).selectedTransaction
-//        binding.selectedTransaction = selectedTransaction
-//        binding.saveChild.setOnClickListener {
-//            val child = binding.selectedChild!!
-//            val name = child.name
-//            val age = child.age
-//            val birthday = child.birthday
-//            val id = child.id
-//            _viewModel.validateAndUpdateChild(
-//                ChildDataItem(
-//                    name,
-//                    age,
-//                    birthday,
-//                    id
-//                )
-//            )
-//            Timber.i("Save Clicked")
-//        }
+
+        selectedChild = TransactionDetailsFragmentArgs.fromBundle(requireArguments()).selectedChild
+        binding.selectedChild = selectedChild
+
+        selectedTransaction =
+            TransactionDetailsFragmentArgs.fromBundle(requireArguments()).selectedTransaction
+        binding.selectedTransaction = selectedTransaction
         return binding.root
     }
 
@@ -66,13 +53,6 @@ class TransactionDetailsFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
     }
-
-//    private fun setupRecyclerView() {
-//        val adapter = TransactionsListAdapter { selectedTransaction ->
-//            _viewModel.navigationCommand.postValue(NavigationCommand.To(ChildDetailsFragmentDirections.actionShowDetail(selectedTransaction)))
-//        }
-//        binding.transactionsRecyclerView.setup(adapter)
-//    }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         android.R.id.home -> {

@@ -1,9 +1,15 @@
 package com.hooware.allowancetracker.overview
 
 import android.app.Application
+import android.widget.ImageView
+import androidx.core.net.toUri
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.hooware.allowancetracker.AllowanceApp
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.auth.FirebaseUserLiveData
 import com.hooware.allowancetracker.base.BaseViewModel
@@ -14,11 +20,14 @@ import com.hooware.allowancetracker.data.to.ChildTO
 import com.hooware.allowancetracker.data.to.ResultTO
 import com.hooware.allowancetracker.data.to.TransactionTO
 import com.hooware.allowancetracker.network.Network
+import com.hooware.allowancetracker.network.QuoteResponseTO
+import com.hooware.allowancetracker.network.parseQuoteJsonResult
+import com.hooware.allowancetracker.transactions.TransactionDataItem
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import timber.log.Timber
 
-class OverviewViewModel(val app: Application, private val dataSource: DataSource) :
+class OverviewViewModel(val app: AllowanceApp, private val dataSource: DataSource) :
     BaseViewModel(app) {
 
     enum class AuthenticationState {
@@ -44,6 +53,30 @@ class OverviewViewModel(val app: Application, private val dataSource: DataSource
     // lists that hold the data to be displayed on the UI
     val transactionsList = MutableLiveData<List<TransactionDataItem>>()
     val childrenList = MutableLiveData<List<ChildDataItem>>()
+
+    private var _quoteLoaded = MutableLiveData<Boolean>()
+    val quoteLoaded: LiveData<Boolean>
+        get() = _quoteLoaded
+
+    private var _quoteResponse = MutableLiveData<QuoteResponseTO>()
+    val quoteResponse: LiveData<QuoteResponseTO>
+        get() = _quoteResponse
+
+    init {
+        _quoteLoaded.value = false
+        val defaultQuote = app.firebaseConfigRetriever("default_quote")
+        val defaultAuthor = app.firebaseConfigRetriever("default_author")
+        val defaultBackgroundImage =
+            app.firebaseConfigRetriever("default_background")
+        _quoteResponse.value = QuoteResponseTO(
+            defaultQuote,
+            defaultAuthor,
+            defaultBackgroundImage
+        )
+        viewModelScope.launch {
+            dataSource.saveQuote(_quoteResponse.value!!)
+        }
+    }
 
     fun clearAllTransactions(id: String) {
         showTransactionsLoading.value = true
@@ -154,6 +187,12 @@ class OverviewViewModel(val app: Application, private val dataSource: DataSource
         }
     }
 
+    fun validateAndSaveTransaction(transaction: TransactionDataItem) {
+        if (validateEnteredTransaction(transaction)) {
+            saveTransaction(transaction)
+        }
+    }
+
     fun validateAndUpdateChild(child: ChildDataItem) {
         if (validateEnteredChild(child)) {
             updateChild(child)
@@ -172,6 +211,23 @@ class OverviewViewModel(val app: Application, private val dataSource: DataSource
             )
             showChildrenLoading.postValue(false)
             showToast.value = app.getString(R.string.child_saved)
+        }
+        navigationCommand.value = NavigationCommand.Back
+    }
+
+    private fun saveTransaction(transaction: TransactionDataItem) {
+        showTransactionsLoading.value = true
+        viewModelScope.launch {
+            dataSource.saveTransaction(
+                TransactionTO(
+                    transaction.name,
+                    transaction.details,
+                    transaction.amount,
+                    transaction.date
+                )
+            )
+            showTransactionsLoading.postValue(false)
+            showToast.value = app.getString(R.string.transaction_saved)
         }
         navigationCommand.value = NavigationCommand.Back
     }
@@ -201,11 +257,49 @@ class OverviewViewModel(val app: Application, private val dataSource: DataSource
         return true
     }
 
-    fun refreshQuotes() {
+    private fun validateEnteredTransaction(transaction: TransactionDataItem): Boolean {
+        if (transaction.amount == null) {
+            showSnackBarInt.value = R.string.err_enter_amount
+            return false
+        }
+        return true
+    }
+
+    fun refreshQuotes(view: ImageView) {
         viewModelScope.launch {
-            val responseString = Network.quote.getQuoteAsync("en", "inspire").await()
-            val responseJson = JSONObject(responseString)
-            Timber.i("$responseJson")
+            addQuoteCard(view, quoteResponse.value!!.backgroundImage)
+            if (quoteLoaded.value == false) {
+                try {
+                    val responseString = Network.quote.getQuoteAsync("en", "inspire").await()
+                    val responseJSON = JSONObject(responseString)
+                    _quoteResponse.value = parseQuoteJsonResult(responseJSON)
+                    Timber.i("Quote of the day retrieved.")
+                    dataSource.saveQuote(_quoteResponse.value!!)
+                    _quoteLoaded.value = true
+                } catch (e: Exception) {
+                    Timber.i("Network call failed, loading saved quote")
+                    Timber.i(e)
+                    when (val storedQuoteResult = dataSource.getQuote()) {
+                        is ResultTO.Success<*> -> {
+                            _quoteResponse.value = storedQuoteResult.data as QuoteResponseTO
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun addQuoteCard(imgView: ImageView, imgUrl: String?) {
+        imgUrl?.let {
+            val imgUri = imgUrl.toUri().buildUpon().scheme("https").build()
+            Glide.with(imgView.context)
+                .load(imgUri)
+                .apply(
+                    RequestOptions()
+                        .placeholder(R.drawable.loading_animation)
+                        .error(R.drawable.ic_broken_image)
+                )
+                .into(imgView)
         }
     }
 }

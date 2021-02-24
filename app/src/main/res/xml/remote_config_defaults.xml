@@ -1,2 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<defaultsMap />
+<defaultsMap>
+    <entry>
+        <key>default_quote</key>
+        <value>The factory of the future will have only two employees, a man, and a dog. The man will be there to feed the dog. The dog will be there to keep the man from touching the equipment.</value>
+    </entry>
+    <entry>
+        <key>default_author</key>
+        <value>Warren G. Bennis</value>
+    </entry>
+    <entry>
+        <key>default_background</key>
+        <value>https://images.pexels.com/photos/459728/pexels-photo-459728.jpeg</value>
+    </entry>
+</defaultsMap>

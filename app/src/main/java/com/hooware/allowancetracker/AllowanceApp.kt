@@ -8,6 +8,7 @@ import com.hooware.allowancetracker.data.local.DataSource
 import com.hooware.allowancetracker.data.local.LocalDB
 import com.hooware.allowancetracker.data.local.LocalRepository
 import com.hooware.allowancetracker.data.local.children.ChildrenDao
+import com.hooware.allowancetracker.data.local.quotes.QuoteDao
 import com.hooware.allowancetracker.data.local.transactions.TransactionsDao
 import com.hooware.allowancetracker.overview.OverviewViewModel
 import org.koin.android.ext.koin.androidContext
@@ -30,12 +31,13 @@ class AllowanceApp : Application() {
         val myModule = module {
             //Declare a ViewModel - be later inject into Fragment with dedicated injector using by viewModel()
             viewModel {
-                OverviewViewModel(get(), get() as DataSource)
+                OverviewViewModel(this@AllowanceApp, get() as DataSource)
             }
             single { AuthViewModel(get()) }
-            single { LocalRepository(get() as TransactionsDao, get() as ChildrenDao) as DataSource }
+            single { LocalRepository(get() as TransactionsDao, get() as ChildrenDao, get() as QuoteDao) as DataSource }
             single { LocalDB.createChildrenDao(this@AllowanceApp) }
             single { LocalDB.createTransactionsDao(this@AllowanceApp) }
+            single { LocalDB.createQuoteDao(this@AllowanceApp) }
         }
 
         startKoin {
