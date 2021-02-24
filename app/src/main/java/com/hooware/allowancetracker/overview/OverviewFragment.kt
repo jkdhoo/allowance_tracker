@@ -11,8 +11,11 @@ import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.auth.AuthActivity
 import com.hooware.allowancetracker.base.BaseFragment
 import com.hooware.allowancetracker.base.NavigationCommand
+import com.hooware.allowancetracker.children.ChildDataItem
 import com.hooware.allowancetracker.children.ChildrenListAdapter
 import com.hooware.allowancetracker.databinding.FragmentOverviewBinding
+import com.hooware.allowancetracker.transactions.TransactionDataItem
+import com.hooware.allowancetracker.transactions.TransactionDetailsFragmentArgs
 import com.hooware.allowancetracker.utils.setDisplayHomeAsUpEnabled
 import com.hooware.allowancetracker.utils.setTitle
 import com.hooware.allowancetracker.utils.setup
@@ -32,6 +35,7 @@ class OverviewFragment : BaseFragment() {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_overview, container, false)
         binding.viewModel = _viewModel
+
         setHasOptionsMenu(true)
 
         setDisplayHomeAsUpEnabled(false)
@@ -71,7 +75,21 @@ class OverviewFragment : BaseFragment() {
                     finishAffinity(requireActivity())
                 }
             })
+
+        val activity = this.activity as OverviewActivity
+        val bundle = activity.getIntentData()
+        if (bundle != null) {
+            Timber.i("Bundle is not null, $bundle")
+            val child = bundle.get("ChildDataItem") as ChildDataItem
+            Timber.i("$child")
+            _viewModel.navigationCommand.postValue(NavigationCommand.To(
+                OverviewFragmentDirections.actionShowDetail(
+                    child
+                )
+            ))
+        }
     }
+
 
     override fun onResume() {
         super.onResume()

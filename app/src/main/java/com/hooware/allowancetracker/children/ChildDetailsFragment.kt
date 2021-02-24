@@ -10,7 +10,10 @@ import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.base.BaseFragment
 import com.hooware.allowancetracker.base.NavigationCommand
 import com.hooware.allowancetracker.databinding.FragmentChildDetailsBinding
+import com.hooware.allowancetracker.overview.OverviewActivity
+import com.hooware.allowancetracker.overview.OverviewFragmentDirections
 import com.hooware.allowancetracker.overview.OverviewViewModel
+import com.hooware.allowancetracker.transactions.TransactionDataItem
 import com.hooware.allowancetracker.transactions.TransactionsListAdapter
 import com.hooware.allowancetracker.utils.setDisplayHomeAsUpEnabled
 import com.hooware.allowancetracker.utils.setup
@@ -70,6 +73,21 @@ class ChildDetailsFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
         setupRecyclerView()
+        val activity = this.activity as OverviewActivity
+        val bundle = activity.getIntentData()
+        if (bundle != null) {
+            Timber.i("Bundle is not null, $bundle")
+            val child = bundle.get("ChildDataItem") as ChildDataItem
+            val transaction = bundle.get("TransactionDataItem") as TransactionDataItem
+            Timber.i("$child, $transaction")
+            _viewModel.navigationCommand.postValue(NavigationCommand.To(
+                ChildDetailsFragmentDirections.actionShowDetail(
+                    transaction,
+                    child
+                )
+            ))
+            activity.clearBundle()
+        }
     }
 
     private fun setupRecyclerView() {

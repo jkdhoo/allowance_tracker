@@ -21,6 +21,9 @@
         <action
             android:id="@+id/action_showDetail"
             app:destination="@id/childDetailsFragment" />
+        <action
+            android:id="@+id/action_showTransactionDetail"
+            app:destination="@id/transactionDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/saveChildFragment"

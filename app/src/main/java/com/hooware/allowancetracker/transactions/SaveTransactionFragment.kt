@@ -44,7 +44,7 @@ class SaveTransactionFragment : BaseFragment() {
                     details,
                     amount,
                     date
-                )
+                ), selectedChild
             )
             Timber.i("Save Clicked")
         }

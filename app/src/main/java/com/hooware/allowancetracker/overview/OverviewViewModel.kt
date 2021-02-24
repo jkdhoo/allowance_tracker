@@ -23,6 +23,7 @@ import com.hooware.allowancetracker.network.Network
 import com.hooware.allowancetracker.network.QuoteResponseTO
 import com.hooware.allowancetracker.network.parseQuoteJsonResult
 import com.hooware.allowancetracker.transactions.TransactionDataItem
+import com.hooware.allowancetracker.utils.sendNotification
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import timber.log.Timber
@@ -49,6 +50,8 @@ class OverviewViewModel(val app: AllowanceApp, private val dataSource: DataSourc
     val transactionAmount = MutableLiveData<String>()
     val transactionDate = MutableLiveData<String>()
     var editChildDetails = MutableLiveData<Boolean>()
+    var intentChild = MutableLiveData<ChildDataItem>()
+    var intentTransaction = MutableLiveData<TransactionDataItem>()
 
     // lists that hold the data to be displayed on the UI
     val transactionsList = MutableLiveData<List<TransactionDataItem>>()
@@ -187,9 +190,9 @@ class OverviewViewModel(val app: AllowanceApp, private val dataSource: DataSourc
         }
     }
 
-    fun validateAndSaveTransaction(transaction: TransactionDataItem) {
+    fun validateAndSaveTransaction(transaction: TransactionDataItem, child: ChildDataItem) {
         if (validateEnteredTransaction(transaction)) {
-            saveTransaction(transaction)
+            saveTransaction(transaction, child)
         }
     }
 
@@ -215,7 +218,7 @@ class OverviewViewModel(val app: AllowanceApp, private val dataSource: DataSourc
         navigationCommand.value = NavigationCommand.Back
     }
 
-    private fun saveTransaction(transaction: TransactionDataItem) {
+    private fun saveTransaction(transaction: TransactionDataItem, child: ChildDataItem) {
         showTransactionsLoading.value = true
         viewModelScope.launch {
             dataSource.saveTransaction(
@@ -229,6 +232,7 @@ class OverviewViewModel(val app: AllowanceApp, private val dataSource: DataSourc
             showTransactionsLoading.postValue(false)
             showToast.value = app.getString(R.string.transaction_saved)
         }
+        sendNotification(this.app.applicationContext, child, transaction)
         navigationCommand.value = NavigationCommand.Back
     }
 
@@ -286,6 +290,7 @@ class OverviewViewModel(val app: AllowanceApp, private val dataSource: DataSourc
                     }
                 }
             }
+            addQuoteCard(view, quoteResponse.value!!.backgroundImage)
         }
     }
 
