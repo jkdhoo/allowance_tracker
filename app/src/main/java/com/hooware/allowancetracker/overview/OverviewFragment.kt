@@ -53,12 +53,6 @@ class OverviewFragment : BaseFragment() {
                 }
             }
         })
-        binding.refreshLayout.setOnRefreshListener {
-            _viewModel.loadChildren()
-            if (binding.refreshLayout.isRefreshing) {
-                binding.refreshLayout.isRefreshing = false
-            }
-        }
         _viewModel.refreshQuotes(binding.quoteBackground)
         return binding.root
     }

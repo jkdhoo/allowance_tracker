@@ -10,63 +10,60 @@
             type="com.hooware.allowancetracker.overview.OverviewViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/overview_constraint_layout"
+    <ScrollView
+        android:id="@+id/overview_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white">
+        android:fillViewport="true">
 
-        <ImageView
-            android:id="@+id/quote_background"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/overview_constraint_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/cd_quote_background"
-            android:adjustViewBounds="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:background="@color/white">
 
-        <TextView
-            android:id="@+id/quote_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_normal"
-            android:gravity="center"
-            android:text="@{viewModel.quoteResponse.quote}"
-            android:textColor="@color/white"
-            app:layout_constraintEnd_toEndOf="@id/quote_background"
-            app:layout_constraintStart_toStartOf="@id/quote_background"
-            app:layout_constraintTop_toTopOf="@id/quote_background" />
+            <ImageView
+                android:id="@+id/quote_background"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/cd_quote_background"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_normal"
-            android:gravity="center"
-            android:text="@{viewModel.quoteResponse.author}"
-            android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="@id/quote_background"
-            app:layout_constraintEnd_toEndOf="@id/quote_background"
-            app:layout_constraintStart_toStartOf="@id/quote_background"
-            app:layout_constraintTop_toTopOf="@id/quote_text" />
+            <TextView
+                android:id="@+id/quote_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_normal"
+                android:gravity="center"
+                android:text="@{viewModel.quoteResponse.quote}"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="@id/quote_background"
+                app:layout_constraintStart_toStartOf="@id/quote_background"
+                app:layout_constraintTop_toTopOf="@id/quote_background" />
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/refreshLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/quote_background"
-            tools:context=".overview.OverviewFragment">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_normal"
+                android:gravity="center"
+                android:text="@{viewModel.quoteResponse.author}"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="@id/quote_background"
+                app:layout_constraintEnd_toEndOf="@id/quote_background"
+                app:layout_constraintStart_toStartOf="@id/quote_background"
+                app:layout_constraintTop_toTopOf="@id/quote_text" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/childrenRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:liveData="@{viewModel.childrenList}"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/quote_background" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -92,20 +89,19 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/addChildFAB"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_normal"
+                android:contentDescription="@string/cd_add_new_child"
+                app:fabSize="normal"
+                app:layout_anchor="@id/overview_constraint_layout"
+                app:layout_anchorGravity="bottom|right|end"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:srcCompat="@drawable/ic_add" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/addChildFAB"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_normal"
-            android:contentDescription="@string/cd_add_new_child"
-            app:fabSize="normal"
-            app:layout_anchor="@id/overview_constraint_layout"
-            app:layout_anchorGravity="bottom|right|end"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_add" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </layout>
