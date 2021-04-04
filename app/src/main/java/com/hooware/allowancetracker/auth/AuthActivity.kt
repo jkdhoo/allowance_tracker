@@ -10,23 +10,31 @@ import androidx.databinding.DataBindingUtil
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.hooware.allowancetracker.AllowanceApp
 import com.hooware.allowancetracker.R
-import com.hooware.allowancetracker.databinding.ActivityAuthenticationBinding
+import com.hooware.allowancetracker.base.BaseViewModel
+import com.hooware.allowancetracker.databinding.ActivityAuthBinding
+import com.hooware.allowancetracker.network.QuoteResponseTO
 import com.hooware.allowancetracker.overview.OverviewActivity
-import org.koin.android.ext.android.inject
 import timber.log.Timber
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
- * This class should be the starting point of the app, It asks the users to sign in / register, and redirects the
- * signed in users to the OverviewActivity.
+ * Authentication activity
  */
 class AuthActivity : AppCompatActivity() {
 
-    private val viewModel: AuthViewModel by inject()
+    class AuthViewModel(application: AllowanceApp) : BaseViewModel(application) {
+        fun logAuthState() {
+            Timber.i("Authentication State: ${authenticationState.value}")
+            Timber.i("Authentication Type: $authenticationType")
+        }
+    }
+
+    private val viewModel: AuthViewModel by viewModel()
 
     private val startForResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult())
-        { result: ActivityResult ->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
                 Timber.i("Successfully signed in user ${FirebaseAuth.getInstance().currentUser?.displayName}!")
             } else {
@@ -36,38 +44,43 @@ class AuthActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var isNotLoggingOut = intent.getBooleanExtra("fresh_auth_start", true)
-        val binding: ActivityAuthenticationBinding = DataBindingUtil.setContentView(
+        var isFreshAuthStart = intent.getBooleanExtra("fresh_auth_start", true)
+        val binding: ActivityAuthBinding = DataBindingUtil.setContentView(
             this,
-            R.layout.activity_authentication
+            R.layout.activity_auth
         )
         binding.authViewModel = viewModel
         binding.authButton.setOnClickListener { launchSignInFlow() }
         Timber.i("Observe Authentication State")
         viewModel.authenticationState.observe(this, { authenticationState ->
             when (authenticationState) {
-                AuthViewModel.AuthenticationState.AUTHENTICATED -> {
-                    if (isNotLoggingOut) {
+                AllowanceApp.AuthenticationState.AUTHENTICATED -> {
+                    if (isFreshAuthStart) {
                         Timber.i("Authenticated, routing to Reminders")
-                        val reminderActivityIntent =
-                            Intent(applicationContext, OverviewActivity::class.java)
-                        startActivity(reminderActivityIntent)
+                        val overviewActivityIntent = Intent(applicationContext, OverviewActivity::class.java)
+                        val bundle = this.intent.extras
+                        if (bundle != null) {
+                            val quoteResponse: QuoteResponseTO? = bundle.getParcelable("quoteResponse")
+                            overviewActivityIntent.putExtra("quoteResponse", quoteResponse)
+                        }
+                        startActivity(overviewActivityIntent)
+                        finishAffinity()
                     }
                 }
-                AuthViewModel.AuthenticationState.INVALID_AUTHENTICATION -> {
-                    Timber.i("Unauthenticated")
-                    Snackbar.make(
-                        binding.root, this.getString(R.string.login_unsuccessful_msg),
-                        Snackbar.LENGTH_LONG
-                    ).show()
-                    isNotLoggingOut = true
-                }
                 else -> {
-                    Timber.i("Unable to act on authentication state $authenticationState")
-                    isNotLoggingOut = true
+                    Timber.i("Unauthenticated")
+                    if (!isFreshAuthStart) {
+                        Snackbar.make(
+                            binding.root, this.getString(R.string.login_unsuccessful_msg),
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                    }
+                    isFreshAuthStart = true
                 }
             }
         })
+
+        viewModel.logAuthState()
     }
 
     override fun onBackPressed() {

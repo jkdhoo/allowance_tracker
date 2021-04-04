@@ -78,29 +78,27 @@ class LocalRepository(
      * @param id to be used to get the transaction
      * @return Result holds a Success object with the Transaction or an Error object with the error message
      */
-    override suspend fun getTransaction(id: String): ResultTO<TransactionTO> =
-        withContext(ioDispatcher) {
-            try {
-                val transaction = transactionsDao.getTransactionById(id)
-                if (transaction != null) {
-                    return@withContext ResultTO.Success(transaction)
-                } else {
-                    return@withContext ResultTO.Error("Reminder not found!")
-                }
-            } catch (e: Exception) {
-                return@withContext ResultTO.Error(e.localizedMessage)
+    override suspend fun getTransaction(id: String): ResultTO<TransactionTO> {
+        return try {
+            val transaction = transactionsDao.getTransactionById(id)
+            if (transaction != null) {
+                ResultTO.Success(transaction)
+            } else {
+                ResultTO.Error("Reminder not found!")
             }
+        } catch (e: Exception) {
+            ResultTO.Error(e.localizedMessage)
         }
+    }
 
-    override suspend fun getTransactionsByChild(id: String): ResultTO<List<TransactionTO>> =
-        withContext(ioDispatcher) {
-            try {
-                val transactions = transactionsDao.getTransactionsByChild(id)
-                return@withContext ResultTO.Success(transactions)
-            } catch (e: Exception) {
-                return@withContext ResultTO.Error(e.localizedMessage)
-            }
+    override suspend fun getTransactionsByChild(id: String): ResultTO<List<TransactionTO>> {
+        return try {
+            val transactions = transactionsDao.getTransactionsByChild(id)
+            ResultTO.Success(transactions)
+        } catch (e: Exception) {
+            ResultTO.Error(e.localizedMessage)
         }
+    }
 
     /**
      * Get a child by its id
@@ -138,23 +136,20 @@ class LocalRepository(
         }
     }
 
-    override suspend fun getQuote(): ResultTO<QuoteResponseTO> = withContext(ioDispatcher) {
-        try {
+    override suspend fun getQuote(): ResultTO<QuoteResponseTO> {
+        return try {
             val quote = quoteDao.getQuote()
-            return@withContext ResultTO.Success(quote)
+            ResultTO.Success(quote)
         } catch (e: Exception) {
-            return@withContext ResultTO.Error(e.localizedMessage)
+            ResultTO.Error(e.localizedMessage)
         }
     }
 
     override suspend fun deleteQuote() {
-        withContext(ioDispatcher) {
             quoteDao.deleteQuote()
-        }
     }
 
-    override suspend fun saveQuote(quote: QuoteResponseTO) =
-        withContext(ioDispatcher) {
+    override suspend fun saveQuote(quote: QuoteResponseTO) {
             quoteDao.deleteQuote()
             quoteDao.saveQuote(quote)
         }

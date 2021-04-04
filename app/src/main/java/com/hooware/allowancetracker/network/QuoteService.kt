@@ -1,32 +1,25 @@
 package com.hooware.allowancetracker.network
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Deferred
 import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
-import java.util.*
 
+@Parcelize
 @Entity(tableName = "quote")
 data class QuoteResponseTO(
     @PrimaryKey @ColumnInfo(name = "quote") var quote: String,
     @ColumnInfo(name = "author") var author: String,
     @ColumnInfo(name = "backgroundImage") var backgroundImage: String
-)
-
-@Entity(tableName = "transactions")
-data class TransactionTO(
-    @ColumnInfo(name = "name") var name: String?,
-    @ColumnInfo(name = "details") var details: String?,
-    @ColumnInfo(name = "amount") var amount: String?,
-    @ColumnInfo(name = "date") val date: String?,
-    @PrimaryKey @ColumnInfo(name = "entry_id") val id: String = UUID.randomUUID().toString()
-)
+): Parcelable
 
 fun parseQuoteJsonResult(jsonResult: JSONObject): QuoteResponseTO {
     val resultContents = jsonResult.getJSONObject("contents")
@@ -49,7 +42,7 @@ interface QuoteService {
 
 object Network {
 
-    const val BASE_URL = "https://quotes.rest/"
+    private const val BASE_URL = "https://quotes.rest/"
 
     private val retrofitQuote = Retrofit.Builder()
         .baseUrl(BASE_URL)

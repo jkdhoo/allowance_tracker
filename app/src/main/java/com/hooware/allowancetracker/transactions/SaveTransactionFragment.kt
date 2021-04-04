@@ -18,7 +18,7 @@ import timber.log.Timber
 
 class SaveTransactionFragment : BaseFragment() {
 
-    override val _viewModel: OverviewViewModel by viewModel()
+    override val viewModel: OverviewViewModel by viewModel()
     private lateinit var binding: FragmentSaveTransactionBinding
 
     override fun onCreateView(
@@ -32,13 +32,13 @@ class SaveTransactionFragment : BaseFragment() {
         setHasOptionsMenu(true)
         val selectedChild = ChildDetailsFragmentArgs.fromBundle(requireArguments()).selectedChild
         binding.selectedChild = selectedChild
-        binding.viewModel = _viewModel
+        binding.viewModel = viewModel
         binding.saveTransaction.setOnClickListener {
             val name = selectedChild.id
-            val details = _viewModel.transactionDescription.value
-            val amount = _viewModel.transactionAmount.value
+            val details = viewModel.transactionDescription.value
+            val amount = viewModel.transactionAmount.value
             val date = "None"
-            _viewModel.validateAndSaveTransaction(
+            viewModel.validateAndSaveTransaction(
                 TransactionDataItem(
                     name,
                     details,
@@ -60,7 +60,7 @@ class SaveTransactionFragment : BaseFragment() {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         android.R.id.home -> {
             Timber.i("Navigate back to OverviewFragment")
-            _viewModel.navigationCommand.value = NavigationCommand.Back
+            viewModel.navigationCommand.value = NavigationCommand.Back
             true
         }
         else -> super.onOptionsItemSelected(item)

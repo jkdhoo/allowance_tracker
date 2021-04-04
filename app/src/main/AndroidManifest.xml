@@ -3,10 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.hooware.allowancetracker">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".AllowanceApp"
@@ -16,13 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AllowanceTracker"
         tools:ignore="AllowBackup">
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
-
         <activity
-            android:name=".auth.AuthActivity"
-            android:theme="@style/Theme.AllowanceTracker.Auth">
+            android:name=".SplashActivity"
+            android:theme="@style/Theme.AllowanceTracker.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -31,5 +24,8 @@
         <activity
             android:name=".overview.OverviewActivity"
             android:theme="@style/Theme.AllowanceTracker" />
+        <activity
+            android:name=".auth.AuthActivity"
+            android:theme="@style/Theme.AllowanceTracker.Auth" />
     </application>
 </manifest>

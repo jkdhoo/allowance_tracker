@@ -1,14 +1,16 @@
 package com.hooware.allowancetracker.base
 
-import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.hooware.allowancetracker.AllowanceApp
 import com.hooware.allowancetracker.utils.SingleLiveEvent
 
 /**
  * Base class for View Models to declare the common LiveData objects in one place
  */
-abstract class BaseViewModel(app: Application) : AndroidViewModel(app) {
+abstract class BaseViewModel(application: AllowanceApp) : AndroidViewModel(application) {
+
+    val app = application
 
     val navigationCommand: SingleLiveEvent<NavigationCommand> = SingleLiveEvent()
     val showErrorMessage: SingleLiveEvent<String> = SingleLiveEvent()
@@ -19,5 +21,7 @@ abstract class BaseViewModel(app: Application) : AndroidViewModel(app) {
     val showTransactionsLoading: SingleLiveEvent<Boolean> = SingleLiveEvent()
     val showNoTransactionData: MutableLiveData<Boolean> = MutableLiveData()
     val showNoChildData: MutableLiveData<Boolean> = MutableLiveData()
+    val authenticationState = app.authenticationState
+    val authenticationType = app.authenticationType
 
 }

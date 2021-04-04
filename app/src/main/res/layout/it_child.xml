@@ -20,42 +20,71 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/primaryColor"
             android:padding="@dimen/padding_medium">
 
             <TextView
-                android:id="@+id/title"
+                android:id="@+id/it_name_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/padding_small"
-                android:layout_marginLeft="@dimen/padding_small"
-                android:text="@{item.name}"
-                android:textColor="@color/black"
-                android:textSize="@dimen/text_size_normal"
+                android:text="@string/it_name_title"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_large"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Title" />
+                tools:text="Name:" />
 
             <TextView
-                android:id="@+id/description"
+                android:id="@+id/it_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_small"
+                android:text="@{item.name}"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_large"
+                app:layout_constraintStart_toEndOf="@id/it_name_title"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Levi" />
+
+            <TextView
+                android:id="@+id/it_age_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_small"
+                android:text="@string/it_age_title"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_small"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/it_name_title"
+                tools:text="Age:" />
+
+            <TextView
+                android:id="@+id/it_age"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_small"
                 android:text="@{item.age}"
+                android:textColor="@color/white"
                 android:textSize="@dimen/text_size_small"
-                app:layout_constraintStart_toStartOf="@id/title"
-                app:layout_constraintTop_toBottomOf="@id/title"
-                tools:text="Description" />
+                app:layout_constraintStart_toEndOf="@id/it_age_title"
+                app:layout_constraintTop_toBottomOf="@id/it_name"
+                tools:text="13" />
 
             <TextView
+                android:id="@+id/it_balance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/padding_small"
                 android:gravity="center"
-                android:text="@{item.birthday}"
-                android:textColor="@color/colorAccent"
-                android:textSize="@dimen/text_size_small"
-                app:layout_constraintBottom_toBottomOf="@+id/description"
+                android:text=""
+                android:textColor="@color/secondaryLightColor"
+                android:textSize="@dimen/text_size_large"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/title"
-                tools:text="Location" />
+                tools:text="$324.51" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

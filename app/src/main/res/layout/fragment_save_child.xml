@@ -10,108 +10,101 @@
             type="com.hooware.allowancetracker.overview.OverviewViewModel" />
     </data>
 
-    <ScrollView
-        android:id="@+id/overview_scroll_view"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:background="@color/white">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/child_name_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/white">
+            android:layout_margin="@dimen/margin_normal"
+            android:text="@string/child_name_title"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/child_name_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_normal"
-                android:text="@string/child_name_title"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <EditText
+            android:id="@+id/edit_child_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_normal"
+            android:autofillHints="name"
+            android:hint="@string/hint_edit_child_name"
+            android:inputType="text"
+            android:text="@={viewModel.childName}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/child_name_title"
+            tools:text="Laavingonn" />
 
-            <EditText
-                android:id="@+id/edit_child_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_normal"
-                android:autofillHints="name"
-                android:hint="@string/hint_edit_child_name"
-                android:inputType="text"
-                android:text="@={viewModel.childName}"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/child_name_title"
-                tools:text="Laavingonn" />
+        <TextView
+            android:id="@+id/child_age_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_normal"
+            android:text="@string/child_age_title"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edit_child_name" />
 
-            <TextView
-                android:id="@+id/child_age_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_normal"
-                android:text="@string/child_age_title"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edit_child_name" />
+        <EditText
+            android:id="@+id/edit_child_age"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_normal"
+            android:autofillHints="age"
+            android:hint="@string/hint_edit_child_age"
+            android:inputType="number"
+            android:text="@={viewModel.childAge}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/child_age_title"
+            tools:text="10" />
 
-            <EditText
-                android:id="@+id/edit_child_age"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_normal"
-                android:autofillHints="age"
-                android:hint="@string/hint_edit_child_age"
-                android:inputType="number"
-                android:text="@={viewModel.childAge}"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/child_age_title"
-                tools:text="10" />
+        <TextView
+            android:id="@+id/child_birthday_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_normal"
+            android:text="@string/child_birthday_title"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edit_child_age" />
 
-            <TextView
-                android:id="@+id/child_birthday_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_normal"
-                android:text="@string/child_birthday_title"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edit_child_age" />
+        <EditText
+            android:id="@+id/edit_child_birthday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_normal"
+            android:autofillHints="date"
+            android:hint="@string/hint_edit_child_birthday"
+            android:inputType="date"
+            android:text="@={viewModel.childBirthday}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/child_birthday_title"
+            tools:text="08/02/2010" />
 
-            <EditText
-                android:id="@+id/edit_child_birthday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_normal"
-                android:autofillHints="date"
-                android:hint="@string/hint_edit_child_birthday"
-                android:inputType="date"
-                android:text="@={viewModel.childBirthday}"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/child_birthday_title"
-                tools:text="08/02/2010" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/saveChild"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_normal"
+            android:contentDescription="@string/cd_saveChild"
+            app:fabSize="normal"
+            app:layout_anchorGravity="bottom|right|end"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_save" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/saveChild"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_normal"
-                android:contentDescription="@string/cd_saveChild"
-                app:fabSize="normal"
-                app:layout_anchorGravity="bottom|right|end"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@drawable/ic_save" />
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fadeVisible="@{viewModel.showChildrenLoading.booleanValue()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fadeVisible="@{viewModel.showChildrenLoading.booleanValue()}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

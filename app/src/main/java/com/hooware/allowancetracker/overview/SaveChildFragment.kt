@@ -12,12 +12,13 @@ import com.hooware.allowancetracker.base.NavigationCommand
 import com.hooware.allowancetracker.children.ChildDataItem
 import com.hooware.allowancetracker.databinding.FragmentSaveChildBinding
 import com.hooware.allowancetracker.utils.setDisplayHomeAsUpEnabled
+import com.hooware.allowancetracker.utils.setTitle
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 class SaveChildFragment : BaseFragment() {
 
-    override val _viewModel: OverviewViewModel by viewModel()
+    override val viewModel: OverviewViewModel by viewModel()
     private lateinit var binding: FragmentSaveChildBinding
 
     override fun onCreateView(
@@ -28,13 +29,14 @@ class SaveChildFragment : BaseFragment() {
             DataBindingUtil.inflate(inflater, R.layout.fragment_save_child, container, false)
 
         setDisplayHomeAsUpEnabled(true)
+        setTitle(getString(R.string.new_child))
         setHasOptionsMenu(true)
-        binding.viewModel = _viewModel
+        binding.viewModel = viewModel
         binding.saveChild.setOnClickListener {
-            val name = _viewModel.childName.value
-            val age = _viewModel.childAge.value
-            val birthday = _viewModel.childBirthday.value
-            _viewModel.validateAndSaveChild(
+            val name = viewModel.childName.value
+            val age = viewModel.childAge.value
+            val birthday = viewModel.childBirthday.value
+            viewModel.validateAndSaveChild(
                 ChildDataItem(
                     name,
                     age,
@@ -55,7 +57,7 @@ class SaveChildFragment : BaseFragment() {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         android.R.id.home -> {
             Timber.i("Navigate back to OverviewFragment")
-            _viewModel.navigationCommand.value = NavigationCommand.Back
+            viewModel.navigationCommand.value = NavigationCommand.Back
             true
         }
         else -> super.onOptionsItemSelected(item)

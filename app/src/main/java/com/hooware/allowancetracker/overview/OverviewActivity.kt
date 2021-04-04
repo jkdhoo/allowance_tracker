@@ -5,43 +5,51 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.hooware.allowancetracker.AllowanceApp
 import com.hooware.allowancetracker.R
+import com.hooware.allowancetracker.auth.AuthActivity
 import com.hooware.allowancetracker.children.ChildDataItem
 import com.hooware.allowancetracker.databinding.ActivityOverviewBinding
 import com.hooware.allowancetracker.transactions.TransactionDataItem
-import com.hooware.allowancetracker.transactions.TransactionDetailsFragment
-import com.hooware.allowancetracker.transactions.TransactionDetailsFragmentArgs
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class OverviewActivity : AppCompatActivity() {
 
-    var bundle: Bundle? = null
+    private val viewModel: OverviewViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding: ActivityOverviewBinding = DataBindingUtil.setContentView(
-            this,
-            R.layout.activity_overview
-        )
-        val intent = this.intent
-        bundle = intent.extras
-    }
+        val binding: ActivityOverviewBinding = DataBindingUtil.setContentView(this, R.layout.activity_overview)
+        binding.viewModel = viewModel
+        viewModel.loadChildren()
 
-    fun getIntentData(): Bundle? {
-        return bundle
-    }
+        val bundle = this.intent.extras
+        if (bundle != null) {
+            viewModel.processBundle(bundle)
+        }
 
-    fun clearBundle() {
-        bundle = null
+        viewModel.addQuoteImage(binding.quoteBackground, viewModel.quoteResponse.value!!.backgroundImage)
+        viewModel.authenticationState.observe(this, { authenticationState ->
+            when (authenticationState) {
+                AllowanceApp.AuthenticationState.AUTHENTICATED -> Timber.i("Authenticated")
+                else -> {
+                    Timber.i("User logged out, returning to Auth Activity")
+                    val authActivityIntent = Intent(this, AuthActivity::class.java)
+                    authActivityIntent.putExtra("logging_out", true)
+                    authActivityIntent.putExtra("quoteResponse", viewModel.quoteResponse.value)
+                    startActivity(authActivityIntent)
+                    finishAffinity()
+                }
+            }
+            viewModel.logAuthState()
+        })
+
+        viewModel.logAuthState()
     }
 
     companion object {
-        fun newIntent(
-            context: Context,
-            child: ChildDataItem,
-            transaction: TransactionDataItem
-        ): Intent {
+        fun newIntent(context: Context, child: ChildDataItem, transaction: TransactionDataItem): Intent {
             val intent = Intent(context, OverviewActivity::class.java)
             intent.putExtra("ChildDataItem", child)
             intent.putExtra("TransactionDataItem", transaction)

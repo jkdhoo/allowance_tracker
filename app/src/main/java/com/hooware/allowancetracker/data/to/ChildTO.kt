@@ -9,10 +9,10 @@ import java.util.*
 /**
  * Immutable model class for a Reminder. In order to compile with Room
  *
- * @param title         name of the child
- * @param description   age of the child
- * @param location      birthday of the child
- * @param entry_id      entry_id of the child
+ * @param name         name of the child
+ * @param age   age of the child
+ * @param birthday      birthday of the child
+ * @param id      entry_id of the child
  */
 
 @Entity(tableName = "children")

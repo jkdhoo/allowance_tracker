@@ -11,6 +11,7 @@ import com.hooware.allowancetracker.BuildConfig
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.children.ChildDataItem
 import com.hooware.allowancetracker.overview.OverviewActivity
+import com.hooware.allowancetracker.overview.OverviewActivity.Companion.newIntent
 import com.hooware.allowancetracker.transactions.TransactionDataItem
 
 private const val NOTIFICATION_CHANNEL_ID = BuildConfig.APPLICATION_ID + ".channel"
@@ -32,7 +33,7 @@ fun sendNotification(context: Context, child: ChildDataItem, transaction: Transa
         notificationManager.createNotificationChannel(channel)
     }
 
-    val intent = OverviewActivity.newIntent(context.applicationContext, child, transaction)
+    val intent = newIntent(context.applicationContext, child, transaction)
 
     //create a pending intent that opens ReminderDescriptionActivity when the user clicks on the notification
     val stackBuilder = TaskStackBuilder.create(context)

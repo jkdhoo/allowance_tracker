@@ -8,11 +8,10 @@ import java.util.*
 /**
  * Immutable model class for a Reminder. In order to compile with Room
  *
- * @param title         title of the reminder
- * @param description   description of the reminder
- * @param location      location name of the reminder
- * @param latitude      latitude of the reminder location
- * @param longitude     longitude of the reminder location
+ * @param name         title of the reminder
+ * @param details   description of the reminder
+ * @param amount      location name of the reminder
+ * @param date      latitude of the reminder location
  * @param id          id of the reminder
  */
 

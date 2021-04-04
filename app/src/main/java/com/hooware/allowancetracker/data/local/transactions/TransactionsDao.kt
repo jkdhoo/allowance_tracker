@@ -25,7 +25,7 @@ interface TransactionsDao {
     suspend fun getTransactionById(transactionId: String): TransactionTO?
 
     /**
-     * @param name the name of the child in the transaction
+     * @param childId the childId of the child in the transaction
      * @return the transaction object with the transactionId
      */
     @Query("SELECT * FROM transactions where name = :childId")

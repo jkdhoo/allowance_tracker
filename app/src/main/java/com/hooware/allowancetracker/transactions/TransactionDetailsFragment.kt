@@ -18,7 +18,7 @@ import timber.log.Timber
 
 class TransactionDetailsFragment : BaseFragment() {
 
-    override val _viewModel: OverviewViewModel by viewModel()
+    override val viewModel: OverviewViewModel by viewModel()
     private lateinit var binding: FragmentTransactionDetailsBinding
     lateinit var selectedChild: ChildDataItem
     lateinit var selectedTransaction: TransactionDataItem
@@ -37,7 +37,7 @@ class TransactionDetailsFragment : BaseFragment() {
 
         setDisplayHomeAsUpEnabled(true)
         setHasOptionsMenu(true)
-        binding.viewModel = _viewModel
+        binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
         selectedChild = TransactionDetailsFragmentArgs.fromBundle(requireArguments()).selectedChild
@@ -57,7 +57,7 @@ class TransactionDetailsFragment : BaseFragment() {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         android.R.id.home -> {
             Timber.i("Navigate back to OverviewFragment")
-            _viewModel.navigationCommand.value = NavigationCommand.Back
+            viewModel.navigationCommand.value = NavigationCommand.Back
             true
         }
         else -> super.onOptionsItemSelected(item)

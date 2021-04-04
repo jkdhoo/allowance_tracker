@@ -10,10 +10,7 @@ import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.base.BaseFragment
 import com.hooware.allowancetracker.base.NavigationCommand
 import com.hooware.allowancetracker.databinding.FragmentChildDetailsBinding
-import com.hooware.allowancetracker.overview.OverviewActivity
-import com.hooware.allowancetracker.overview.OverviewFragmentDirections
 import com.hooware.allowancetracker.overview.OverviewViewModel
-import com.hooware.allowancetracker.transactions.TransactionDataItem
 import com.hooware.allowancetracker.transactions.TransactionsListAdapter
 import com.hooware.allowancetracker.utils.setDisplayHomeAsUpEnabled
 import com.hooware.allowancetracker.utils.setup
@@ -22,7 +19,7 @@ import timber.log.Timber
 
 class ChildDetailsFragment : BaseFragment() {
 
-    override val _viewModel: OverviewViewModel by viewModel()
+    override val viewModel: OverviewViewModel by viewModel()
     private lateinit var binding: FragmentChildDetailsBinding
     lateinit var selectedChild: ChildDataItem
 
@@ -34,7 +31,7 @@ class ChildDetailsFragment : BaseFragment() {
             DataBindingUtil.inflate(inflater, R.layout.fragment_child_details, container, false)
         setDisplayHomeAsUpEnabled(true)
         setHasOptionsMenu(true)
-        binding.viewModel = _viewModel
+        binding.viewModel = viewModel
         binding.lifecycleOwner = this
         selectedChild = ChildDetailsFragmentArgs.fromBundle(requireArguments()).selectedChild
         binding.selectedChild = selectedChild
@@ -50,18 +47,18 @@ class ChildDetailsFragment : BaseFragment() {
                 birthday,
                 id
             )
-            _viewModel.validateAndUpdateChild(newChild)
+            viewModel.validateAndUpdateChild(newChild)
             binding.selectedChild = newChild
             Timber.i("Save Clicked")
         }
         binding.refreshLayout.setOnRefreshListener {
-            _viewModel.loadTransactions(selectedChild.id)
+            viewModel.loadTransactions(selectedChild.id)
             if (binding.refreshLayout.isRefreshing) {
                 binding.refreshLayout.isRefreshing = false
             }
         }
         binding.initiateEditChild.setOnClickListener {
-            _viewModel.editChildDetails.value = true
+            viewModel.editChildDetails.value = true
         }
         binding.addTransactionFAB.setOnClickListener {
             navigateToAddTransaction()
@@ -73,26 +70,11 @@ class ChildDetailsFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
         setupRecyclerView()
-        val activity = this.activity as OverviewActivity
-        val bundle = activity.getIntentData()
-        if (bundle != null) {
-            Timber.i("Bundle is not null, $bundle")
-            val child = bundle.get("ChildDataItem") as ChildDataItem
-            val transaction = bundle.get("TransactionDataItem") as TransactionDataItem
-            Timber.i("$child, $transaction")
-            _viewModel.navigationCommand.postValue(NavigationCommand.To(
-                ChildDetailsFragmentDirections.actionShowDetail(
-                    transaction,
-                    child
-                )
-            ))
-            activity.clearBundle()
-        }
     }
 
     private fun setupRecyclerView() {
         val adapter = TransactionsListAdapter { selectedTransaction ->
-            _viewModel.navigationCommand.postValue(
+            viewModel.navigationCommand.postValue(
                 NavigationCommand.To(
                     ChildDetailsFragmentDirections.actionShowDetail(
                         selectedTransaction,
@@ -105,7 +87,7 @@ class ChildDetailsFragment : BaseFragment() {
     }
 
     private fun navigateToAddTransaction() {
-        _viewModel.navigationCommand.postValue(
+        viewModel.navigationCommand.postValue(
             NavigationCommand.To(
                 ChildDetailsFragmentDirections.actionAddTransaction(
                     selectedChild
@@ -117,7 +99,7 @@ class ChildDetailsFragment : BaseFragment() {
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         android.R.id.home -> {
             Timber.i("Navigate back to OverviewFragment")
-            _viewModel.navigationCommand.value = NavigationCommand.Back
+            viewModel.navigationCommand.value = NavigationCommand.Back
             true
         }
         else -> super.onOptionsItemSelected(item)
@@ -125,6 +107,6 @@ class ChildDetailsFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        _viewModel.loadTransactions(selectedChild.id)
+        viewModel.loadTransactions(selectedChild.id)
     }
 }

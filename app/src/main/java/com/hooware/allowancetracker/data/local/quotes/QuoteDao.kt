@@ -15,9 +15,9 @@ interface QuoteDao {
     suspend fun getQuote(): QuoteResponseTO
 
     /**
-     * Insert a child in the database. If the child already exists, abort.
+     * Insert a quote in the database. If the quote already exists, replace.
      *
-     * @param child the child to be inserted.
+     * @param quote the quote to be inserted.
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveQuote(quote: QuoteResponseTO)

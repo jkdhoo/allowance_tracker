@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Allowance Tracker</string>
+    <string name="overview">Overview</string>
+    <string name="new_child">New Child</string>
     <string name="login_unsuccessful_msg">Login unsuccessful</string>
     <string name="login_button">Login</string>
     <string name="login_title">Allowance\nTracker</string>
@@ -11,7 +13,9 @@
     <string name="cd_add_new_child">Add New Child</string>
     <string name="cd_add_new_transaction">Add New Transaction</string>
     <string name="child_name_title">Name</string>
+    <string name="it_name_title">Name:</string>
     <string name="child_age_title">Age</string>
+    <string name="it_age_title">Age:</string>
     <string name="transaction_description_title">Description</string>
     <string name="transaction_amount_title">Amount</string>
     <string name="transaction_date_title">Date</string>

@@ -6,7 +6,7 @@
     <data>
 
         <variable
-            name="overviewViewModel"
+            name="viewModel"
             type="com.hooware.allowancetracker.overview.OverviewViewModel" />
     </data>
 
@@ -15,13 +15,60 @@
         android:layout_height="match_parent"
         tools:context="com.hooware.allowancetracker.overview.OverviewActivity">
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/nav_host_fragment"
-            android:name="androidx.navigation.fragment.NavHostFragment"
+        <ImageView
+            android:id="@+id/quote_background"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/nav_graph" />
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/cd_quote_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/quote_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_normal"
+            android:background="#60000000"
+            android:gravity="start"
+            android:paddingStart="@dimen/margin_normal"
+            android:paddingEnd="@dimen/margin_normal"
+            android:text="@{viewModel.quoteResponse.quote}"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="@id/quote_background"
+            app:layout_constraintStart_toStartOf="@id/quote_background"
+            app:layout_constraintTop_toTopOf="@id/quote_background" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#60000000"
+            android:gravity="end"
+            android:paddingStart="@dimen/margin_normal"
+            android:paddingEnd="@dimen/margin_normal"
+            android:text="@{`~ ` + viewModel.quoteResponse.author}"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="@id/quote_background"
+            app:layout_constraintStart_toStartOf="@id/quote_background"
+            app:layout_constraintTop_toBottomOf="@id/quote_text" />
+
+        <ScrollView
+            android:id="@+id/overview_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/quote_background"
+            app:layout_constraintBottom_toBottomOf="parent" >
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/nav_host_fragment"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:defaultNavHost="true"
+                app:navGraph="@navigation/nav_graph" />
+        </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
