@@ -2,6 +2,7 @@ package com.hooware.allowancetracker
 
 import android.app.Application
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
@@ -33,7 +34,10 @@ class AllowanceApp : Application() {
     }
 
     lateinit var authenticationState: LiveData<AuthenticationState>
-    var authenticationType = AuthenticationType.UNKNOWN
+
+    private var _authenticationType = MutableLiveData<AuthenticationType>()
+    val authenticationType: LiveData<AuthenticationType>
+        get() = _authenticationType
 
     override fun onCreate() {
         super.onCreate()
@@ -41,7 +45,7 @@ class AllowanceApp : Application() {
         Timber.plant(Timber.DebugTree())
         Timber.i("Tree Planted")
 
-        @Suppress("USELESS_CAST")
+        @Suppress("USELESS_CAST") // Needed to cast the LocalRepository as a DataSource for the viewModels
         val myModule = module {
             //Declare a ViewModel - be later inject into Fragment with dedicated injector using by viewModel()
             viewModel { OverviewViewModel(this@AllowanceApp, get() as DataSource) }
@@ -76,10 +80,10 @@ class AllowanceApp : Application() {
             }
         }
 
-        setAuthenticationState()
+        setAuthenticationStateAndType()
     }
 
-    private fun setAuthenticationState() {
+    private fun setAuthenticationStateAndType() {
         authenticationState = FirebaseUserLiveData().map { user ->
             setAuthenticationType(user)
             if (user != null) {
@@ -88,35 +92,23 @@ class AllowanceApp : Application() {
                 AuthenticationState.UNAUTHENTICATED
             }
         }
-
-        Timber.i("Authentication State: ${authenticationState.value}")
     }
 
-    fun setAuthenticationType(user: FirebaseUser?) {
+    private fun setAuthenticationType(user: FirebaseUser?) {
         val administrators = firebaseConfigRetriever("administrator_uid")
         val parents = firebaseConfigRetriever("parent_uid")
         val children = firebaseConfigRetriever("child_uid")
 
         if (user != null) {
-            authenticationType = when {
-                administrators.contains(user.uid) -> {
-                    AuthenticationType.ADMINISTRATOR
-                }
-                parents.contains(user.uid) -> {
-                    AuthenticationType.ADULT
-                }
-                children.contains(user.uid) -> {
-                    AuthenticationType.CHILD
-                }
-                else -> {
-                    AuthenticationType.UNKNOWN
-                }
+            _authenticationType.value = when {
+                administrators.contains(user.uid) -> { AuthenticationType.ADMINISTRATOR }
+                parents.contains(user.uid) -> { AuthenticationType.ADULT }
+                children.contains(user.uid) -> { AuthenticationType.CHILD }
+                else -> { AuthenticationType.UNKNOWN }
             }
         } else {
-            authenticationType = AuthenticationType.UNKNOWN
+            _authenticationType.value = AuthenticationType.UNKNOWN
         }
-
-        Timber.i("Authentication Type: $authenticationType")
     }
 
     fun firebaseConfigRetriever(param: String): String {

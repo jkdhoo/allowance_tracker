@@ -103,8 +103,8 @@ class SplashViewModel(application: AllowanceApp, private val dataSource: DataSou
         }
     }
 
-    fun logAuthState() {
+    override fun logAuthState() {
         Timber.i("Authentication State: ${authenticationState.value}")
-        Timber.i("Authentication Type: $authenticationType")
+        Timber.i("Authentication Type: ${authenticationType.value}")
     }
 }

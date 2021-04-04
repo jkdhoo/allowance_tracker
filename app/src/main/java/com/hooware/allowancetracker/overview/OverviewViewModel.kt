@@ -273,8 +273,8 @@ class OverviewViewModel(application: AllowanceApp, private val dataSource: DataS
         quoteResponse.value = quoteResponseTO
     }
 
-    fun logAuthState() {
+    override fun logAuthState() {
         Timber.i("Authentication State: ${authenticationState.value}")
-        Timber.i("Authentication Type: $authenticationType")
+        Timber.i("Authentication Type: ${authenticationType.value}")
     }
 }

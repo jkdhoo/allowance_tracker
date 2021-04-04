@@ -24,4 +24,6 @@ abstract class BaseViewModel(application: AllowanceApp) : AndroidViewModel(appli
     val authenticationState = app.authenticationState
     val authenticationType = app.authenticationType
 
+    abstract fun logAuthState()
+
 }

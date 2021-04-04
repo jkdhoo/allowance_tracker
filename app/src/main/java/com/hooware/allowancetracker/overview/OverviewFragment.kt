@@ -33,7 +33,6 @@ class OverviewFragment : BaseFragment() {
         setDisplayHomeAsUpEnabled(false)
         setTitle(getString(R.string.overview))
 
-        Timber.i("Observe Authentication State")
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 finishAffinity(requireActivity())

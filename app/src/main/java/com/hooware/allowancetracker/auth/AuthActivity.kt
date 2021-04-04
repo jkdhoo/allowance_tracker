@@ -25,9 +25,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class AuthActivity : AppCompatActivity() {
 
     class AuthViewModel(application: AllowanceApp) : BaseViewModel(application) {
-        fun logAuthState() {
+        override fun logAuthState() {
             Timber.i("Authentication State: ${authenticationState.value}")
-            Timber.i("Authentication Type: $authenticationType")
+            Timber.i("Authentication Type: ${authenticationType.value}")
         }
     }
 

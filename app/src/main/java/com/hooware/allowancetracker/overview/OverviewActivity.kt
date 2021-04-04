@@ -22,7 +22,6 @@ class OverviewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding: ActivityOverviewBinding = DataBindingUtil.setContentView(this, R.layout.activity_overview)
         binding.viewModel = viewModel
-        viewModel.loadChildren()
 
         val bundle = this.intent.extras
         if (bundle != null) {
@@ -42,7 +41,6 @@ class OverviewActivity : AppCompatActivity() {
                     finishAffinity()
                 }
             }
-            viewModel.logAuthState()
         })
 
         viewModel.logAuthState()
