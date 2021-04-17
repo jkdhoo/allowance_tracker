@@ -8,14 +8,20 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hooware.allowancetracker.base.BaseRecyclerViewAdapter
+import com.hooware.allowancetracker.transactions.TransactionsListAdapter
 
 
 /**
  * Extension function to setup the RecyclerView
  */
-fun <T> RecyclerView.setup(
-    adapter: BaseRecyclerViewAdapter<T>
-) {
+fun <T> RecyclerView.setup(adapter: BaseRecyclerViewAdapter<T>) {
+    this.apply {
+        layoutManager = LinearLayoutManager(this.context)
+        this.adapter = adapter
+    }
+}
+
+fun <T> RecyclerView.setupTransactionsList(adapter: TransactionsListAdapter<T>) {
     this.apply {
         layoutManager = LinearLayoutManager(this.context)
         this.adapter = adapter

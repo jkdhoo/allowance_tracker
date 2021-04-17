@@ -5,23 +5,26 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import com.hooware.allowancetracker.R
+import com.hooware.allowancetracker.auth.FirebaseUserLiveData
 import com.hooware.allowancetracker.base.BaseFragment
 import com.hooware.allowancetracker.base.NavigationCommand
-import com.hooware.allowancetracker.children.ChildDataItem
 import com.hooware.allowancetracker.databinding.FragmentTransactionDetailsBinding
-import com.hooware.allowancetracker.overview.OverviewViewModel
+import com.hooware.allowancetracker.to.ChildTO
+import com.hooware.allowancetracker.to.TransactionTO
 import com.hooware.allowancetracker.utils.setDisplayHomeAsUpEnabled
+import com.hooware.allowancetracker.utils.setTitle
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 class TransactionDetailsFragment : BaseFragment() {
 
-    override val viewModel: OverviewViewModel by viewModel()
+    override val viewModel: TransactionsViewModel by viewModel()
     private lateinit var binding: FragmentTransactionDetailsBinding
-    lateinit var selectedChild: ChildDataItem
-    lateinit var selectedTransaction: TransactionDataItem
+    lateinit var selectedChild: ChildTO
+    lateinit var selectedTransaction: TransactionTO
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,16 +39,25 @@ class TransactionDetailsFragment : BaseFragment() {
             )
 
         setDisplayHomeAsUpEnabled(true)
+        setTitle(getString(R.string.transactions_title))
         setHasOptionsMenu(true)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
-        selectedChild = TransactionDetailsFragmentArgs.fromBundle(requireArguments()).selectedChild
-        binding.selectedChild = selectedChild
+        selectedChild = TransactionDetailsFragmentArgs.fromBundle(requireArguments()).child
+        binding.child = selectedChild
 
-        selectedTransaction =
-            TransactionDetailsFragmentArgs.fromBundle(requireArguments()).selectedTransaction
-        binding.selectedTransaction = selectedTransaction
+        selectedTransaction = TransactionDetailsFragmentArgs.fromBundle(requireArguments()).transaction
+        binding.transaction = selectedTransaction
+
+        FirebaseUserLiveData().observe(viewLifecycleOwner, { user ->
+            if (user != null) {
+                viewModel.firebaseUID.value = user.uid
+                Timber.i("${viewModel.firebaseUID.value}")
+                binding.transactionDelete.isVisible = selectedChild.id != user.uid
+            }
+        })
+
         return binding.root
     }
 
@@ -61,5 +73,11 @@ class TransactionDetailsFragment : BaseFragment() {
             true
         }
         else -> super.onOptionsItemSelected(item)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.resetTransactions()
+        FirebaseUserLiveData().removeObservers(this)
     }
 }

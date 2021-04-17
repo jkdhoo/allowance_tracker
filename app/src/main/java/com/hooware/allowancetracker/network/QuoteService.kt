@@ -5,8 +5,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import kotlinx.android.parcel.Parcelize
 import kotlinx.coroutines.Deferred
+import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -15,10 +15,10 @@ import retrofit2.http.Query
 
 @Parcelize
 @Entity(tableName = "quote")
-data class QuoteResponseTO(
-    @PrimaryKey @ColumnInfo(name = "quote") var quote: String,
-    @ColumnInfo(name = "author") var author: String,
-    @ColumnInfo(name = "backgroundImage") var backgroundImage: String
+class QuoteResponseTO(
+    @PrimaryKey @ColumnInfo(name = "quote") var quote: String = "",
+    @ColumnInfo(name = "author") var author: String = "",
+    @ColumnInfo(name = "backgroundImage") var backgroundImage: String = ""
 ): Parcelable
 
 fun parseQuoteJsonResult(jsonResult: JSONObject): QuoteResponseTO {

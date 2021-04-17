@@ -9,16 +9,15 @@ import androidx.databinding.DataBindingUtil
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.base.BaseFragment
 import com.hooware.allowancetracker.base.NavigationCommand
-import com.hooware.allowancetracker.children.ChildDetailsFragmentArgs
 import com.hooware.allowancetracker.databinding.FragmentSaveTransactionBinding
-import com.hooware.allowancetracker.overview.OverviewViewModel
+import com.hooware.allowancetracker.to.TransactionTO
 import com.hooware.allowancetracker.utils.setDisplayHomeAsUpEnabled
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import timber.log.Timber
 
 class SaveTransactionFragment : BaseFragment() {
 
-    override val viewModel: OverviewViewModel by viewModel()
+    override val viewModel by sharedViewModel<TransactionsViewModel>()
     private lateinit var binding: FragmentSaveTransactionBinding
 
     override fun onCreateView(
@@ -30,31 +29,12 @@ class SaveTransactionFragment : BaseFragment() {
 
         setDisplayHomeAsUpEnabled(true)
         setHasOptionsMenu(true)
-        val selectedChild = ChildDetailsFragmentArgs.fromBundle(requireArguments()).selectedChild
-        binding.selectedChild = selectedChild
+        val selectedChild = TransactionsFragmentArgs.fromBundle(requireArguments()).child
+        binding.child = selectedChild
+        binding.savingTransaction = TransactionTO()
         binding.viewModel = viewModel
-        binding.saveTransaction.setOnClickListener {
-            val name = selectedChild.id
-            val details = viewModel.transactionDescription.value
-            val amount = viewModel.transactionAmount.value
-            val date = "None"
-            viewModel.validateAndSaveTransaction(
-                TransactionDataItem(
-                    name,
-                    details,
-                    amount,
-                    date
-                ), selectedChild
-            )
-            Timber.i("Save Clicked")
-        }
         binding.lifecycleOwner = this
         return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.lifecycleOwner = this
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
@@ -64,5 +44,10 @@ class SaveTransactionFragment : BaseFragment() {
             true
         }
         else -> super.onOptionsItemSelected(item)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.resetTransactions()
     }
 }

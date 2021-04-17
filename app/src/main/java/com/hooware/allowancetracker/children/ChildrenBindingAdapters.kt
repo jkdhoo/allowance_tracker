@@ -14,7 +14,7 @@ object ChildrenBindingAdapters {
      * Use binding adapter to set the recycler view data using livedata object
      */
     @Suppress("UNCHECKED_CAST")
-    @BindingAdapter("android:liveData")
+    @BindingAdapter("android:liveDataKids")
     @JvmStatic
     fun <T> setRecyclerViewData(recyclerView: RecyclerView, children: LiveData<List<T>>?) {
         children?.value?.let { childrenList ->

@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.hooware.allowancetracker.children.ChildDataItem" />
+            type="com.hooware.allowancetracker.to.ChildTO" />
     </data>
 
     <androidx.cardview.widget.CardView

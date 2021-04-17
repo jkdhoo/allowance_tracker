@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat.finishAffinity
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import com.firebase.ui.auth.AuthUI
 import com.hooware.allowancetracker.R
+import com.hooware.allowancetracker.auth.FirebaseUserLiveData
 import com.hooware.allowancetracker.base.BaseFragment
 import com.hooware.allowancetracker.base.NavigationCommand
 import com.hooware.allowancetracker.children.ChildrenListAdapter
@@ -27,7 +29,6 @@ class OverviewFragment : BaseFragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_overview, container, false)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
-        binding.addChildFAB.setOnClickListener { navigateToAddChild() }
 
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(false)
@@ -38,6 +39,24 @@ class OverviewFragment : BaseFragment() {
                 finishAffinity(requireActivity())
             }
         })
+
+        viewModel.quoteLoaded.observe(viewLifecycleOwner, { quoteLoaded ->
+            if (quoteLoaded) {
+                viewModel.displayQuoteImage(binding.quoteBackground)
+            }
+        })
+
+        viewModel.showLoading.observe(viewLifecycleOwner, { showLoading ->
+            binding.progressBar.isVisible = showLoading
+        })
+
+        FirebaseUserLiveData().observe(viewLifecycleOwner, { user ->
+            if (user != null) {
+                viewModel.firebaseUID.value = user.uid
+                Timber.i("${viewModel.firebaseUID.value}")
+            }
+        })
+
         return binding.root
     }
 
@@ -48,12 +67,13 @@ class OverviewFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.loadChildren()
+        viewModel.loadQuote()
+        viewModel.loadKids()
     }
 
-    private fun navigateToAddChild() {
-        viewModel.navigationCommand.postValue(NavigationCommand.To(OverviewFragmentDirections.actionAddChild()))
-    }
+//    private fun navigateToAddChild() {
+//        viewModel.navigationCommand.postValue(NavigationCommand.To(OverviewFragmentDirections.actionAddChild()))
+//    }
 
     private fun setupRecyclerView() {
         val adapter = ChildrenListAdapter { selectedChild ->

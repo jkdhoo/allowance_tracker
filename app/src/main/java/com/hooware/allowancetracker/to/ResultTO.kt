@@ -1,4 +1,4 @@
-package com.hooware.allowancetracker.data.to
+package com.hooware.allowancetracker.to
 
 /**
  * A sealed class that encapsulates successful outcome with a value of type [T]

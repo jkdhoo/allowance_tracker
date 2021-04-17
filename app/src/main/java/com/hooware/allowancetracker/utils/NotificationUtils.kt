@@ -9,14 +9,14 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.TaskStackBuilder
 import com.hooware.allowancetracker.BuildConfig
 import com.hooware.allowancetracker.R
-import com.hooware.allowancetracker.children.ChildDataItem
+import com.hooware.allowancetracker.to.ChildTO
 import com.hooware.allowancetracker.overview.OverviewActivity
 import com.hooware.allowancetracker.overview.OverviewActivity.Companion.newIntent
 import com.hooware.allowancetracker.transactions.TransactionDataItem
 
 private const val NOTIFICATION_CHANNEL_ID = BuildConfig.APPLICATION_ID + ".channel"
 
-fun sendNotification(context: Context, child: ChildDataItem, transaction: TransactionDataItem) {
+fun sendNotification(context: Context, child: ChildTO, transaction: TransactionDataItem) {
     val notificationManager = context
         .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 

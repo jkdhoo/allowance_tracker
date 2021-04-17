@@ -21,4 +21,4 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 #noinspection ShrinkerUnresolvedReference
--keepclassmembers class com.hooware.allowancetracker.data.to.** { *; }
+-keepclassmembers class com.hooware.allowancetracker.to.to.** { *; }

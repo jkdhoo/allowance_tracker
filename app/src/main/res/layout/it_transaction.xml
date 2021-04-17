@@ -7,10 +7,10 @@
 
         <variable
             name="item"
-            type="com.hooware.allowancetracker.transactions.TransactionDataItem" />
+            type="com.hooware.allowancetracker.to.TransactionTO" />
         <variable
-            name="selectedChild"
-            type="com.hooware.allowancetracker.children.ChildDataItem" />
+            name="child"
+            type="com.hooware.allowancetracker.to.ChildTO" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -30,7 +30,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/padding_small"
-                android:text="@{selectedChild.name}"
+                android:text="@{item.date}"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_size_normal"
                 app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +41,7 @@
                 android:id="@+id/description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{item.amount}"
+                android:text="@{item.details}"
                 android:textSize="@dimen/text_size_small"
                 app:layout_constraintStart_toStartOf="@id/title"
                 app:layout_constraintTop_toBottomOf="@id/title"
@@ -51,8 +51,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@{item.details}"
-                android:textColor="@color/colorAccent"
+                android:text="@{item.amount}"
+                android:textColor="@color/primaryDarkColor"
                 android:textSize="@dimen/text_size_small"
                 app:layout_constraintBottom_toBottomOf="@+id/description"
                 app:layout_constraintEnd_toEndOf="parent"

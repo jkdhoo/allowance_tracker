@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.hooware.allowancetracker.transactions.TransactionsViewModel" />
+
+        <variable
+            name="child"
+            type="com.hooware.allowancetracker.to.ChildTO" />
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/transactions_relative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:id="@+id/transactions_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/transactions_constraint_layout_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white">
+
+                <TextView
+                    android:id="@+id/child_name_title"
+                    style="@style/TextViewStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/child_name_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Fade Group - Edit Name -->
+                <!--        <EditText-->
+                <!--            android:id="@+id/_edit_child_name"-->
+                <!--            style="@style/EditTextStyle"-->
+                <!--            android:layout_width="wrap_content"-->
+                <!--            android:layout_height="wrap_content"-->
+                <!--            android:autofillHints="name"-->
+                <!--            android:enabled="true"-->
+                <!--            android:fadeVisible="@{viewModel.transactionsLoaded}"-->
+                <!--            android:hint="@string/hint_edit_child_name"-->
+                <!--            android:inputType="text"-->
+                <!--            android:text="@={selectedChild.name}"-->
+                <!--            app:layout_constraintStart_toStartOf="parent"-->
+                <!--            app:layout_constraintTop_toBottomOf="@id/child_name_title"-->
+                <!--            tools:text="Laavingonn" />-->
+
+                <TextView
+                    android:id="@+id/edit_child_name"
+                    style="@style/EditTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fadeVisible="@{viewModel.transactionsLoaded}"
+                    android:text="@{child.name}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/child_name_title"
+                    tools:text="Laavingonn" />
+
+                <!-- Fade Group - Age Title -->
+                <TextView
+                    android:id="@+id/child_age_title"
+                    style="@style/TextViewStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fadeVisible="@{viewModel.transactionsLoaded}"
+                    android:text="@string/child_age_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/edit_child_name" />
+
+                <!--        <TextView-->
+                <!--            android:id="@+id/_child_age_title"-->
+                <!--            style="@style/TextViewStyle"-->
+                <!--            android:layout_width="wrap_content"-->
+                <!--            android:layout_height="wrap_content"-->
+                <!--            android:fadeVisible="@{viewModel.transactionsLoaded}"-->
+                <!--            android:text="@string/child_age_title"-->
+                <!--            app:layout_constraintStart_toStartOf="parent"-->
+                <!--            app:layout_constraintTop_toBottomOf="@id/_edit_child_name" />-->
+
+                <!-- Fade Group - Edit Age -->
+                <!--        <EditText-->
+                <!--            android:id="@+id/_edit_child_age"-->
+                <!--            style="@style/EditTextStyle"-->
+                <!--            android:layout_width="wrap_content"-->
+                <!--            android:layout_height="wrap_content"-->
+                <!--            android:autofillHints="age"-->
+                <!--            android:enabled="true"-->
+                <!--            android:fadeVisible="@{viewModel.transactionsLoaded}"-->
+                <!--            android:hint="@string/hint_edit_child_age"-->
+                <!--            android:inputType="number"-->
+                <!--            android:text="@={selectedChild.age}"-->
+                <!--            app:layout_constraintStart_toStartOf="parent"-->
+                <!--            app:layout_constraintTop_toBottomOf="@id/_child_age_title"-->
+                <!--            tools:text="10" />-->
+
+                <TextView
+                    android:id="@+id/edit_child_age"
+                    style="@style/EditTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fadeVisible="@{viewModel.transactionsLoaded}"
+                    android:text="@{child.age}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/child_age_title" />
+
+                <TextView
+                    android:id="@+id/child_birthday_title"
+                    style="@style/TextViewStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fadeVisible="@{viewModel.transactionsLoaded}"
+                    android:text="@string/child_birthday_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/edit_child_age" />
+
+                <!--        <TextView-->
+                <!--            android:id="@+id/_child_birthday_title"-->
+                <!--            style="@style/TextViewStyle"-->
+                <!--            android:layout_width="wrap_content"-->
+                <!--            android:layout_height="wrap_content"-->
+                <!--            android:fadeVisible="@{viewModel.transactionsLoaded}"-->
+                <!--            android:text="@string/child_birthday_title"-->
+                <!--            app:layout_constraintStart_toStartOf="parent"-->
+                <!--            app:layout_constraintTop_toBottomOf="@id/_edit_child_age" />-->
+
+                <!--        <EditText-->
+                <!--            android:id="@+id/_edit_child_birthday"-->
+                <!--            style="@style/EditTextStyle"-->
+                <!--            android:layout_width="wrap_content"-->
+                <!--            android:layout_height="wrap_content"-->
+                <!--            android:autofillHints="date"-->
+                <!--            android:enabled="true"-->
+                <!--            android:fadeVisible="@{viewModel.transactionsLoaded}"-->
+                <!--            android:hint="@string/hint_edit_child_birthday"-->
+                <!--            android:inputType="date"-->
+                <!--            android:text="@={selectedChild.birthday}"-->
+                <!--            app:layout_constraintStart_toStartOf="parent"-->
+                <!--            app:layout_constraintTop_toBottomOf="@id/_child_birthday_title"-->
+                <!--            tools:text="08/02/2010" />-->
+
+                <TextView
+                    android:id="@+id/edit_child_birthday"
+                    style="@style/EditTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fadeVisible="@{viewModel.transactionsLoaded}"
+                    android:text="@{child.birthday}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/child_birthday_title" />
+
+                    <androidx.core.widget.NestedScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="@dimen/margin_normal"
+                        android:fillViewport="true"
+                        android:fadeVisible="@{viewModel.transactionsLoaded}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/edit_child_birthday">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/transactionsRecyclerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:liveDataTransactions="@{viewModel.transactionsList}"
+                            app:layout_constrainedHeight="true" />
+                    </androidx.core.widget.NestedScrollView>
+
+                <!--        <ImageView-->
+                <!--            android:id="@+id/initiate_edit_child"-->
+                <!--            android:layout_width="wrap_content"-->
+                <!--            android:layout_height="wrap_content"-->
+                <!--            android:contentDescription="@string/cd_editChild"-->
+                <!--            android:fadeVisible="@{!viewModel.editChildDetails.booleanValue()}"-->
+                <!--            app:layout_constraintEnd_toEndOf="parent"-->
+                <!--            app:layout_constraintTop_toTopOf="parent"-->
+                <!--            app:srcCompat="@drawable/ic_edit" />-->
+
+                <!--        <ImageView-->
+                <!--            android:id="@+id/save_edit_child"-->
+                <!--            android:layout_width="wrap_content"-->
+                <!--            android:layout_height="wrap_content"-->
+                <!--            android:contentDescription="@string/cd_saveChild"-->
+                <!--            android:fadeVisible="@{viewModel.transactionsLoaded}"-->
+                <!--            app:layout_constraintEnd_toEndOf="parent"-->
+                <!--            app:layout_constraintTop_toTopOf="parent"-->
+                <!--            app:srcCompat="@drawable/ic_save_vector" />-->
+
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+        <TextView
+            android:id="@+id/noTransactionDataTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/margin_normal"
+            android:fadeVisible="@{viewModel.transactionsEmpty}"
+            android:gravity="center"
+            android:text="@string/add_a_transaction"
+            android:textSize="@dimen/text_size_large"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addTransactionFAB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@id/transactions_scroll_view"
+            android:layout_alignBottom="@id/transactions_scroll_view"
+            android:layout_marginStart="@dimen/margin_normal"
+            android:layout_marginTop="@dimen/margin_normal"
+            android:layout_marginEnd="@dimen/margin_normal"
+            android:layout_marginBottom="@dimen/margin_normal"
+            android:contentDescription="@string/cd_add_new_transaction"
+            android:visibility="invisible"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_add" />
+    </RelativeLayout>
+</layout>

@@ -7,7 +7,7 @@
 
         <variable
             name="authViewModel"
-            type="com.hooware.allowancetracker.auth.AuthActivity.AuthViewModel" />
+            type="com.hooware.allowancetracker.auth.AuthViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

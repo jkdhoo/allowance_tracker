@@ -7,15 +7,15 @@
 
         <variable
             name="viewModel"
-            type="com.hooware.allowancetracker.overview.OverviewViewModel" />
+            type="com.hooware.allowancetracker.transactions.TransactionsViewModel" />
 
         <variable
-            name="selectedTransaction"
-            type="com.hooware.allowancetracker.transactions.TransactionDataItem" />
+            name="transaction"
+            type="com.hooware.allowancetracker.to.TransactionTO" />
 
         <variable
-            name="selectedChild"
-            type="com.hooware.allowancetracker.children.ChildDataItem" />
+            name="child"
+            type="com.hooware.allowancetracker.to.ChildTO" />
     </data>
 
     <androidx.constraintlayout.motion.widget.MotionLayout
@@ -40,7 +40,7 @@
             style="@style/EditTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{selectedChild.name}"
+            android:text="@{child.name}"
             tools:text="Laavingonn" />
 
         <TextView
@@ -55,7 +55,7 @@
             style="@style/EditTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{selectedTransaction.amount}" />
+            android:text="@{transaction.amount}" />
 
         <TextView
             android:id="@+id/transaction_details_description_title"
@@ -69,7 +69,18 @@
             style="@style/EditTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{selectedTransaction.details}" />
+            android:text="@{transaction.details}" />
+
+        <TextView
+            android:id="@+id/transaction_delete"
+            style="@style/TextViewStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/delete"
+            android:onClick="@{() -> viewModel.deleteTransaction(transaction.id)}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone" />
 
     </androidx.constraintlayout.motion.widget.MotionLayout>
 </layout>

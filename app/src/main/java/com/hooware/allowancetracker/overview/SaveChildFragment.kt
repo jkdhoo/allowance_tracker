@@ -9,16 +9,15 @@ import androidx.databinding.DataBindingUtil
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.base.BaseFragment
 import com.hooware.allowancetracker.base.NavigationCommand
-import com.hooware.allowancetracker.children.ChildDataItem
 import com.hooware.allowancetracker.databinding.FragmentSaveChildBinding
 import com.hooware.allowancetracker.utils.setDisplayHomeAsUpEnabled
 import com.hooware.allowancetracker.utils.setTitle
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import timber.log.Timber
 
 class SaveChildFragment : BaseFragment() {
 
-    override val viewModel: OverviewViewModel by viewModel()
+    override val viewModel by sharedViewModel<OverviewViewModel>()
     private lateinit var binding: FragmentSaveChildBinding
 
     override fun onCreateView(
@@ -32,19 +31,19 @@ class SaveChildFragment : BaseFragment() {
         setTitle(getString(R.string.new_child))
         setHasOptionsMenu(true)
         binding.viewModel = viewModel
-        binding.saveChild.setOnClickListener {
-            val name = viewModel.childName.value
-            val age = viewModel.childAge.value
-            val birthday = viewModel.childBirthday.value
-            viewModel.validateAndSaveChild(
-                ChildDataItem(
-                    name,
-                    age,
-                    birthday
-                )
-            )
-            Timber.i("Save Clicked")
-        }
+//        binding.saveChild.setOnClickListener {
+//            val name = viewModel.childName.value
+//            val age = viewModel.childAge.value
+//            val birthday = viewModel.childBirthday.value
+//            viewModel.validateAndSaveChild(
+//                ChildTO(
+//                    name,
+//                    age,
+//                    birthday
+//                )
+//            )
+//            Timber.i("Save Clicked")
+//        }
         binding.lifecycleOwner = this
         return binding.root
     }

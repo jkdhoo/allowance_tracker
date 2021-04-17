@@ -22,8 +22,10 @@
     <string name="child_birthday_title">Birthday</string>
     <string name="err_enter_name">You must enter a child\'s name to save.</string>
     <string name="err_enter_amount">You must enter an amount to save.</string>
+    <string name="err_invalid_format_amount">You must format the amount correctly.</string>
     <string name="child_saved">Child Saved!</string>
     <string name="transaction_saved">Transaction Saved!</string>
+    <string name="transaction_deleted">Transaction Deleted!</string>
     <string name="child_updated">Child Updated!</string>
     <string name="hint_edit_child_name">Your child\'s name (required)</string>
     <string name="hint_edit_child_age">Your child\'s age (optional)</string>
@@ -34,4 +36,8 @@
     <string name="cd_saveChild">Click to save</string>
     <string name="cd_editChild">Clidk to edit child information</string>
     <string name="cd_quote_background">Inspirational picture</string>
+    <string name="transactions_title">Transactions</string>
+    <string name="transaction_details_title">Transaction Details</string>
+    <string name="transaction_save_error">Sorry, we could not save your transaction at this time.</string>
+    <string name="delete">Delete</string>
 </resources>

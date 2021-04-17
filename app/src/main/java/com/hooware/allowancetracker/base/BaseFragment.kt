@@ -1,9 +1,13 @@
 package com.hooware.allowancetracker.base
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import com.hooware.allowancetracker.auth.AuthActivity
+import com.hooware.allowancetracker.auth.FirebaseUserLiveData
+import timber.log.Timber
 
 /**
  * Base Fragment to observe on the common LiveData objects
@@ -39,6 +43,15 @@ abstract class BaseFragment : Fragment() {
                     command.destinationId,
                     false
                 )
+            }
+        })
+
+        FirebaseUserLiveData().observe(this, { user ->
+            if (user == null) {
+                Timber.i("Not authenticated. Authenticating...")
+                val intent = Intent(requireActivity(), AuthActivity::class.java)
+                startActivity(intent)
+                requireActivity().finish()
             }
         })
     }
