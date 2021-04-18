@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.hooware.allowancetracker.AllowanceApp
-import com.hooware.allowancetracker.AuthType
+import com.hooware.allowancetracker.utils.AuthType
 import com.hooware.allowancetracker.base.BaseViewModel
 import timber.log.Timber
 
@@ -21,11 +21,11 @@ class SplashViewModel(application: AllowanceApp) : BaseViewModel(application) {
     val splashReady: LiveData<Boolean>
         get() = _splashReady
 
-    private val splashTimerComplete = MutableLiveData<Boolean>()
-
     private var _authType = MutableLiveData<AuthType>()
     val authType: LiveData<AuthType>
         get() = _authType
+
+    private val splashTimerComplete = MutableLiveData<Boolean>()
 
     init {
         _splashReady.value = false

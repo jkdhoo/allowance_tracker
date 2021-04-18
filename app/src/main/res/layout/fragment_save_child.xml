@@ -25,64 +25,64 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/edit_child_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_normal"
-            android:autofillHints="name"
-            android:hint="@string/hint_edit_child_name"
-            android:inputType="text"
-            android:text="@={viewModel.childName}"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/child_name_title"
-            tools:text="Laavingonn" />
+<!--        <EditText-->
+<!--            android:id="@+id/edit_child_name"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_margin="@dimen/margin_normal"-->
+<!--            android:autofillHints="name"-->
+<!--            android:hint="@string/hint_edit_child_name"-->
+<!--            android:inputType="text"-->
+<!--            android:text="@={viewModel.childName}"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/child_name_title"-->
+<!--            tools:text="Laavingonn" />-->
 
-        <TextView
-            android:id="@+id/child_age_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_normal"
-            android:text="@string/child_age_title"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/edit_child_name" />
+<!--        <TextView-->
+<!--            android:id="@+id/child_age_title"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_margin="@dimen/margin_normal"-->
+<!--            android:text="@string/child_age_title"-->
+<!--            android:textStyle="bold"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/edit_child_name" />-->
 
-        <EditText
-            android:id="@+id/edit_child_age"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_normal"
-            android:autofillHints="age"
-            android:hint="@string/hint_edit_child_age"
-            android:inputType="number"
-            android:text="@={viewModel.childAge}"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/child_age_title"
-            tools:text="10" />
+<!--        <EditText-->
+<!--            android:id="@+id/edit_child_age"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_margin="@dimen/margin_normal"-->
+<!--            android:autofillHints="age"-->
+<!--            android:hint="@string/hint_edit_child_age"-->
+<!--            android:inputType="number"-->
+<!--            android:text="@={viewModel.childAge}"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/child_age_title"-->
+<!--            tools:text="10" />-->
 
-        <TextView
-            android:id="@+id/child_birthday_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_normal"
-            android:text="@string/child_birthday_title"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/edit_child_age" />
+<!--        <TextView-->
+<!--            android:id="@+id/child_birthday_title"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_margin="@dimen/margin_normal"-->
+<!--            android:text="@string/child_birthday_title"-->
+<!--            android:textStyle="bold"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/edit_child_age" />-->
 
-        <EditText
-            android:id="@+id/edit_child_birthday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_normal"
-            android:autofillHints="date"
-            android:hint="@string/hint_edit_child_birthday"
-            android:inputType="date"
-            android:text="@={viewModel.childBirthday}"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/child_birthday_title"
-            tools:text="08/02/2010" />
+<!--        <EditText-->
+<!--            android:id="@+id/edit_child_birthday"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_margin="@dimen/margin_normal"-->
+<!--            android:autofillHints="date"-->
+<!--            android:hint="@string/hint_edit_child_birthday"-->
+<!--            android:inputType="date"-->
+<!--            android:text="@={viewModel.childBirthday}"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/child_birthday_title"-->
+<!--            tools:text="08/02/2010" />-->
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/saveChild"

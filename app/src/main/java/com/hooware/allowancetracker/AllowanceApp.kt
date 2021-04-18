@@ -1,12 +1,12 @@
 package com.hooware.allowancetracker
 
 import android.app.Application
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.hooware.allowancetracker.auth.AuthViewModel
-import com.hooware.allowancetracker.auth.FirebaseUserLiveData
 import com.hooware.allowancetracker.overview.OverviewViewModel
 import com.hooware.allowancetracker.splash.SplashViewModel
 import com.hooware.allowancetracker.transactions.TransactionsViewModel
@@ -23,16 +23,14 @@ class AllowanceApp : Application() {
         super.onCreate()
 
         Timber.plant(Timber.DebugTree())
-        Timber.i("Tree Planted")
+        Timber.i("Timber initialized.")
 
         initializeKoin()
         initializeFirebase()
-        Firebase.database.setPersistenceEnabled(true)
     }
 
     private fun initializeKoin() {
         val myModule = module {
-            //Declare a ViewModel - be later inject into Fragment with dedicated injector using by viewModel()
             viewModel { OverviewViewModel(this@AllowanceApp) }
             viewModel { AuthViewModel(this@AllowanceApp) }
             viewModel { SplashViewModel(this@AllowanceApp) }
@@ -47,7 +45,6 @@ class AllowanceApp : Application() {
     }
 
     private fun initializeFirebase() {
-        //Setup FireBase Remote Config
         val remoteConfig = FirebaseRemoteConfig.getInstance()
         val configSettings = FirebaseRemoteConfigSettings.Builder()
             .setMinimumFetchIntervalInSeconds(60)
@@ -58,9 +55,9 @@ class AllowanceApp : Application() {
         remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val updated = task.result
-                Timber.i("Config params updated: $updated")
+                Timber.i("Firebase Config params updated: $updated")
             } else {
-                Timber.i("Config param update failed.")
+                Timber.i("Firebase Config param update failed.")
             }
         }
     }

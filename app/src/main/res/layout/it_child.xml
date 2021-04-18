@@ -8,6 +8,10 @@
         <variable
             name="item"
             type="com.hooware.allowancetracker.to.ChildTO" />
+
+        <variable
+            name="viewModel"
+            type="com.hooware.allowancetracker.overview.OverviewViewModel" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -78,14 +82,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/padding_small"
                 android:gravity="center"
-                android:text=""
-                android:textColor="@color/secondaryLightColor"
+                android:text="@{item.totalAllowance}"
+                android:textColor="@color/white"
                 android:textSize="@dimen/text_size_large"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:text="$324.51" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </layout>

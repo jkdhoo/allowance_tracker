@@ -1,3 +1,3 @@
-package com.hooware.allowancetracker
+package com.hooware.allowancetracker.utils
 
 enum class AuthType { PARENT, LAA, LEVI }

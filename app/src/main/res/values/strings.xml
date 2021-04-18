@@ -39,5 +39,7 @@
     <string name="transactions_title">Transactions</string>
     <string name="transaction_details_title">Transaction Details</string>
     <string name="transaction_save_error">Sorry, we could not save your transaction at this time.</string>
+    <string name="transaction_delete_error">Sorry, we could not delete your transaction at this time.</string>
     <string name="delete">Delete</string>
+    <string name="total">Total</string>
 </resources>

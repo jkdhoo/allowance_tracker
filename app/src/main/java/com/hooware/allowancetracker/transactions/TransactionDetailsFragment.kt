@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import com.hooware.allowancetracker.R
@@ -19,24 +20,15 @@ import com.hooware.allowancetracker.utils.setTitle
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
-class TransactionDetailsFragment : BaseFragment() {
+class TransactionDetailsFragment : BaseFragment(), MotionLayout.TransitionListener {
 
     override val viewModel: TransactionsViewModel by viewModel()
     private lateinit var binding: FragmentTransactionDetailsBinding
     lateinit var selectedChild: ChildTO
     lateinit var selectedTransaction: TransactionTO
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding =
-            DataBindingUtil.inflate(
-                inflater,
-                R.layout.fragment_transaction_details,
-                container,
-                false
-            )
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction_details, container, false)
 
         setDisplayHomeAsUpEnabled(true)
         setTitle(getString(R.string.transactions_title))
@@ -50,20 +42,37 @@ class TransactionDetailsFragment : BaseFragment() {
         selectedTransaction = TransactionDetailsFragmentArgs.fromBundle(requireArguments()).transaction
         binding.transaction = selectedTransaction
 
-        FirebaseUserLiveData().observe(viewLifecycleOwner, { user ->
-            if (user != null) {
-                viewModel.firebaseUID.value = user.uid
-                Timber.i("${viewModel.firebaseUID.value}")
-                binding.transactionDelete.isVisible = selectedChild.id != user.uid
-            }
-        })
+        binding.motionLayoutTransactionDetails.addTransitionListener(this)
 
         return binding.root
     }
 
+    override fun onTransitionStarted(motionLayout: MotionLayout?, startId: Int, endId: Int) {
+        // Intentionally empty
+    }
+
+    override fun onTransitionChange(motionLayout: MotionLayout?, startId: Int, endId: Int, progress: Float) {
+        // Intentionally empty
+    }
+
+    override fun onTransitionCompleted(motionLayout: MotionLayout?, currentId: Int) {
+        val currentUID = FirebaseUserLiveData().value?.uid ?: ""
+        binding.transactionDelete.isVisible = selectedChild.id != currentUID
+        Timber.i("Current UID: $currentUID, Child UID: ${selectedChild.id}")
+    }
+
+    override fun onTransitionTrigger(motionLayout: MotionLayout?, triggerId: Int, positive: Boolean, progress: Float) {
+        // Intentionally empty
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.lifecycleOwner = this
+        FirebaseUserLiveData().observe(viewLifecycleOwner, { user ->
+            if (user != null) {
+                viewModel.setFirebaseUID(user.uid)
+                binding.transactionDelete.isVisible = selectedChild.id != user.uid
+            }
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {

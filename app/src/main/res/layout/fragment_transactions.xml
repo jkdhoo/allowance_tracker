@@ -19,145 +19,96 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/reminderCardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/padding_medium"
+            android:fadeVisible="@{true}">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/primaryColor"
+                android:padding="@dimen/padding_medium">
+
+                <TextView
+                    android:id="@+id/it_name_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/padding_small"
+                    android:text="@string/it_name_title"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_large"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Name:" />
+
+                <TextView
+                    android:id="@+id/it_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/padding_small"
+                    android:text="@{child.name}"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_large"
+                    app:layout_constraintStart_toEndOf="@id/it_name_title"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Levi" />
+
+                <TextView
+                    android:id="@+id/it_age_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/padding_small"
+                    android:text="@string/it_age_title"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_small"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/it_name_title"
+                    tools:text="Age:" />
+
+                <TextView
+                    android:id="@+id/it_age"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/padding_small"
+                    android:text="@{child.age}"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_small"
+                    app:layout_constraintStart_toEndOf="@id/it_age_title"
+                    app:layout_constraintTop_toBottomOf="@id/it_name"
+                    tools:text="13" />
+
+                <TextView
+                    android:id="@+id/it_balance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/padding_small"
+                    android:gravity="center"
+                    android:text="@{child.totalAllowance}"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_large"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="$324.51" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
         <ScrollView
             android:id="@+id/transactions_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true">
+            android:fillViewport="true"
+            android:layout_below="@id/reminderCardView">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/transactions_constraint_layout_main"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white">
-
-                <TextView
-                    android:id="@+id/child_name_title"
-                    style="@style/TextViewStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/child_name_title"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <!-- Fade Group - Edit Name -->
-                <!--        <EditText-->
-                <!--            android:id="@+id/_edit_child_name"-->
-                <!--            style="@style/EditTextStyle"-->
-                <!--            android:layout_width="wrap_content"-->
-                <!--            android:layout_height="wrap_content"-->
-                <!--            android:autofillHints="name"-->
-                <!--            android:enabled="true"-->
-                <!--            android:fadeVisible="@{viewModel.transactionsLoaded}"-->
-                <!--            android:hint="@string/hint_edit_child_name"-->
-                <!--            android:inputType="text"-->
-                <!--            android:text="@={selectedChild.name}"-->
-                <!--            app:layout_constraintStart_toStartOf="parent"-->
-                <!--            app:layout_constraintTop_toBottomOf="@id/child_name_title"-->
-                <!--            tools:text="Laavingonn" />-->
-
-                <TextView
-                    android:id="@+id/edit_child_name"
-                    style="@style/EditTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fadeVisible="@{viewModel.transactionsLoaded}"
-                    android:text="@{child.name}"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/child_name_title"
-                    tools:text="Laavingonn" />
-
-                <!-- Fade Group - Age Title -->
-                <TextView
-                    android:id="@+id/child_age_title"
-                    style="@style/TextViewStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fadeVisible="@{viewModel.transactionsLoaded}"
-                    android:text="@string/child_age_title"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/edit_child_name" />
-
-                <!--        <TextView-->
-                <!--            android:id="@+id/_child_age_title"-->
-                <!--            style="@style/TextViewStyle"-->
-                <!--            android:layout_width="wrap_content"-->
-                <!--            android:layout_height="wrap_content"-->
-                <!--            android:fadeVisible="@{viewModel.transactionsLoaded}"-->
-                <!--            android:text="@string/child_age_title"-->
-                <!--            app:layout_constraintStart_toStartOf="parent"-->
-                <!--            app:layout_constraintTop_toBottomOf="@id/_edit_child_name" />-->
-
-                <!-- Fade Group - Edit Age -->
-                <!--        <EditText-->
-                <!--            android:id="@+id/_edit_child_age"-->
-                <!--            style="@style/EditTextStyle"-->
-                <!--            android:layout_width="wrap_content"-->
-                <!--            android:layout_height="wrap_content"-->
-                <!--            android:autofillHints="age"-->
-                <!--            android:enabled="true"-->
-                <!--            android:fadeVisible="@{viewModel.transactionsLoaded}"-->
-                <!--            android:hint="@string/hint_edit_child_age"-->
-                <!--            android:inputType="number"-->
-                <!--            android:text="@={selectedChild.age}"-->
-                <!--            app:layout_constraintStart_toStartOf="parent"-->
-                <!--            app:layout_constraintTop_toBottomOf="@id/_child_age_title"-->
-                <!--            tools:text="10" />-->
-
-                <TextView
-                    android:id="@+id/edit_child_age"
-                    style="@style/EditTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fadeVisible="@{viewModel.transactionsLoaded}"
-                    android:text="@{child.age}"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/child_age_title" />
-
-                <TextView
-                    android:id="@+id/child_birthday_title"
-                    style="@style/TextViewStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fadeVisible="@{viewModel.transactionsLoaded}"
-                    android:text="@string/child_birthday_title"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/edit_child_age" />
-
-                <!--        <TextView-->
-                <!--            android:id="@+id/_child_birthday_title"-->
-                <!--            style="@style/TextViewStyle"-->
-                <!--            android:layout_width="wrap_content"-->
-                <!--            android:layout_height="wrap_content"-->
-                <!--            android:fadeVisible="@{viewModel.transactionsLoaded}"-->
-                <!--            android:text="@string/child_birthday_title"-->
-                <!--            app:layout_constraintStart_toStartOf="parent"-->
-                <!--            app:layout_constraintTop_toBottomOf="@id/_edit_child_age" />-->
-
-                <!--        <EditText-->
-                <!--            android:id="@+id/_edit_child_birthday"-->
-                <!--            style="@style/EditTextStyle"-->
-                <!--            android:layout_width="wrap_content"-->
-                <!--            android:layout_height="wrap_content"-->
-                <!--            android:autofillHints="date"-->
-                <!--            android:enabled="true"-->
-                <!--            android:fadeVisible="@{viewModel.transactionsLoaded}"-->
-                <!--            android:hint="@string/hint_edit_child_birthday"-->
-                <!--            android:inputType="date"-->
-                <!--            android:text="@={selectedChild.birthday}"-->
-                <!--            app:layout_constraintStart_toStartOf="parent"-->
-                <!--            app:layout_constraintTop_toBottomOf="@id/_child_birthday_title"-->
-                <!--            tools:text="08/02/2010" />-->
-
-                <TextView
-                    android:id="@+id/edit_child_birthday"
-                    style="@style/EditTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fadeVisible="@{viewModel.transactionsLoaded}"
-                    android:text="@{child.birthday}"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/child_birthday_title" />
 
                     <androidx.core.widget.NestedScrollView
                         android:layout_width="match_parent"
@@ -168,7 +119,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/edit_child_birthday">
+                        app:layout_constraintTop_toTopOf="parent" >
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/transactionsRecyclerView"

@@ -1,5 +1,6 @@
 package com.hooware.allowancetracker.transactions
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -7,17 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.hooware.allowancetracker.R
+import com.hooware.allowancetracker.auth.AuthActivity
 import com.hooware.allowancetracker.auth.FirebaseUserLiveData
 import com.hooware.allowancetracker.base.BaseFragment
 import com.hooware.allowancetracker.base.NavigationCommand
-import com.hooware.allowancetracker.to.ChildTO
 import com.hooware.allowancetracker.databinding.FragmentTransactionsBinding
+import com.hooware.allowancetracker.to.ChildTO
 import com.hooware.allowancetracker.utils.setDisplayHomeAsUpEnabled
 import com.hooware.allowancetracker.utils.setTitle
-import com.hooware.allowancetracker.utils.setup
 import com.hooware.allowancetracker.utils.setupTransactionsList
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import timber.log.Timber
@@ -39,31 +38,6 @@ class TransactionsFragment : BaseFragment() {
         viewModel.child.value = TransactionsFragmentArgs.fromBundle(requireArguments()).child
         selectedChild = TransactionsFragmentArgs.fromBundle(requireArguments()).child
         binding.child = viewModel.child.value
-//        binding.saveEditChild.setOnClickListener {
-//            val child = binding.selectedChild!!
-//            val name = child.name
-//            val age = child.age
-//            val birthday = child.birthday
-//            val id = child.id
-//            val newChild = ChildTO(
-//                name,
-//                age,
-//                birthday,
-//                id
-//            )
-//            viewModel.validateAndUpdateChild(newChild)
-//            binding.selectedChild = newChild
-//            Timber.i("Save Clicked")
-//        }
-//        binding.refreshLayout.setOnRefreshListener {
-//            viewModel.loadTransactions(selectedChild.id)
-//            if (binding.refreshLayout.isRefreshing) {
-//                binding.refreshLayout.isRefreshing = false
-//            }
-//        }
-//        binding.initiateEditChild.setOnClickListener {
-//            viewModel.editChildDetails.value = true
-//        }
         binding.addTransactionFAB.setOnClickListener {
             navigateToAddTransaction()
         }
@@ -74,9 +48,13 @@ class TransactionsFragment : BaseFragment() {
 
         FirebaseUserLiveData().observe(viewLifecycleOwner, { user ->
             if (user != null) {
-                viewModel.firebaseUID.value = user.uid
-                Timber.i("${viewModel.firebaseUID.value}")
+                viewModel.setFirebaseUID(user.uid)
                 binding.addTransactionFAB.isVisible = viewModel.child.value!!.id != user.uid
+            } else {
+                Timber.i("Not authenticated. Authenticating...")
+                val intent = Intent(requireActivity(), AuthActivity::class.java)
+                startActivity(intent)
+                this.activity?.finish()
             }
         })
 
@@ -90,14 +68,18 @@ class TransactionsFragment : BaseFragment() {
 
     private fun setupRecyclerView() {
         val adapter = TransactionsListAdapter<Any> { selectedTransaction ->
-            viewModel.navigationCommand.postValue(
-                NavigationCommand.To(
-                    TransactionsFragmentDirections.actionShowDetail(
-                        selectedTransaction,
-                        selectedChild
+            if (selectedChild.id == viewModel.firebaseUID.value) {
+                Timber.i("Not navigating, child")
+            } else {
+                viewModel.navigationCommand.postValue(
+                    NavigationCommand.To(
+                        TransactionsFragmentDirections.actionShowDetail(
+                            selectedTransaction,
+                            selectedChild
+                        )
                     )
                 )
-            )
+            }
         }
         binding.transactionsRecyclerView.setupTransactionsList(adapter)
     }
@@ -124,7 +106,7 @@ class TransactionsFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         viewModel.resetTransactions()
-        viewModel.loadTransactions(selectedChild.id)
+        viewModel.loadTransactions(selectedChild)
     }
 
     override fun onDestroy() {

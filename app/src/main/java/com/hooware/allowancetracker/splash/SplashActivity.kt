@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import com.hooware.allowancetracker.AuthType
+import com.hooware.allowancetracker.utils.AuthType
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.auth.AuthActivity
 import com.hooware.allowancetracker.auth.FirebaseUserLiveData
@@ -21,7 +21,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding: ActivitySplashBinding = DataBindingUtil.setContentView(this, R.layout.activity_splash)
         binding.lifecycleOwner = this
-        Timber.i("Waiting for Splash to complete, then check authentication state.")
+        Timber.i("Wait for Splash to complete, then check authentication state.")
 
         viewModel.splashReady.observe(this, { readyToNavigate ->
             if (readyToNavigate) {

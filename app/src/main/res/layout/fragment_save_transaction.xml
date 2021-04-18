@@ -79,7 +79,7 @@
             android:layout_height="wrap_content"
             android:autofillHints="amount"
             android:hint="@string/hint_edit_transaction_amount"
-            android:inputType="numberDecimal"
+            android:inputType="numberDecimal|numberSigned"
             android:text="@={savingTransaction.amount}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/transaction_amount_title"

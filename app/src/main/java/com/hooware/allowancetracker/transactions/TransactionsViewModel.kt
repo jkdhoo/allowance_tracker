@@ -2,9 +2,7 @@ package com.hooware.allowancetracker.transactions
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.ktx.database
-import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.hooware.allowancetracker.AllowanceApp
 import com.hooware.allowancetracker.R
@@ -12,13 +10,13 @@ import com.hooware.allowancetracker.base.BaseViewModel
 import com.hooware.allowancetracker.base.NavigationCommand
 import com.hooware.allowancetracker.to.ChildTO
 import com.hooware.allowancetracker.to.TransactionTO
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.NumberFormat
+import java.util.*
 
 class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(application) {
 
-    private val transactionsDatabase = Firebase.database.reference.child("transactions").ref
+    private val kidsDatabase = Firebase.database.reference.child("kids").ref
 
     private var _transactionsLoaded = MutableLiveData<Boolean>()
     val transactionsLoaded: LiveData<Boolean>
@@ -40,44 +38,21 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
 
     var child = MutableLiveData<ChildTO>()
 
-    init {
-        _transactionsLoaded.value = false
-        transactionsDatabase.keepSynced(true)
-    }
-
-    fun loadTransactions(id: String) {
+    fun loadTransactions(child: ChildTO) {
         _showLoading.value = true
-        viewModelScope.launch {
-            if (transactionsLoaded.value == false) {
-                transactionsDatabase.get()
-                    .addOnSuccessListener {
-                        _transactionsList.value = it.getValue<HashMap<String, TransactionTO>>()?.values?.toList()?.filter { transactionTO ->
-                            transactionTO.name == id
-                        } ?: listOf()
-                        _transactionsLoaded.value = true
-                        _transactionsEmpty.value = _transactionsList.value.isNullOrEmpty()
-                        _showLoading.value = false
-                    }
-                    .addOnFailureListener {
-                        _transactionsList.value = listOf()
-                        _transactionsLoaded.value = true
-                        _transactionsEmpty.value = true
-                        _showLoading.value = false
-                    }
-            }
-        }
+        _transactionsList.value = child.transactions?.values?.toList() ?: mutableListOf()
+        _transactionsEmpty.value = _transactionsList.value.isNullOrEmpty()
+        _transactionsLoaded.value = true
+        _showLoading.value = false
     }
 
-    private fun validateEnteredTransaction(transaction: TransactionTO?, child: ChildTO): TransactionTO? {
-        if (transaction?.amount == null) {
-            showSnackBarInt.value = R.string.err_enter_amount
-            return null
-        }
+    private fun validateEnteredTransaction(transaction: TransactionTO): TransactionTO? {
+        val amount = transaction.amount
+
         return try {
-            val format = NumberFormat.getCurrencyInstance()
+            val format = NumberFormat.getCurrencyInstance(Locale.US)
             format.maximumFractionDigits = 2
-            transaction.amount = format.format(transaction.amount.toDouble()).toString()
-            transaction.name = child.id
+            transaction.amount = format.format(amount.toDouble()).toString()
             transaction
         } catch (ex: Exception) {
             Timber.i(ex)
@@ -86,18 +61,18 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
         }
     }
 
-    fun validateAndSaveTransaction(transaction: TransactionTO?, child: ChildTO) {
+    fun validateAndSaveTransaction(transaction: TransactionTO, child: ChildTO) {
         _showLoading.value = true
-        Timber.i("${transaction?.details}")
-        val adjustedTransactionTO = validateEnteredTransaction(transaction, child) ?: run {
+        Timber.i(transaction.details)
+        val adjustedTransactionTO = validateEnteredTransaction(transaction) ?: run {
             _showLoading.value = false
             return
         }
-        transactionsDatabase.child(adjustedTransactionTO.id).setValue(adjustedTransactionTO)
+        kidsDatabase.child(child.id).child("transactions").child(adjustedTransactionTO.id).setValue(adjustedTransactionTO)
             .addOnSuccessListener {
                 _showLoading.value = false
-                navigationCommand.value = NavigationCommand.Back
                 showSnackBarInt.value = R.string.transaction_saved
+                navigationCommand.value = NavigationCommand.Back
             }
             .addOnFailureListener {
                 _showLoading.value = false
@@ -105,18 +80,26 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
             }
     }
 
-    fun deleteTransaction(transactionID: String) {
+    fun deleteTransaction(child: ChildTO, transaction: TransactionTO) {
         _showLoading.value = true
-        transactionsDatabase.child(transactionID).removeValue()
+        kidsDatabase.child(child.id).child("transactions").child(transaction.id).removeValue()
             .addOnSuccessListener {
                 _showLoading.value = false
                 navigationCommand.value = NavigationCommand.Back
                 showSnackBarInt.value = R.string.transaction_deleted
+            }
+            .addOnFailureListener {
+                _showLoading.value = false
+                showSnackBarInt.value = R.string.transaction_delete_error
             }
     }
 
     fun resetTransactions() {
         _transactionsList.value = listOf()
         _transactionsLoaded.value = false
+    }
+
+    fun setFirebaseUID(userId: String) {
+        firebaseUID.value = userId
     }
 }
