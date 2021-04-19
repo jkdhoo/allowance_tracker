@@ -206,7 +206,7 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         kidsLoaded.value = false
     }
 
-    fun clear() {
+    fun reset() {
         _quoteResponseTO.value = QuoteResponseTO()
         _kidsList.value = mutableListOf()
         _quoteLoaded.value = false

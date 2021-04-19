@@ -1,6 +1,7 @@
 package com.hooware.allowancetracker.to
 
 import android.os.Parcelable
+import androidx.annotation.Keep
 import androidx.databinding.BaseObservable
 import kotlinx.parcelize.Parcelize
 import java.text.SimpleDateFormat
@@ -16,6 +17,7 @@ import java.util.*
  * @param _id          id of the reminder
  */
 
+@Keep
 @Parcelize
 class TransactionTO(
     var details: String = "",

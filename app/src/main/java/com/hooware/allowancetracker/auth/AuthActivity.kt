@@ -21,9 +21,7 @@ class AuthActivity : AppCompatActivity() {
 
     private val viewModel: AuthViewModel by viewModel()
 
-    private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-        processAuthResponse(result)
-    }
+    private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,18 +32,15 @@ class AuthActivity : AppCompatActivity() {
         binding.authViewModel = viewModel
         binding.lifecycleOwner = this
         binding.authButton.setOnClickListener { launchSignInFlow() }
-    }
-
-    private fun processAuthResponse(result: ActivityResult) {
-        if (result.resultCode == Activity.RESULT_OK) {
-            Timber.i("Authenticated, routing to Overview")
-            val overviewActivityIntent = Intent(applicationContext, OverviewActivity::class.java)
-            startActivity(overviewActivityIntent)
-            finishAffinity()
-        } else {
-            Timber.i("Unauthenticated")
-            viewModel.showSnackBar.value = this.getString(R.string.login_unsuccessful_msg)
-        }
+        FirebaseUserLiveData().observe(this, { user ->
+            if (user != null) {
+                Timber.i("Authenticated, sending to Overview: ${user.displayName}")
+                val overviewActivityIntent = Intent(applicationContext, OverviewActivity::class.java)
+                startActivity(overviewActivityIntent)
+            } else {
+                Timber.i("Unauthenticated")
+            }
+        })
     }
 
     override fun onBackPressed() {

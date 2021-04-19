@@ -1,9 +1,6 @@
 package com.hooware.allowancetracker
 
 import android.app.Application
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.hooware.allowancetracker.auth.AuthViewModel
@@ -22,14 +19,14 @@ class AllowanceApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        Timber.plant(Timber.DebugTree())
-        Timber.i("Timber initialized.")
+            Timber.plant(Timber.DebugTree())
+            Timber.i("Timber initialized.")
 
-        initializeKoin()
-        initializeFirebase()
+        initKoin()
+        initFirebase()
     }
 
-    private fun initializeKoin() {
+    private fun initKoin() {
         val myModule = module {
             viewModel { OverviewViewModel(this@AllowanceApp) }
             viewModel { AuthViewModel(this@AllowanceApp) }
@@ -44,7 +41,7 @@ class AllowanceApp : Application() {
         }
     }
 
-    private fun initializeFirebase() {
+    private fun initFirebase() {
         val remoteConfig = FirebaseRemoteConfig.getInstance()
         val configSettings = FirebaseRemoteConfigSettings.Builder()
             .setMinimumFetchIntervalInSeconds(60)

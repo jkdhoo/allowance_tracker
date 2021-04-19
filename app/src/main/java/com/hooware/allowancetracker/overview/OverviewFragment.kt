@@ -2,7 +2,12 @@ package com.hooware.allowancetracker.overview
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.core.view.isVisible
@@ -69,7 +74,7 @@ class OverviewFragment : BaseFragment() {
             if (user == null) {
                 Timber.i("Not authenticated. Authenticating...")
                 val intent = Intent(requireActivity(), AuthActivity::class.java)
-                viewModel.clear()
+                viewModel.reset()
                 startActivity(intent)
                 this.activity?.finish()
             } else {
@@ -114,6 +119,6 @@ class OverviewFragment : BaseFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.clear()
+        viewModel.reset()
     }
 }
