@@ -117,8 +117,13 @@ class OverviewFragment : BaseFragment() {
         inflater.inflate(R.menu.main_menu, menu)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.reset()
-    }
+//    override fun onResume() {
+//        super.onResume()
+//        viewModel.loadQuote()
+//    }
+
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        viewModel.reset()
+//    }
 }

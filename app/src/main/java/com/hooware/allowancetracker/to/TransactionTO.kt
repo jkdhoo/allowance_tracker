@@ -22,5 +22,6 @@ class TransactionTO(
     var details: String = "",
     var amount: String = "",
     var id: String = UUID.randomUUID().toString(),
-    var date: String = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()).format(Calendar.getInstance().time),
+    var date: String = System.currentTimeMillis().toString()
+//    var date: String = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()).format(Calendar.getInstance().time),
 ) : Parcelable, BaseObservable()

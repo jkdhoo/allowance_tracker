@@ -1,9 +1,7 @@
 package com.hooware.allowancetracker.network
 
 import android.os.Parcelable
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.annotation.Keep
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.coroutines.Deferred
 import kotlinx.parcelize.Parcelize
@@ -13,12 +11,12 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
+@Keep
 @Parcelize
-@Entity(tableName = "quote")
 class QuoteResponseTO(
-    @PrimaryKey @ColumnInfo(name = "quote") var quote: String = "",
-    @ColumnInfo(name = "author") var author: String = "",
-    @ColumnInfo(name = "backgroundImage") var backgroundImage: String = ""
+    var quote: String = "",
+    var author: String = "",
+    var backgroundImage: String = ""
 ): Parcelable
 
 fun parseQuoteJsonResult(jsonResult: JSONObject): QuoteResponseTO {

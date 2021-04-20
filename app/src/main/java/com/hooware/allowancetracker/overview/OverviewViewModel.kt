@@ -202,7 +202,7 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         loadKids()
     }
 
-    fun resetKidsLoaded() {
+    private fun resetKidsLoaded() {
         kidsLoaded.value = false
     }
 
