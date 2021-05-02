@@ -30,7 +30,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/padding_small"
-                android:text="@{item.date}"
+                android:text="@{item.timestamp}"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_size_normal"
                 app:layout_constraintStart_toStartOf="parent"
@@ -48,15 +48,80 @@
                 tools:text="Description" />
 
             <TextView
+                android:id="@+id/total"
+                android:layout_marginStart="@dimen/padding_small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@{item.amount}"
+                android:currency="@{item.total}"
+                android:textSize="@dimen/text_size_normal"
+                android:moneyStyleColor="@{item}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="Location" />
+
+            <TextView
+                android:id="@+id/spending"
+                android:layout_marginStart="@dimen/padding_small"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="@dimen/padding_small"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:currency="@{item.spending}"
                 android:textSize="@dimen/text_size_small"
                 android:moneyStyleColor="@{item}"
-                app:layout_constraintBottom_toBottomOf="@+id/description"
+                app:layout_constraintTop_toBottomOf="@id/total"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/title"
+                tools:text="Location" />
+
+            <TextView
+                android:id="@+id/savings"
+                android:layout_marginStart="@dimen/padding_small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:currency="@{item.savings}"
+                android:textSize="@dimen/text_size_small"
+                android:moneyStyleColor="@{item}"
+                app:layout_constraintTop_toBottomOf="@id/spending"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="Location" />
+
+            <TextView
+                android:id="@+id/total_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/total_title"
+                android:textSize="@dimen/text_size_normal"
+                android:moneyStyleColor="@{item}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/total"
+                tools:text="Location" />
+
+            <TextView
+                android:id="@+id/spending_title"
+                android:layout_marginTop="@dimen/padding_small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/spending_title"
+                android:textSize="@dimen/text_size_small"
+                android:moneyStyleColor="@{item}"
+                app:layout_constraintTop_toBottomOf="@id/total_title"
+                app:layout_constraintEnd_toStartOf="@id/spending"
+                tools:text="Location" />
+
+            <TextView
+                android:id="@+id/savings_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/savings_title_2"
+                android:textSize="@dimen/text_size_small"
+                android:moneyStyleColor="@{item}"
+                app:layout_constraintTop_toBottomOf="@id/spending_title"
+                app:layout_constraintEnd_toStartOf="@id/savings"
                 tools:text="Location" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

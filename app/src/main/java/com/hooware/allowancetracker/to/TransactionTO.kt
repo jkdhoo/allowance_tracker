@@ -10,18 +10,22 @@ import java.util.*
 /**
  * Immutable model class for a Reminder. In order to compile with Room
  *
- * @param details   description of the reminder
- * @param amount      location name of the reminder
- * @param date      latitude of the reminder location
- * @param id          id of the reminder
+ * @param details   details of the transaction
+ * @param spending  amount available to spend
+ * @param total     total amount of transaction
+ * @param savings   amount set aside for savings (25%)
+ * @param date      date of transaction in milliseconds
+ * @param id        id of transaction
+ * @param timestamp timestamp of transaction
  */
-
 @Keep
 @Parcelize
 class TransactionTO(
     var details: String = "",
-    var amount: String = "",
+    var spending: Double = 0.0,
+    var savings: Double = 0.0,
+    var total: Double = 0.0,
     var id: String = UUID.randomUUID().toString(),
-    var date: String = System.currentTimeMillis().toString()
-//    var date: String = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault()).format(Calendar.getInstance().time),
+    var date: Long = System.currentTimeMillis(),
+    var timestamp: String = SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.getDefault()).format(Calendar.getInstance().time)
 ) : Parcelable, BaseObservable()

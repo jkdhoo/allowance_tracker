@@ -38,8 +38,11 @@
         <argument
             android:name="child"
             app:argType="com.hooware.allowancetracker.to.ChildTO" />
+        <argument
+            android:name="motionEndLocation"
+            app:argType="string" />
         <action
-            android:id="@+id/action_showDetail"
+            android:id="@+id/action_showTransactionDetail"
             app:destination="@id/transactionDetailsFragment" />
         <action
             android:id="@+id/action_addTransaction"
@@ -52,16 +55,10 @@
         <argument
             android:name="transaction"
             app:argType="com.hooware.allowancetracker.to.TransactionTO" />
-        <argument
-            android:name="child"
-            app:argType="com.hooware.allowancetracker.to.ChildTO" />
     </fragment>
     <fragment
         android:id="@+id/saveTransactionFragment"
         android:name="com.hooware.allowancetracker.transactions.SaveTransactionFragment"
         android:label="Transactions">
-        <argument
-            android:name="child"
-            app:argType="com.hooware.allowancetracker.to.ChildTO" />
     </fragment>
 </navigation>

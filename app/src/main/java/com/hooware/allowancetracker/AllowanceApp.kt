@@ -1,6 +1,10 @@
 package com.hooware.allowancetracker
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.hooware.allowancetracker.auth.AuthViewModel
@@ -24,6 +28,7 @@ class AllowanceApp : Application() {
 
         initKoin()
         initFirebase()
+        createNotificationChannel()
     }
 
     private fun initKoin() {
@@ -56,6 +61,20 @@ class AllowanceApp : Application() {
             } else {
                 Timber.i("Firebase Config param update failed.")
             }
+        }
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = getString(R.string.channel_name)
+            val descriptionText = getString(R.string.channel_description)
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(getString(R.string.channel_id), name, importance).apply {
+                description = descriptionText
+            }
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
         }
     }
 }

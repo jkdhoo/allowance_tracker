@@ -20,17 +20,10 @@ class SaveTransactionFragment : BaseFragment() {
     override val viewModel by sharedViewModel<TransactionsViewModel>()
     private lateinit var binding: FragmentSaveTransactionBinding
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_save_transaction, container, false)
-
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_save_transaction, container, false)
         setDisplayHomeAsUpEnabled(true)
         setHasOptionsMenu(true)
-        val selectedChild = TransactionsFragmentArgs.fromBundle(requireArguments()).child
-        binding.child = selectedChild
         binding.savingTransaction = TransactionTO()
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
@@ -44,6 +37,11 @@ class SaveTransactionFragment : BaseFragment() {
             true
         }
         else -> super.onOptionsItemSelected(item)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.resetTransactions()
     }
 
     override fun onDestroy() {

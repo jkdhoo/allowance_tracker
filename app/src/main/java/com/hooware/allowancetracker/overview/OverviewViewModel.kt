@@ -1,6 +1,8 @@
 package com.hooware.allowancetracker.overview
 
+import android.os.Build
 import android.widget.ImageView
+import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -17,16 +19,21 @@ import com.hooware.allowancetracker.network.Network
 import com.hooware.allowancetracker.network.QuoteResponseTO
 import com.hooware.allowancetracker.network.parseQuoteJsonResult
 import com.hooware.allowancetracker.to.ChildTO
+import com.hooware.allowancetracker.utils.age
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import timber.log.Timber
 import java.text.NumberFormat
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) {
 
     private val quoteDatabase = Firebase.database.reference.child("quote").ref
     val kidsDatabase = Firebase.database.reference.child("kids").ref
+    private val notificationDatabase = Firebase.database.reference.child("notifications").ref
 
     private var _quoteResponseTO = MutableLiveData<QuoteResponseTO>()
     val quoteResponseTO: LiveData<QuoteResponseTO>
@@ -104,6 +111,7 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun loadKids() {
         if (kidsLoaded.value == true) {
             showLoadingCheck()
@@ -116,45 +124,24 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
                         kidsDB.children.forEach { databaseChild ->
                             val childTO = databaseChild.getValue(ChildTO::class.java) ?: return@forEach
                             if (childTO.id == firebaseUID.value) {
-                                childTO.totalAllowance = totalAllowance(childTO)
+                                childTO.age = childAge(childTO.birthday)
                                 kidsList = mutableListOf()
                                 kidsList.add(childTO)
                                 _kidsList.value = kidsList
                                 kidsLoaded.value = true
                                 return@addOnSuccessListener
                             }
-                            childTO.totalAllowance = totalAllowance(childTO)
+                            childTO.age = childAge(childTO.birthday)
                             kidsList.add(childTO)
-                        }
-                        if (kidsList.isEmpty()) {
-                            kidsList = getDefaultKids()
                         }
                         _kidsList.value = kidsList
                         kidsLoaded.value = true
                     }
                     .addOnFailureListener {
-                        _kidsList.value = getDefaultKids()
+                        _kidsList.value = emptyList()
                         kidsLoaded.value = true
                     }
             }
-    }
-
-    private fun getDefaultKids(): MutableList<ChildTO> {
-        val levi = ChildTO(
-            name = "Levi",
-            birthday = "09/28/2007",
-            age = "13",
-            id = "ohi9UvJ040cPyUusqxWTU3DSwj72",
-            totalAllowance = "$0.0"
-        )
-        val laa = ChildTO(
-            name = "Laavingonn",
-            birthday = "08/02/2010",
-            age = "10",
-            id = "27d7e2c6-213e-4554-b9d7-db32b9f0c3b6",
-            totalAllowance = "$0.0"
-        )
-        return mutableListOf(levi, laa)
     }
 
     fun displayQuoteImage(imgView: ImageView) {
@@ -181,21 +168,18 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         return remoteConfig.getString(param)
     }
 
-    private fun totalAllowance(child: ChildTO): String {
+    private fun totalSpending(child: ChildTO): Double {
         val format = NumberFormat.getCurrencyInstance(Locale.US)
         format.maximumFractionDigits = 2
-        var allowanceTotal = 0.0
+        var spendingTotal = 0.0
         child.transactions?.forEach { transactionTO ->
-            val amount = transactionTO.value.amount
-            allowanceTotal = if (amount.startsWith("$")) {
-                allowanceTotal + NumberFormat.getInstance(Locale.US).parse(amount.drop(1))?.toDouble()!!
-            } else {
-                allowanceTotal - NumberFormat.getInstance(Locale.US).parse(amount.drop(2))?.toDouble()!!
-            }
+            val amount = transactionTO.value.spending ?: return@forEach
+            spendingTotal += amount
         }
-        return format.format(allowanceTotal).toString()
+        return spendingTotal
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun setFirebaseUID(userId: String) {
         firebaseUID.value = userId
         resetKidsLoaded()
@@ -213,5 +197,17 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         _showLoading.value = false
         kidsLoaded.value = false
         firebaseUID.value = ""
+    }
+
+    fun saveFCMToken(fcmToken: String) {
+        val currentFirebaseUID = firebaseUID.value ?: return
+        notificationDatabase.child(currentFirebaseUID).setValue(fcmToken)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun childAge(birthday: String): String {
+        val format = DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.ENGLISH)
+        val date = LocalDate.parse(birthday, format)
+        return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()).age
     }
 }

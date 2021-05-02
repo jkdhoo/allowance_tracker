@@ -8,10 +8,6 @@
         <variable
             name="viewModel"
             type="com.hooware.allowancetracker.transactions.TransactionsViewModel" />
-
-        <variable
-            name="child"
-            type="com.hooware.allowancetracker.to.ChildTO" />
     </data>
 
     <RelativeLayout
@@ -39,7 +35,7 @@
                     android:layout_marginStart="@dimen/padding_small"
                     android:text="@string/it_name_title"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/text_size_large"
+                    android:textSize="@dimen/text_size_medium"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -50,9 +46,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/padding_small"
-                    android:text="@{child.name}"
+                    android:text="@{viewModel.child.name}"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/text_size_large"
+                    android:textSize="@dimen/text_size_medium"
                     app:layout_constraintStart_toEndOf="@id/it_name_title"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Levi" />
@@ -74,7 +70,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/padding_small"
-                    android:text="@{child.age}"
+                    android:text="@{viewModel.child.age}"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size_small"
                     app:layout_constraintStart_toEndOf="@id/it_age_title"
@@ -87,13 +83,40 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/padding_small"
                     android:gravity="center"
-                    android:text="@{child.totalAllowance}"
+                    android:currency="@{viewModel.child.totalSpending}"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/text_size_large"
+                    android:textSize="@dimen/text_size_medium"
                     app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/it_savings"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="$324.51" />
+
+                <TextView
+                    android:id="@+id/it_savings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/padding_small"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_small"
+                    app:layout_constraintTop_toBottomOf="@id/it_balance"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     tools:text="$324.51" />
+
+                <TextView
+                    android:id="@+id/it_savings_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/padding_small"
+                    android:gravity="center"
+                    android:text="@string/savings_title"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_small"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/it_savings"
+                    tools:text="$324.51" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 
@@ -161,6 +184,21 @@
                     app:layout_constraintStart_toStartOf="parent"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
+        <TextView
+            android:id="@+id/reset_savings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/padding_small"
+            android:gravity="center"
+            android:text="@string/reset_savings_title"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_small"
+            android:layout_below="@id/reminderCardView"
+            android:layout_alignEnd="@id/reminderCardView"
+            android:onClick="@{() -> viewModel.resetSavingsOwed()}"
+            android:visibility="invisible"
+            tools:text="Reset Savings Owed" />
+
         <TextView
             android:id="@+id/noTransactionDataTextView"
             android:layout_width="match_parent"

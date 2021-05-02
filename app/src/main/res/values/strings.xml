@@ -26,6 +26,7 @@
     <string name="child_saved">Child Saved!</string>
     <string name="transaction_saved">Transaction Saved!</string>
     <string name="transaction_deleted">Transaction Deleted!</string>
+    <string name="savings_reset">Savings owed reset!</string>
     <string name="child_updated">Child Updated!</string>
     <string name="hint_edit_child_name">Your child\'s name (required)</string>
     <string name="hint_edit_child_age">Your child\'s age (optional)</string>
@@ -40,6 +41,17 @@
     <string name="transaction_details_title">Transaction Details</string>
     <string name="transaction_save_error">Sorry, we could not save your transaction at this time.</string>
     <string name="transaction_delete_error">Sorry, we could not delete your transaction at this time.</string>
+    <string name="savings_reset_error">Sorry, we could not reset the savings owed at this time.</string>
     <string name="delete">Delete</string>
     <string name="total">Total</string>
+    <string name="channel_name">notifications</string>
+    <string name="channel_description">Allowance Tracker Notifications</string>
+    <string name="channel_id">"1"</string>
+    <string name="savings_title">Savings Owed:</string>
+    <string name="total_title">Total:</string>
+    <string name="spending_title">Spending:</string>
+    <string name="savings_title_2">Savings:</string>
+    <string name="reset_savings_title">Reset Savings Owed</string>
+    <string name="child_s_name">Child\'s Name</string>
+    <string name="amount">Amount</string>
 </resources>

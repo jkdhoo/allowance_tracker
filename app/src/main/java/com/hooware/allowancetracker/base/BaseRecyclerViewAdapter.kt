@@ -1,6 +1,7 @@
 package com.hooware.allowancetracker.base
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
@@ -8,15 +9,14 @@ import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 
-abstract class BaseRecyclerViewAdapter<T>(private val callback: ((item: T) -> Unit)? = null) :
-    RecyclerView.Adapter<DataBindingViewHolder<T>>() {
+abstract class BaseRecyclerViewAdapter<T>(private val callback: ((item: T, view: View) -> Unit)? = null) : RecyclerView.Adapter<DataBindingViewHolder<T>>() {
 
     private var _items: MutableList<T> = mutableListOf()
 
     /**
      * Returns the _items data
      */
-    private val items: List<T>
+    private val items: MutableList<T>
         get() = this._items
 
     override fun getItemCount() = _items.size
@@ -36,7 +36,7 @@ abstract class BaseRecyclerViewAdapter<T>(private val callback: ((item: T) -> Un
         val item = getItem(position)
         holder.bind(item)
         holder.itemView.setOnClickListener {
-            callback?.invoke(item)
+            callback?.invoke(item, it)
         }
     }
 
@@ -47,7 +47,7 @@ abstract class BaseRecyclerViewAdapter<T>(private val callback: ((item: T) -> Un
      *
      * @param items to be merged
      */
-    fun addData(items: List<T>) {
+    fun addData(items: MutableList<T>) {
         _items.addAll(items)
         notifyDataSetChanged()
     }

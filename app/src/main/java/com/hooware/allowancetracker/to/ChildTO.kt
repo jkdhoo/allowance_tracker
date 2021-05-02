@@ -5,7 +5,6 @@ import androidx.annotation.Keep
 import androidx.databinding.BaseObservable
 import kotlinx.parcelize.Parcelize
 import java.util.*
-import kotlin.collections.HashMap
 
 /**
  * data class acts as a data mapper between the DB and the UI
@@ -14,9 +13,10 @@ import kotlin.collections.HashMap
 @Parcelize
 class ChildTO(
     var name: String = "",
-    var age: String = "",
     var birthday: String = "",
     var id: String = UUID.randomUUID().toString(),
+    var savingsOwed: Double = 0.0,
+    var age: String = "0",
     var transactions: HashMap<String, TransactionTO>? = null,
-    var totalAllowance: String = "$0.0"
+    var totalSpending: Double = 0.0
 ) : Parcelable, BaseObservable()

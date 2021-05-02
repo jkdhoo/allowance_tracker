@@ -8,20 +8,19 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hooware.allowancetracker.base.BaseRecyclerViewAdapter
+import com.hooware.allowancetracker.to.TransactionTO
 import com.hooware.allowancetracker.transactions.TransactionsListAdapter
+import timber.log.Timber
+import java.text.DecimalFormat
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 /**
  * Extension function to setup the RecyclerView
  */
 fun <T> RecyclerView.setup(adapter: BaseRecyclerViewAdapter<T>) {
-    this.apply {
-        layoutManager = LinearLayoutManager(this.context)
-        this.adapter = adapter
-    }
-}
-
-fun <T> RecyclerView.setupTransactionsList(adapter: TransactionsListAdapter<T>) {
     this.apply {
         layoutManager = LinearLayoutManager(this.context)
         this.adapter = adapter
@@ -62,3 +61,53 @@ fun View.fadeOut() {
         }
     })
 }
+
+fun View.fadeOutInvisible() {
+    this.animate().alpha(0f).setListener(object : AnimatorListenerAdapter() {
+        override fun onAnimationEnd(animation: Animator) {
+            this@fadeOutInvisible.alpha = 1f
+            this@fadeOutInvisible.visibility = View.INVISIBLE
+        }
+    })
+}
+
+fun String.currencyFromStringToDouble(): Double {
+    return if (this.startsWith("$")) {
+        NumberFormat.getInstance(Locale.US).parse(this.drop(1))?.toDouble()!!
+    } else {
+        0 - NumberFormat.getInstance(Locale.US).parse(this.drop(2))?.toDouble()!!
+    }
+}
+
+fun Double.currencyFormatter(): Double? {
+    return try {
+        val format = NumberFormat.getInstance()
+        format.maximumFractionDigits = 2
+        Timber.i(format.format(this))
+        format.format(this).toDouble()
+    } catch (ex: Exception) {
+        Timber.i(ex)
+        null
+    }
+}
+
+val Date.age: String
+    get() {
+        val calendar = Calendar.getInstance()
+        calendar.time = Date(time - Date().time)
+        return (1970 - (calendar.get(Calendar.YEAR) + 1)).toString()
+    }
+
+val Long.timestamp: String
+    get() {
+        return SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.getDefault()).format(this)
+    }
+
+val Double.toCurrency: String
+    get() {
+        return try {
+            "$${DecimalFormat("#,##0.00").format(this)}"
+        } catch (ex: Exception) {
+            "$0.00"
+        }
+    }

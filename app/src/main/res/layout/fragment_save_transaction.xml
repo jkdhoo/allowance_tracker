@@ -10,10 +10,6 @@
             type="com.hooware.allowancetracker.transactions.TransactionsViewModel" />
 
         <variable
-            name="child"
-            type="com.hooware.allowancetracker.to.ChildTO" />
-
-        <variable
             name="savingTransaction"
             type="com.hooware.allowancetracker.to.TransactionTO" />
     </data>
@@ -37,7 +33,7 @@
             style="@style/EditTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{child.name}"
+            android:text="@{viewModel.child.name}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/transaction_child_name_title"
             tools:text="Laavingonn" />
@@ -80,7 +76,7 @@
             android:autofillHints="amount"
             android:hint="@string/hint_edit_transaction_amount"
             android:inputType="numberDecimal|numberSigned"
-            android:text="@={savingTransaction.amount}"
+            android:text="@={`` + savingTransaction.total}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/transaction_amount_title"
             tools:text="08/02/2010" />
@@ -91,22 +87,22 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_normal"
             android:contentDescription="@string/cd_saveChild"
-            android:onClick="@{() -> viewModel.validateAndSaveTransaction(savingTransaction, child)}"
+            android:onClick="@{() -> viewModel.validateAndSaveTransaction(savingTransaction)}"
             app:fabSize="normal"
             app:layout_anchorGravity="top|end"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_save" />
 
-<!--        <ProgressBar-->
-<!--            android:id="@+id/progressBar"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:fadeVisible="@{viewModel.showChildrenLoading.booleanValue()}"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent" />-->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fadeVisible="@{viewModel.showLoading.booleanValue()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
