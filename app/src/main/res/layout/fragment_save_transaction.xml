@@ -64,22 +64,33 @@
             style="@style/TextViewStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/transaction_amount_title"
+            android:text="@string/transaction_details_total_title"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/transaction_description" />
+
+        <TextView
+            android:id="@+id/transaction_amount_currency"
+            style="@style/TextViewStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="0dp"
+            android:text="@string/dollar_sign"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/transaction_amount_title" />
 
         <EditText
             android:id="@+id/transaction_amount"
             style="@style/EditTextStyle"
+            android:layout_marginStart="0dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:autofillHints="amount"
             android:hint="@string/hint_edit_transaction_amount"
             android:inputType="numberDecimal|numberSigned"
-            android:text="@={`` + savingTransaction.total}"
-            app:layout_constraintStart_toStartOf="parent"
+            android:text="@={viewModel.saveTransactionTotalHolder}"
+            app:layout_constraintStart_toEndOf="@id/transaction_amount_currency"
             app:layout_constraintTop_toBottomOf="@id/transaction_amount_title"
-            tools:text="08/02/2010" />
+            tools:text="10.00" />
 
         <CheckBox
             android:id="@+id/savings_checkbox"

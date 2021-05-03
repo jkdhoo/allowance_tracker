@@ -12,12 +12,13 @@
     <string name="add_a_transaction">You have not yet added any allowance.\nClick the + button!</string>
     <string name="cd_add_new_child">Add New Child</string>
     <string name="cd_add_new_transaction">Add New Transaction</string>
-    <string name="child_name_title">Name</string>
+    <string name="child_name_title">Name: </string>
     <string name="it_name_title">Name:</string>
     <string name="child_age_title">Age</string>
     <string name="it_age_title">Age:</string>
-    <string name="transaction_description_title">Description</string>
-    <string name="transaction_amount_title">Amount</string>
+    <string name="transaction_description_title">Description: </string>
+    <string name="transaction_spending_title">Spending: </string>
+    <string name="transaction_savings_title">Savings: </string>
     <string name="transaction_date_title">Date</string>
     <string name="child_birthday_title">Birthday</string>
     <string name="err_enter_name">You must enter a child\'s name to save.</string>
@@ -32,7 +33,7 @@
     <string name="hint_edit_child_age">Your child\'s age (optional)</string>
     <string name="hint_edit_child_birthday">Your child\'s birthday (optional)</string>
     <string name="hint_edit_transaction_description">The transaction description</string>
-    <string name="hint_edit_transaction_amount">The transaction amount</string>
+    <string name="hint_edit_transaction_amount">Total Amount</string>
     <string name="hint_edit_transaction_date">The transaction date</string>
     <string name="cd_saveChild">Click to save</string>
     <string name="cd_editChild">Clidk to edit child information</string>
@@ -55,4 +56,9 @@
     <string name="child_s_name">Child\'s Name</string>
     <string name="amount">Amount</string>
     <string name="disable_savings_for_this_transaction">Disable savings for this transaction</string>
+    <string name="transaction_details_name_title">Name: </string>
+    <string name="transaction_details_total_title">Total: </string>
+    <string name="transaction_details_amount_title">Spending: </string>
+    <string name="transaction_details_savings_title">Savings: </string>
+    <string name="dollar_sign">$</string>
 </resources>

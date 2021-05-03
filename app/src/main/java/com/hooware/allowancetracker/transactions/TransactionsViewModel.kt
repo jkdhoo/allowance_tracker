@@ -46,6 +46,8 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
 
     var disableSavings = MutableLiveData<Boolean>()
 
+    var saveTransactionTotalHolder = MutableLiveData<String>()
+
     init {
         _transactionsLoaded.value = false
         _savingsOwedUpdated.value = false
@@ -64,6 +66,7 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
 
     private fun validateEnteredTransaction(transaction: TransactionTO): TransactionTO? {
         try {
+            transaction.total = saveTransactionTotalHolder.value?.toDouble() ?: return null
             transaction.total = transaction.total.currencyFormatter() ?: run {
                 showSnackBarInt.value = R.string.err_invalid_format_amount
                 return null

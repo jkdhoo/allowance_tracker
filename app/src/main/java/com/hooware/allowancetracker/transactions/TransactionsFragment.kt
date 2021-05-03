@@ -47,6 +47,7 @@ class TransactionsFragment : BaseFragment() {
         })
         binding.addTransactionFAB.setOnClickListener {
             viewModel.disableSavings.value = false
+            viewModel.saveTransactionTotalHolder.value = ""
             navigateToAddTransaction()
         }
 
