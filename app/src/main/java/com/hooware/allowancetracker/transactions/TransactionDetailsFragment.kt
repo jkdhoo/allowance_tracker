@@ -52,14 +52,4 @@ class TransactionDetailsFragment : BaseFragment() {
         }
         else -> super.onOptionsItemSelected(item)
     }
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.resetTransactions()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.resetTransactions()
-    }
 }

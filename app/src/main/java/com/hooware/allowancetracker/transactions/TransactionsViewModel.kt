@@ -1,13 +1,7 @@
 package com.hooware.allowancetracker.transactions
 
-import android.annotation.SuppressLint
-import android.widget.TextView
-import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.hooware.allowancetracker.AllowanceApp
@@ -17,8 +11,6 @@ import com.hooware.allowancetracker.base.NavigationCommand
 import com.hooware.allowancetracker.to.ChildTO
 import com.hooware.allowancetracker.to.TransactionTO
 import com.hooware.allowancetracker.utils.currencyFormatter
-import timber.log.Timber
-import java.text.DecimalFormat
 
 class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(application) {
 
@@ -32,13 +24,17 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
     val transactionsList: LiveData<MutableList<TransactionTO>>
         get() = _transactionsList
 
-    private var _transactionsEmpty = MutableLiveData<Boolean>()
-    val transactionsEmpty: LiveData<Boolean>
-        get() = _transactionsEmpty
+    private var _showTransactionsEmpty = MutableLiveData<Boolean>()
+    val showTransactionsEmpty: LiveData<Boolean>
+        get() = _showTransactionsEmpty
 
     private var _savingsOwedUpdated = MutableLiveData<Boolean>()
     val savingsOwedUpdated: LiveData<Boolean>
         get() =_savingsOwedUpdated
+
+    private var _totalSpendingUpdated = MutableLiveData<Boolean>()
+    val totalSpendingUpdated: LiveData<Boolean>
+        get() = _totalSpendingUpdated
 
     private var _showLoading = MutableLiveData<Boolean>()
     val showLoading: LiveData<Boolean>
@@ -48,45 +44,21 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
 
     var child = MutableLiveData<ChildTO>()
 
+    var disableSavings = MutableLiveData<Boolean>()
+
     init {
         _transactionsLoaded.value = false
-        _savingsOwedUpdated.value = true
+        _savingsOwedUpdated.value = false
         _transactionsList.value = mutableListOf()
-        _transactionsEmpty.value = true
-        _showLoading.value = true
-        kidsDatabase.addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
-                Timber.i("onChildAdded: ${dataSnapshot.key!!}")
-            }
-
-            override fun onChildChanged(dataSnapshot: DataSnapshot, previousChildName: String?) {
-                Timber.i("onChildChanged: ${dataSnapshot.key}")
-//                Timber.i("Previous Child: $previousChildName")
-//                if (child.value?.id == dataSnapshot.key) {
-//                    child.value = dataSnapshot.getValue(ChildTO::class.java)
-//                }
-            }
-
-            override fun onChildRemoved(dataSnapshot: DataSnapshot) {
-                Timber.i("onChildRemoved: ${dataSnapshot.key!!}")
-            }
-
-            override fun onChildMoved(dataSnapshot: DataSnapshot, previousChildName: String?) {
-                Timber.i("onChildMoved: ${dataSnapshot.key!!}")
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                Timber.i("postComments:onCancelled ${databaseError.toException()}")
-            }
-        })
+        _showTransactionsEmpty.value = false
     }
 
     fun loadTransactions() {
         _showLoading.value = true
-        _transactionsLoaded.value = false
         _transactionsList.value = child.value?.transactions?.values?.sortedByDescending { it.date }?.toMutableList() ?: mutableListOf()
-        _transactionsEmpty.value = _transactionsList.value.isNullOrEmpty()
+        _showTransactionsEmpty.value = _transactionsList.value.isNullOrEmpty()
         _transactionsLoaded.value = true
+        _savingsOwedUpdated.value = true
         _showLoading.value = false
     }
 
@@ -108,8 +80,12 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
     }
 
     fun validateAndSaveTransaction(transaction: TransactionTO) {
+        if (disableSavings.value == true) {
+            validateAndSaveTransactionNoSavings(transaction)
+            return
+        }
         _showLoading.value = true
-        val childId = child.value?.id ?: return
+        val childTO = child.value ?: return
         val adjustedTransactionTO = validateEnteredTransaction(transaction) ?: run {
             _showLoading.value = false
             return
@@ -123,17 +99,52 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
                 showSnackBarInt.value = R.string.err_invalid_format_amount
                 return
             }
-            kidsDatabase.child(childId).child("savingsOwed").setValue(child.value?.savingsOwed)
         }
-        kidsDatabase.child(childId).child("transactions").child(adjustedTransactionTO.id).setValue(adjustedTransactionTO)
+        childTO.transactions?.put(adjustedTransactionTO.id, adjustedTransactionTO)
+        kidsDatabase.child(childTO.id).child("transactions").child(adjustedTransactionTO.id).setValue(adjustedTransactionTO)
             .addOnSuccessListener {
-                child.value?.transactions?.put(adjustedTransactionTO.id, adjustedTransactionTO)
                 if (adjustedTransactionTO.total > 0) {
-                    child.value?.totalSpending = child.value?.totalSpending?.plus(adjustedTransactionTO.spending) ?: 0.0
-                    kidsDatabase.child(childId).child("totalSpending").setValue(child.value?.totalSpending)
-                    child.value?.savingsOwed = child.value?.savingsOwed?.plus(adjustedTransactionTO.savings) ?: 0.0
-                    kidsDatabase.child(childId).child("savingsOwed").setValue(child.value?.savingsOwed)
+                    childTO.totalSpending = childTO.totalSpending.plus(adjustedTransactionTO.spending)
+                    kidsDatabase.child(childTO.id).child("totalSpending").setValue(childTO.totalSpending)
+                    childTO.savingsOwed = childTO.savingsOwed.plus(adjustedTransactionTO.savings)
+                    kidsDatabase.child(childTO.id).child("savingsOwed").setValue(childTO.savingsOwed)
                 }
+                child.value = childTO
+                _showLoading.value = false
+                showSnackBarInt.value = R.string.transaction_saved
+                navigationCommand.value = NavigationCommand.Back
+            }
+            .addOnFailureListener {
+                _showLoading.value = false
+                showSnackBarInt.value = R.string.transaction_save_error
+            }
+    }
+
+    private fun validateAndSaveTransactionNoSavings(transaction: TransactionTO) {
+        _showLoading.value = true
+        val childTO = child.value ?: return
+        val adjustedTransactionTO = validateEnteredTransaction(transaction) ?: run {
+            _showLoading.value = false
+            return
+        }
+        if (adjustedTransactionTO.total > 0) {
+            adjustedTransactionTO.spending = (adjustedTransactionTO.total).currencyFormatter() ?: run {
+                showSnackBarInt.value = R.string.err_invalid_format_amount
+                return
+            }
+            adjustedTransactionTO.savings = (adjustedTransactionTO.total * 0).currencyFormatter() ?: run {
+                showSnackBarInt.value = R.string.err_invalid_format_amount
+                return
+            }
+        }
+        childTO.transactions?.put(adjustedTransactionTO.id, adjustedTransactionTO)
+        kidsDatabase.child(childTO.id).child("transactions").child(adjustedTransactionTO.id).setValue(adjustedTransactionTO)
+            .addOnSuccessListener {
+                if (adjustedTransactionTO.total > 0) {
+                    childTO.totalSpending = childTO.totalSpending.plus(adjustedTransactionTO.spending)
+                    kidsDatabase.child(childTO.id).child("totalSpending").setValue(childTO.totalSpending)
+                }
+                child.value = childTO
                 _showLoading.value = false
                 showSnackBarInt.value = R.string.transaction_saved
                 navigationCommand.value = NavigationCommand.Back
@@ -146,16 +157,31 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
 
     fun deleteTransaction(transaction: TransactionTO) {
         _showLoading.value = true
-        val childId = child.value?.id ?: return
-        kidsDatabase.child(childId).child("transactions").child(transaction.id).removeValue()
+        val childTO = child.value ?: run {
+            _showLoading.value = false
+            showSnackBarInt.value = R.string.transaction_delete_error
+            return
+        }
+        childTO.transactions?.remove(transaction.id) ?: run {
+            _showLoading.value = false
+            showSnackBarInt.value = R.string.transaction_delete_error
+            return
+        }
+        kidsDatabase.child(childTO.id).child("transactions").child(transaction.id).removeValue()
             .addOnSuccessListener {
-                child.value?.transactions?.remove(transaction.id)
                 if (transaction.total > 0) {
-                    child.value?.savingsOwed = child.value?.savingsOwed?.minus(transaction.savings) ?: 0.0
-                    kidsDatabase.child(childId).child("savingsOwed").setValue(child.value?.savingsOwed)
-                    child.value?.totalSpending = child.value?.totalSpending?.minus(transaction.spending) ?: 0.0
-                    kidsDatabase.child(childId).child("totalSpending").setValue(child.value?.totalSpending)
+                    childTO.savingsOwed = childTO.savingsOwed.minus(transaction.savings)
+                    kidsDatabase.child(childTO.id).child("savingsOwed").setValue(childTO.savingsOwed)
+                        .addOnSuccessListener {
+                            _savingsOwedUpdated.value = true
+                        }
+                    childTO.totalSpending = childTO.totalSpending.minus(transaction.spending)
+                    kidsDatabase.child(childTO.id).child("totalSpending").setValue(childTO.totalSpending)
+                        .addOnSuccessListener {
+                            _totalSpendingUpdated.value = true
+                        }
                 }
+                child.value = childTO
                 _showLoading.value = false
                 showSnackBarInt.value = R.string.transaction_deleted
                 navigationCommand.value = NavigationCommand.Back
@@ -166,23 +192,19 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
             }
     }
 
-    fun resetTransactions() {
-        _transactionsList.value = mutableListOf()
-        _transactionsLoaded.value = false
-    }
-
     fun setFirebaseUID(userId: String) {
         firebaseUID.value = userId
     }
 
     fun resetSavingsOwed() {
         _showLoading.value = true
-        val childId = child.value?.id ?: return
-        child.value?.savingsOwed = 0.0
-        kidsDatabase.child(childId).child("savingsOwed").setValue(child.value?.savingsOwed)
+        val childTO = child.value ?: return
+        childTO.savingsOwed = 0.0
+        kidsDatabase.child(childTO.id).child("savingsOwed").setValue(childTO.savingsOwed)
             .addOnSuccessListener {
-                _showLoading.value = false
+                child.value = childTO
                 _savingsOwedUpdated.value = true
+                _showLoading.value = false
                 showSnackBarInt.value = R.string.savings_reset
             }
             .addOnFailureListener {
@@ -191,20 +213,11 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
             }
     }
 
-    fun setCurrency(newValue: Double): String {
-        val format = DecimalFormat("#,##0.00")
-        return format.format(newValue)
-    }
-
     fun resetSavingsOwedUpdated() {
         _savingsOwedUpdated.value = false
     }
 
-    fun reset() {
-        _transactionsLoaded.value = false
-        _savingsOwedUpdated.value = true
-        _transactionsList.value = mutableListOf()
-        _transactionsEmpty.value = true
-        _showLoading.value = true
+    fun resetTotalSpendingUpdated() {
+        _totalSpendingUpdated.value = false
     }
 }

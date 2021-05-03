@@ -149,6 +149,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:liveDataTransactions="@{viewModel.transactionsList}"
+                            android:fadeVisible="@{viewModel.transactionsLoaded}"
                             app:layout_constrainedHeight="true" />
                     </androidx.core.widget.NestedScrollView>
 
@@ -204,7 +205,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/margin_normal"
-            android:fadeVisible="@{viewModel.transactionsEmpty}"
+            android:fadeVisible="@{viewModel.showTransactionsEmpty}"
             android:gravity="center"
             android:text="@string/add_a_transaction"
             android:textSize="@dimen/text_size_large"

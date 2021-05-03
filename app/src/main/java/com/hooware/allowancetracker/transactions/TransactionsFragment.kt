@@ -39,7 +39,14 @@ class TransactionsFragment : BaseFragment() {
                 viewModel.resetSavingsOwedUpdated()
             }
         })
+        viewModel.totalSpendingUpdated.observe(viewLifecycleOwner, { isUpdated ->
+            if (isUpdated) {
+                binding.itBalance.text = viewModel.child.value?.totalSpending?.toCurrency
+                viewModel.resetTotalSpendingUpdated()
+            }
+        })
         binding.addTransactionFAB.setOnClickListener {
+            viewModel.disableSavings.value = false
             navigateToAddTransaction()
         }
 
@@ -92,6 +99,7 @@ class TransactionsFragment : BaseFragment() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         android.R.id.home -> {
+
             Timber.i("Navigate back to OverviewFragment")
             binding.transactionsRelativeLayout.fadeOut()
             viewModel.navigationCommand.value = NavigationCommand.Back
@@ -108,6 +116,5 @@ class TransactionsFragment : BaseFragment() {
     override fun onDestroy() {
         super.onDestroy()
         FirebaseUserLiveData().removeObservers(this)
-        viewModel.reset()
     }
 }

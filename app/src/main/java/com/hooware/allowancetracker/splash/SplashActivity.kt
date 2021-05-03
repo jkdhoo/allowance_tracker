@@ -46,6 +46,7 @@ class SplashActivity : AppCompatActivity() {
                         Timber.i("Recognized, routing to Overview")
                         val intent = Intent(this, OverviewActivity::class.java)
                         startActivity(intent)
+                        overridePendingTransition(R.xml.slide_up_from_bottom, R.xml.slide_up_and_out)
                         finish()
                     }
                     else -> finish()

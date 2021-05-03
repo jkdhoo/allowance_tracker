@@ -81,6 +81,27 @@
             app:layout_constraintTop_toBottomOf="@id/transaction_amount_title"
             tools:text="08/02/2010" />
 
+        <CheckBox
+            android:id="@+id/savings_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_small"
+            android:layout_marginStart="@dimen/padding_normal"
+            android:checked="@={viewModel.disableSavings}"
+            app:layout_constraintTop_toBottomOf="@id/transaction_amount"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/savings_checkbox_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_small"
+            android:text="@string/disable_savings_for_this_transaction"
+            app:layout_constraintTop_toTopOf="@id/savings_checkbox"
+            app:layout_constraintBottom_toBottomOf="@id/savings_checkbox"
+            app:layout_constraintTop_toBottomOf="@id/transaction_amount"
+            app:layout_constraintStart_toEndOf="@id/savings_checkbox" />
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/saveTransaction"
             android:layout_width="wrap_content"

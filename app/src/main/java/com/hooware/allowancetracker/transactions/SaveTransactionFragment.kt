@@ -1,10 +1,13 @@
 package com.hooware.allowancetracker.transactions
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.autofill.AutofillValue
+import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.base.BaseFragment
@@ -20,6 +23,7 @@ class SaveTransactionFragment : BaseFragment() {
     override val viewModel by sharedViewModel<TransactionsViewModel>()
     private lateinit var binding: FragmentSaveTransactionBinding
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_save_transaction, container, false)
         setDisplayHomeAsUpEnabled(true)
@@ -37,15 +41,5 @@ class SaveTransactionFragment : BaseFragment() {
             true
         }
         else -> super.onOptionsItemSelected(item)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.resetTransactions()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.resetTransactions()
     }
 }
