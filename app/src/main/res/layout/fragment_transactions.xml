@@ -19,6 +19,7 @@
             android:id="@+id/reminderCardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
             android:layout_margin="@dimen/padding_medium"
             android:fadeVisible="@{true}">
 
@@ -82,13 +83,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/padding_small"
-                    android:gravity="center"
                     android:currency="@{viewModel.child.totalSpending}"
+                    android:gravity="center"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size_medium"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toTopOf="@id/it_savings"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:text="$324.51" />
 
                 <TextView
@@ -99,9 +100,9 @@
                     android:gravity="center"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size_small"
-                    app:layout_constraintTop_toBottomOf="@id/it_balance"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/it_balance"
                     tools:text="$324.51" />
 
                 <TextView
@@ -120,12 +121,27 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 
+        <TextView
+            android:id="@+id/reset_savings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/reminderCardView"
+            android:layout_alignEnd="@id/reminderCardView"
+            android:layout_marginEnd="@dimen/padding_small"
+            android:gravity="center"
+            android:onClick="@{() -> viewModel.resetSavingsOwed()}"
+            android:text="@string/reset_savings_title"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_small"
+            android:visibility="gone"
+            tools:text="Reset Savings Owed" />
+
         <ScrollView
             android:id="@+id/transactions_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true"
-            android:layout_below="@id/reminderCardView">
+            android:layout_below="@id/reset_savings"
+            android:fillViewport="true">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/transactions_constraint_layout_main"
@@ -133,72 +149,26 @@
                 android:layout_height="wrap_content"
                 android:background="@color/white">
 
-                    <androidx.core.widget.NestedScrollView
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_marginTop="@dimen/margin_normal"
-                        android:fillViewport="true"
-                        android:fadeVisible="@{viewModel.transactionsLoaded}"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" >
-
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/transactionsRecyclerView"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:liveDataTransactions="@{viewModel.transactionsList}"
-                            android:fadeVisible="@{viewModel.transactionsLoaded}"
-                            app:layout_constrainedHeight="true" />
-                    </androidx.core.widget.NestedScrollView>
-
-                <!--        <ImageView-->
-                <!--            android:id="@+id/initiate_edit_child"-->
-                <!--            android:layout_width="wrap_content"-->
-                <!--            android:layout_height="wrap_content"-->
-                <!--            android:contentDescription="@string/cd_editChild"-->
-                <!--            android:fadeVisible="@{!viewModel.editChildDetails.booleanValue()}"-->
-                <!--            app:layout_constraintEnd_toEndOf="parent"-->
-                <!--            app:layout_constraintTop_toTopOf="parent"-->
-                <!--            app:srcCompat="@drawable/ic_edit" />-->
-
-                <!--        <ImageView-->
-                <!--            android:id="@+id/save_edit_child"-->
-                <!--            android:layout_width="wrap_content"-->
-                <!--            android:layout_height="wrap_content"-->
-                <!--            android:contentDescription="@string/cd_saveChild"-->
-                <!--            android:fadeVisible="@{viewModel.transactionsLoaded}"-->
-                <!--            app:layout_constraintEnd_toEndOf="parent"-->
-                <!--            app:layout_constraintTop_toTopOf="parent"-->
-                <!--            app:srcCompat="@drawable/ic_save_vector" />-->
-
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/transactionsRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fadeVisible="@{viewModel.transactionsLoaded}"
+                    android:liveDataTransactions="@{viewModel.transactionsList}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ProgressBar
                     android:id="@+id/progressBar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"/>
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
-        <TextView
-            android:id="@+id/reset_savings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/padding_small"
-            android:gravity="center"
-            android:text="@string/reset_savings_title"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_size_small"
-            android:layout_below="@id/reminderCardView"
-            android:layout_alignEnd="@id/reminderCardView"
-            android:onClick="@{() -> viewModel.resetSavingsOwed()}"
-            android:visibility="invisible"
-            tools:text="Reset Savings Owed" />
 
         <TextView
             android:id="@+id/noTransactionDataTextView"
@@ -228,5 +198,11 @@
             android:visibility="invisible"
             app:fabSize="normal"
             app:srcCompat="@drawable/ic_add" />
+
+        <RelativeLayout
+            android:id="@+id/transactions_relative_layout_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
     </RelativeLayout>
 </layout>

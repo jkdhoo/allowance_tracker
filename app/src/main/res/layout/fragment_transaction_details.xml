@@ -10,7 +10,7 @@
             type="com.hooware.allowancetracker.transactions.TransactionsViewModel" />
 
         <variable
-            name="transaction"
+            name="item"
             type="com.hooware.allowancetracker.to.TransactionTO" />
     </data>
 
@@ -19,105 +19,121 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/transaction_details_name_title"
-            style="@style/TextViewStyle"
-            android:layout_width="wrap_content"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/reminderCardView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/transaction_details_name_title"
+            android:layout_margin="@dimen/padding_medium"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/transaction_details_name"
-            style="@style/TextViewStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{viewModel.child.name}"
-            android:textStyle="normal"
-            app:layout_constraintStart_toEndOf="@id/transaction_details_name_title"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Laavingonn" />
+            android:fadeVisible="@{true}">
 
-        <TextView
-            android:id="@+id/transaction_details_total_title"
-            style="@style/TextViewStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/transaction_details_total_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/transaction_details_name_title" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding_medium">
 
-        <TextView
-            android:id="@+id/transaction_details_total"
-            style="@style/TextViewStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{`` + transaction.total}"
-            android:textStyle="normal"
-            app:layout_constraintBottom_toBottomOf="@id/transaction_details_total_title"
-            app:layout_constraintStart_toEndOf="@id/transaction_details_total_title"
-            tools:text="$10.00" />
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/padding_small"
+                    android:text="@{item.timestamp}"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_normal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Title" />
 
-        <TextView
-            android:id="@+id/transaction_details_amount_title"
-            style="@style/TextViewStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/transaction_details_amount_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/transaction_details_total_title" />
+                <TextView
+                    android:id="@+id/description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{item.details}"
+                    android:textSize="@dimen/text_size_small"
+                    app:layout_constraintStart_toStartOf="@id/title"
+                    app:layout_constraintTop_toBottomOf="@id/title"
+                    tools:text="Description" />
 
-        <TextView
-            android:id="@+id/transaction_details_amount"
-            style="@style/TextViewStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{`` + transaction.spending}"
-            android:textStyle="normal"
-            app:layout_constraintBottom_toBottomOf="@id/transaction_details_amount_title"
-            app:layout_constraintStart_toEndOf="@id/transaction_details_amount_title"
-            tools:text="$10.00" />
+                <TextView
+                    android:id="@+id/total"
+                    android:layout_marginStart="@dimen/padding_small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:currency="@{item.total}"
+                    android:textSize="@dimen/text_size_normal"
+                    android:moneyStyleColor="@{item}"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="Location" />
 
-        <TextView
-            android:id="@+id/transaction_details_savings_title"
-            style="@style/TextViewStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/transaction_details_savings_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/transaction_details_amount_title" />
+                <TextView
+                    android:id="@+id/spending"
+                    android:layout_marginStart="@dimen/padding_small"
+                    android:layout_width="wrap_content"
+                    android:layout_marginTop="@dimen/padding_small"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:currency="@{item.spending}"
+                    android:textSize="@dimen/text_size_small"
+                    android:moneyStyleColor="@{item}"
+                    app:layout_constraintTop_toBottomOf="@id/total"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="Location" />
 
-        <TextView
-            android:id="@+id/transaction_details_savings"
-            style="@style/TextViewStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{`` + transaction.savings}"
-            android:textStyle="normal"
-            app:layout_constraintBottom_toBottomOf="@id/transaction_details_savings_title"
-            app:layout_constraintStart_toEndOf="@id/transaction_details_savings_title"
-            tools:text="$2.00" />
+                <TextView
+                    android:id="@+id/savings"
+                    android:layout_marginStart="@dimen/padding_small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:currency="@{item.savings}"
+                    android:textSize="@dimen/text_size_small"
+                    android:moneyStyleColor="@{item}"
+                    app:layout_constraintTop_toBottomOf="@id/spending"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="Location" />
 
-        <TextView
-            android:id="@+id/transaction_details_description_title"
-            style="@style/TextViewStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/transaction_description_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/transaction_details_savings_title" />
+                <TextView
+                    android:id="@+id/total_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/total_title"
+                    android:textSize="@dimen/text_size_normal"
+                    android:moneyStyleColor="@{item}"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/total"
+                    tools:text="Location" />
 
-        <TextView
-            android:id="@+id/transaction_details_description"
-            style="@style/TextViewStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{transaction.details}"
-            android:textStyle="normal"
-            app:layout_constraintBottom_toBottomOf="@id/transaction_details_description_title"
-            app:layout_constraintStart_toEndOf="@id/transaction_details_description_title"
-            tools:text="Weekly Allowance" />
+                <TextView
+                    android:id="@+id/spending_title"
+                    android:layout_marginTop="@dimen/padding_small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/spending_title"
+                    android:textSize="@dimen/text_size_small"
+                    android:moneyStyleColor="@{item}"
+                    app:layout_constraintTop_toBottomOf="@id/total_title"
+                    app:layout_constraintEnd_toStartOf="@id/spending"
+                    tools:text="Location" />
+
+                <TextView
+                    android:id="@+id/savings_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/savings_title_2"
+                    android:textSize="@dimen/text_size_small"
+                    android:moneyStyleColor="@{item}"
+                    app:layout_constraintTop_toBottomOf="@id/spending_title"
+                    app:layout_constraintEnd_toStartOf="@id/savings"
+                    tools:text="Location" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
         <Button
             android:id="@+id/transaction_delete"
@@ -125,10 +141,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_normal"
             android:layout_marginEnd="@dimen/margin_normal"
-            android:onClick="@{() -> viewModel.deleteTransaction(transaction)}"
+            android:onClick="@{() -> viewModel.deleteTransaction(item)}"
             android:text="@string/delete"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/reminderCardView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

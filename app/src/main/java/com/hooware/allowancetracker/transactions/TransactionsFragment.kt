@@ -1,12 +1,17 @@
 package com.hooware.allowancetracker.transactions
 
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.cardview.widget.CardView
+import androidx.core.animation.addListener
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updateMargins
 import androidx.databinding.DataBindingUtil
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.auth.AuthActivity
@@ -22,7 +27,6 @@ class TransactionsFragment : BaseFragment() {
 
     override val viewModel by sharedViewModel<TransactionsViewModel>()
     private lateinit var binding: FragmentTransactionsBinding
-    private var animationEndLocation: String? = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transactions, container, false)
@@ -32,7 +36,6 @@ class TransactionsFragment : BaseFragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         viewModel.child.value = TransactionsFragmentArgs.fromBundle(requireArguments()).child
-        animationEndLocation = TransactionsFragmentArgs.fromBundle(requireArguments()).motionEndLocation
         viewModel.savingsOwedUpdated.observe(viewLifecycleOwner, { isUpdated ->
             if (isUpdated) {
                 binding.itSavings.text = viewModel.child.value?.savingsOwed?.toCurrency
@@ -77,14 +80,41 @@ class TransactionsFragment : BaseFragment() {
     }
 
     private fun setupRecyclerView() {
-        val adapter = TransactionsListAdapter { selectedTransaction, _: View ->
+        val adapter = TransactionsListAdapter { selectedTransaction, view: View ->
             if (viewModel.child.value?.id == viewModel.firebaseUID.value) {
                 Timber.i("Not navigating, child")
             } else {
-                viewModel.navigationCommand.postValue(
-                    NavigationCommand.To(TransactionsFragmentDirections.actionShowTransactionDetail(selectedTransaction)
+                val endLocation = IntArray(2)
+                val startLocation = IntArray(2)
+                binding.transactionsRelativeLayout.getLocationInWindow(endLocation)
+                view.getLocationInWindow(startLocation)
+
+                binding.transactionsRecyclerView.removeView(view)
+
+                val params = view.layoutParams as ViewGroup.MarginLayoutParams
+                params.topMargin = startLocation[1] - endLocation[1]
+                view.layoutParams = params
+
+                binding.transactionsRelativeLayoutPlaceholder.addView(view)
+
+
+                binding.transactionsRelativeLayoutPlaceholder.fadeIn()
+                binding.transactionsRecyclerView.fadeOutInvisible()
+                binding.resetSavings.fadeOutInvisible()
+                binding.reminderCardView.fadeOutInvisible()
+
+                val margin = 10F * (context?.resources?.displayMetrics?.density ?: 0F)
+                val animator = ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, endLocation[1].toFloat() - startLocation[1].toFloat() + margin)
+                animator.duration = 1000
+                animator.addListener(onEnd = {
+                    viewModel.navigationCommand.postValue(
+                        NavigationCommand.To(
+                            TransactionsFragmentDirections.actionShowTransactionDetail(selectedTransaction)
+                        )
                     )
-                )
+                })
+
+                animator.start()
             }
         }
         binding.transactionsRecyclerView.setup(adapter)

@@ -15,6 +15,7 @@ import com.hooware.allowancetracker.base.NavigationCommand
 import com.hooware.allowancetracker.databinding.FragmentSaveTransactionBinding
 import com.hooware.allowancetracker.to.TransactionTO
 import com.hooware.allowancetracker.utils.setDisplayHomeAsUpEnabled
+import com.hooware.allowancetracker.utils.setTitle
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import timber.log.Timber
 
@@ -22,6 +23,7 @@ class SaveTransactionFragment : BaseFragment() {
 
     override val viewModel by sharedViewModel<TransactionsViewModel>()
     private lateinit var binding: FragmentSaveTransactionBinding
+    private var animationEndLocation: String? = ""
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

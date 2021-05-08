@@ -25,12 +25,12 @@ class TransactionDetailsFragment : BaseFragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transaction_details, container, false)
 
         setDisplayHomeAsUpEnabled(true)
-        setTitle(getString(R.string.transactions_title))
+        setTitle("Delete transaction?")
         setHasOptionsMenu(true)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
 
-        binding.transaction = TransactionDetailsFragmentArgs.fromBundle(requireArguments()).transaction
+        binding.item = TransactionDetailsFragmentArgs.fromBundle(requireArguments()).transaction
 
         return binding.root
     }
