@@ -1,7 +1,9 @@
 package com.hooware.allowancetracker.overview
 
 import android.os.Build
+import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
@@ -15,6 +17,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.hooware.allowancetracker.AllowanceApp
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.base.BaseViewModel
+import com.hooware.allowancetracker.base.NavigationCommand
 import com.hooware.allowancetracker.network.Network
 import com.hooware.allowancetracker.network.QuoteResponseTO
 import com.hooware.allowancetracker.network.parseQuoteJsonResult
@@ -34,6 +37,7 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
     private val quoteDatabase = Firebase.database.reference.child("quote").ref
     val kidsDatabase = Firebase.database.reference.child("kids").ref
     private val notificationDatabase = Firebase.database.reference.child("notifications").ref
+    val chatDatabase = Firebase.database.reference.child("chat").ref
 
     private var _quoteResponseTO = MutableLiveData<QuoteResponseTO>()
     val quoteResponseTO: LiveData<QuoteResponseTO>
@@ -47,6 +51,10 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
     val quoteLoaded: LiveData<Boolean>
         get() = _quoteLoaded
 
+    private var _chatList = MutableLiveData<List<Triple<String, String, String>>>()
+    val chatList: LiveData<List<Triple<String, String, String>>>
+        get() = _chatList
+
     private val kidsLoaded = MutableLiveData<Boolean>()
 
     private var _showLoading = MutableLiveData<Boolean>()
@@ -55,9 +63,12 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
 
     private val firebaseUID = MutableLiveData<String>()
 
+    private var chatName = ""
+
     init {
         kidsDatabase.keepSynced(true)
         quoteDatabase.keepSynced(true)
+        chatDatabase.keepSynced(true)
         _quoteLoaded.value = false
         kidsLoaded.value = false
         _kidsList.value = mutableListOf()
@@ -109,6 +120,28 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
             author = firebaseConfigRetriever("default_author"),
             backgroundImage = firebaseConfigRetriever("default_backgroundImage")
         )
+    }
+
+    fun loadChat() {
+        viewModelScope.launch {
+            chatDatabase.get()
+                .addOnSuccessListener { chatDB ->
+                    val chatList = mutableListOf<Triple<String, String, String>>()
+                    chatDB.children.forEach { chatChild ->
+                        val messageId = chatChild.key.toString()
+                        var chatName = ""
+                        var chatMessage = ""
+                        chatChild.children.forEach { chatContainer ->
+                            chatName = chatContainer.key.toString()
+                            chatMessage = chatContainer.value.toString()
+                        }
+                        if (chatName.isEmpty() || chatMessage.isEmpty()) return@addOnSuccessListener
+                        val chat = Triple(messageId, chatName, chatMessage)
+                        chatList.add(chat)
+                    }
+                    _chatList.value = chatList.sortedByDescending { it.first }
+                }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -182,6 +215,13 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
     @RequiresApi(Build.VERSION_CODES.O)
     fun setFirebaseUID(userId: String) {
         firebaseUID.value = userId
+        chatName = when (userId) {
+            firebaseConfigRetriever("laa_uid") -> "Laa"
+            firebaseConfigRetriever("levi_uid") -> "Levi"
+            firebaseConfigRetriever("mom_uid") -> "Mom"
+            firebaseConfigRetriever("dad_uid") -> "Dad"
+            else -> ""
+        }
         resetKidsLoaded()
         loadKids()
     }
@@ -193,10 +233,15 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
     fun reset() {
         _quoteResponseTO.value = QuoteResponseTO()
         _kidsList.value = mutableListOf()
+        _chatList.value = mutableListOf()
         _quoteLoaded.value = false
         _showLoading.value = false
         kidsLoaded.value = false
         firebaseUID.value = ""
+    }
+
+    fun saveChatItem(message: String) {
+        chatDatabase.child(System.currentTimeMillis().toString()).child(chatName).setValue(message)
     }
 
     fun saveFCMToken(fcmToken: String) {

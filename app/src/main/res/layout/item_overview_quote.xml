@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="quoteResponseTO"
+            type="com.hooware.allowancetracker.network.QuoteResponseTO" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/quote_constraint_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/quote_background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/cd_quote_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/quote_text_display"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_normal"
+            android:background="#60000000"
+            android:gravity="start"
+            android:paddingStart="@dimen/margin_normal"
+            android:paddingEnd="@dimen/margin_normal"
+            android:text="@{quoteResponseTO.quote}"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="@id/quote_background"
+            app:layout_constraintStart_toStartOf="@id/quote_background"
+            app:layout_constraintTop_toTopOf="@id/quote_background" />
+
+        <TextView
+            android:id="@+id/quote_author_display"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#60000000"
+            android:gravity="end"
+            android:paddingStart="@dimen/margin_normal"
+            android:paddingEnd="@dimen/margin_normal"
+            android:text="@{`~ ` + quoteResponseTO.author}"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="@id/quote_background"
+            app:layout_constraintStart_toStartOf="@id/quote_background"
+            app:layout_constraintTop_toBottomOf="@id/quote_text_display" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

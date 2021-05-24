@@ -61,4 +61,7 @@
     <string name="transaction_details_amount_title">Spending: </string>
     <string name="transaction_details_savings_title">Savings: </string>
     <string name="dollar_sign">$</string>
+    <string name="enter_chat_message">Enter chat message</string>
+    <string name="submit">Submit</string>
+    <string name="space" />
 </resources>

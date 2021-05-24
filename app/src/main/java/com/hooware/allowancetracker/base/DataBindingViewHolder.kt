@@ -14,4 +14,6 @@ class DataBindingViewHolder<T>(private val binding: ViewDataBinding) :
         binding.setVariable(BR.item, item)
         binding.executePendingBindings()
     }
+
+    val triple = Triple(1, 2, 3)
 }

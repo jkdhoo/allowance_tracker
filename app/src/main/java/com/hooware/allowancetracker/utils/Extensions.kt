@@ -98,9 +98,9 @@ val Date.age: String
         return (1970 - (calendar.get(Calendar.YEAR) + 1)).toString()
     }
 
-val Long.timestamp: String
+val Long.toTimestamp: String
     get() {
-        return SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.getDefault()).format(this)
+        return SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.getDefault()).format(this)
     }
 
 val Double.toCurrency: String

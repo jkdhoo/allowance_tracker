@@ -144,6 +144,11 @@ class TransactionsFragment : BaseFragment() {
         viewModel.loadTransactions()
     }
 
+    override fun onPause() {
+        super.onPause()
+        viewModel.resetTransactionsLoaded()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         FirebaseUserLiveData().removeObservers(this)

@@ -7,13 +7,13 @@ import timber.log.Timber
 import java.lang.Exception
 
 class NotificationHandler : FirebaseMessagingService() {
-    override fun getStartCommandIntent(p0: Intent?): Intent {
-        return super.getStartCommandIntent(p0)
-    }
-
-    override fun handleIntent(intent: Intent?) {
-        super.handleIntent(intent)
-    }
+//    override fun getStartCommandIntent(p0: Intent?): Intent {
+//        return super.getStartCommandIntent(p0)
+//    }
+//
+//    override fun handleIntent(intent: Intent?) {
+//        super.handleIntent(intent)
+//    }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Timber.i("${remoteMessage.data}")

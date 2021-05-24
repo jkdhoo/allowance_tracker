@@ -10,4 +10,8 @@
     <color name="secondaryTextColor">#ffffff</color>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
+    <color name="laa">#FF21EC</color>
+    <color name="mom">#52007E</color>
+    <color name="levi">#4C4C4C</color>
+    <color name="dad">#330ccf</color>
 </resources>

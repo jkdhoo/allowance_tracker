@@ -12,6 +12,7 @@ import com.hooware.allowancetracker.to.ChildTO
 import com.hooware.allowancetracker.to.TransactionTO
 import com.hooware.allowancetracker.utils.currencyFormatter
 
+
 class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(application) {
 
     private val kidsDatabase = Firebase.database.reference.child("kids").ref
@@ -102,6 +103,8 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
                 showSnackBarInt.value = R.string.err_invalid_format_amount
                 return
             }
+        } else {
+            adjustedTransactionTO.spending = adjustedTransactionTO.total
         }
         childTO.transactions?.put(adjustedTransactionTO.id, adjustedTransactionTO)
         kidsDatabase.child(childTO.id).child("transactions").child(adjustedTransactionTO.id).setValue(adjustedTransactionTO)
@@ -111,6 +114,9 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
                     kidsDatabase.child(childTO.id).child("totalSpending").setValue(childTO.totalSpending)
                     childTO.savingsOwed = childTO.savingsOwed.plus(adjustedTransactionTO.savings)
                     kidsDatabase.child(childTO.id).child("savingsOwed").setValue(childTO.savingsOwed)
+                } else {
+                    childTO.totalSpending = childTO.totalSpending.plus(adjustedTransactionTO.spending)
+                    kidsDatabase.child(childTO.id).child("totalSpending").setValue(childTO.totalSpending)
                 }
                 child.value = childTO
                 _showLoading.value = false
@@ -139,11 +145,16 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
                 showSnackBarInt.value = R.string.err_invalid_format_amount
                 return
             }
+        } else {
+            adjustedTransactionTO.spending = adjustedTransactionTO.total
         }
         childTO.transactions?.put(adjustedTransactionTO.id, adjustedTransactionTO)
         kidsDatabase.child(childTO.id).child("transactions").child(adjustedTransactionTO.id).setValue(adjustedTransactionTO)
             .addOnSuccessListener {
                 if (adjustedTransactionTO.total > 0) {
+                    childTO.totalSpending = childTO.totalSpending.plus(adjustedTransactionTO.spending)
+                    kidsDatabase.child(childTO.id).child("totalSpending").setValue(childTO.totalSpending)
+                } else {
                     childTO.totalSpending = childTO.totalSpending.plus(adjustedTransactionTO.spending)
                     kidsDatabase.child(childTO.id).child("totalSpending").setValue(childTO.totalSpending)
                 }
@@ -178,6 +189,12 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
                         .addOnSuccessListener {
                             _savingsOwedUpdated.value = true
                         }
+                    childTO.totalSpending = childTO.totalSpending.minus(transaction.spending)
+                    kidsDatabase.child(childTO.id).child("totalSpending").setValue(childTO.totalSpending)
+                        .addOnSuccessListener {
+                            _totalSpendingUpdated.value = true
+                        }
+                } else {
                     childTO.totalSpending = childTO.totalSpending.minus(transaction.spending)
                     kidsDatabase.child(childTO.id).child("totalSpending").setValue(childTO.totalSpending)
                         .addOnSuccessListener {
@@ -223,4 +240,54 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
     fun resetTotalSpendingUpdated() {
         _totalSpendingUpdated.value = false
     }
+
+    fun resetTransactionsLoaded() {
+        _transactionsLoaded.value = false
+    }
+
+//    private fun sendNewTransactionNotification() {
+//        val topic = "1" //topic must match with what the receiver subscribed to
+//
+//        val notificationTitle = "Test"
+//        val notificationMessage = "Test"
+//
+//        val notification = JSONObject()
+//        val notificationBody = JSONObject()
+//        try {
+//            notificationBody.put("title", notificationTitle)
+//            notificationBody.put("message", notificationMessage)
+//            notification.put("to", topic)
+//            notification.put("data", notificationBody)
+//        } catch (e: JSONException) {
+//            Timber.i("onCreate: ${e.message}")
+//        }
+//        sendNotification(notification)
+//    }
+
+//    private fun sendNotification(notification: JSONObject) {
+//        val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(FCM_API, notification,
+//            object : Listener<JSONObject?>() {
+//                fun onResponse(response: JSONObject) {
+//                    Log.i(TAG, "onResponse: $response")
+//                    edtTitle.setText("")
+//                    edtMessage.setText("")
+//                }
+//            },
+//            object : ErrorListener() {
+//                fun onErrorResponse(error: VolleyError?) {
+//                    Toast.makeText(this@MainActivity, "Request error", Toast.LENGTH_LONG).show()
+//                    Log.i(TAG, "onErrorResponse: Didn't work")
+//                }
+//            }) {
+//            @get:Throws(AuthFailureError::class)
+//            val headers: Map<String, String>?
+//                get() {
+//                    val params: MutableMap<String, String> = HashMap()
+//                    params["Authorization"] = serverKey
+//                    params["Content-Type"] = CMSAttributes.contentType
+//                    return params
+//                }
+//        }
+//        MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest)
+//    }
 }
