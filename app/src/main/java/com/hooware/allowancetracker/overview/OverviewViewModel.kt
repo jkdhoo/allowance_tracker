@@ -215,11 +215,11 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
     @RequiresApi(Build.VERSION_CODES.O)
     fun setFirebaseUID(userId: String) {
         firebaseUID.value = userId
-        chatName = when (userId) {
-            firebaseConfigRetriever("laa_uid") -> "Laa"
-            firebaseConfigRetriever("levi_uid") -> "Levi"
-            firebaseConfigRetriever("mom_uid") -> "Mom"
-            firebaseConfigRetriever("dad_uid") -> "Dad"
+        chatName = when {
+            firebaseConfigRetriever("laa_uid").contains(userId) -> "Laa"
+            firebaseConfigRetriever("levi_uid").contains(userId) -> "Levi"
+            firebaseConfigRetriever("mom_uid").contains(userId) -> "Mom"
+            firebaseConfigRetriever("dad_uid").contains(userId) -> "Dad"
             else -> ""
         }
         resetKidsLoaded()
