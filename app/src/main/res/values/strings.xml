@@ -52,7 +52,8 @@
     <string name="total_title">Total:</string>
     <string name="spending_title">Spending:</string>
     <string name="savings_title_2">Savings:</string>
-    <string name="reset_savings_title">Reset Savings Owed</string>
+    <string name="reset_savings_title">Reset savings owed</string>
+    <string name="send_message_title">Send message</string>
     <string name="child_s_name">Child\'s Name</string>
     <string name="amount">Amount</string>
     <string name="disable_savings_for_this_transaction">Disable savings for this transaction</string>
@@ -64,4 +65,5 @@
     <string name="enter_chat_message">Enter chat message</string>
     <string name="submit">Submit</string>
     <string name="space" />
+    <string name="not_available">N/A</string>
 </resources>

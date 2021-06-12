@@ -9,7 +9,6 @@ import com.firebase.ui.auth.AuthUI
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.databinding.ActivityAuthBinding
 import com.hooware.allowancetracker.overview.OverviewActivity
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 /**
@@ -17,17 +16,11 @@ import timber.log.Timber
  */
 class AuthActivity : AppCompatActivity() {
 
-    private val viewModel: AuthViewModel by viewModel()
-
     private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding: ActivityAuthBinding = DataBindingUtil.setContentView(
-            this,
-            R.layout.activity_auth
-        )
-        binding.authViewModel = viewModel
+        val binding: ActivityAuthBinding = DataBindingUtil.setContentView(this, R.layout.activity_auth)
         binding.lifecycleOwner = this
         binding.authButton.setOnClickListener { launchSignInFlow() }
         FirebaseUserLiveData().observe(this, { user ->

@@ -18,8 +18,9 @@
         android:id="@+id/reminderCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/padding_medium"
-        android:fadeVisible="@{true}">
+        android:layout_marginTop="8dp"
+        android:fadeVisible="@{true}"
+        app:cardCornerRadius="8dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -81,12 +82,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/padding_small"
-                android:gravity="center"
                 android:currency="@{item.totalSpending}"
+                android:gravity="center"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_medium"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:text="$324.51" />
 
             <TextView
@@ -94,12 +95,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/padding_small"
-                android:gravity="center"
                 android:currency="@{item.savingsOwed}"
+                android:gravity="center"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_small"
-                app:layout_constraintTop_toBottomOf="@id/it_balance"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/it_balance"
                 tools:text="$324.51" />
 
             <TextView

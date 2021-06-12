@@ -1,16 +1,12 @@
 package com.hooware.allowancetracker
 
 import android.app.Application
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Context
-import android.os.Build
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
-import com.hooware.allowancetracker.auth.AuthViewModel
 import com.hooware.allowancetracker.overview.OverviewViewModel
 import com.hooware.allowancetracker.splash.SplashViewModel
 import com.hooware.allowancetracker.transactions.TransactionsViewModel
+import com.hooware.allowancetracker.utils.CreateNotificationChannel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -28,13 +24,12 @@ class AllowanceApp : Application() {
 
         initKoin()
         initFirebase()
-        createNotificationChannel()
+        CreateNotificationChannel.execute(this)
     }
 
     private fun initKoin() {
         val myModule = module {
             viewModel { OverviewViewModel(this@AllowanceApp) }
-            viewModel { AuthViewModel(this@AllowanceApp) }
             viewModel { SplashViewModel(this@AllowanceApp) }
             viewModel { TransactionsViewModel(this@AllowanceApp) }
         }
@@ -61,20 +56,6 @@ class AllowanceApp : Application() {
             } else {
                 Timber.i("Firebase Config param update failed.")
             }
-        }
-    }
-
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = getString(R.string.channel_name)
-            val descriptionText = getString(R.string.channel_description)
-            val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel(getString(R.string.channel_id), name, importance).apply {
-                description = descriptionText
-            }
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
         }
     }
 }

@@ -2,6 +2,7 @@ package com.hooware.allowancetracker.utils
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.content.Context
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -111,3 +112,11 @@ val Double.toCurrency: String
             "$0.00"
         }
     }
+
+fun Int.dpToInt(context: Context?): Int {
+    return this * (context?.resources?.displayMetrics?.density?.toInt() ?: 0)
+}
+
+fun Float.dpToFloat(context: Context?): Float {
+    return this * (context?.resources?.displayMetrics?.density ?: 0F)
+}

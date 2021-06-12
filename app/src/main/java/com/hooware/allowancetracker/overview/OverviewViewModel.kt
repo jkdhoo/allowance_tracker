@@ -1,11 +1,12 @@
 package com.hooware.allowancetracker.overview
 
-import android.os.Build
-import android.view.View
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
+import androidx.core.widget.NestedScrollView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -17,26 +18,24 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.hooware.allowancetracker.AllowanceApp
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.base.BaseViewModel
-import com.hooware.allowancetracker.base.NavigationCommand
 import com.hooware.allowancetracker.network.Network
 import com.hooware.allowancetracker.network.QuoteResponseTO
 import com.hooware.allowancetracker.network.parseQuoteJsonResult
 import com.hooware.allowancetracker.to.ChildTO
-import com.hooware.allowancetracker.utils.age
+import com.hooware.allowancetracker.utils.RetrieveChildAgeFromBirthday
+import com.hooware.allowancetracker.utils.toTimestamp
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import timber.log.Timber
-import java.text.NumberFormat
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.*
 
+
 class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) {
+    val app = application
 
     private val quoteDatabase = Firebase.database.reference.child("quote").ref
     val kidsDatabase = Firebase.database.reference.child("kids").ref
-    private val notificationDatabase = Firebase.database.reference.child("notifications").ref
+    val notificationDatabase = Firebase.database.reference.child("notifications").ref
     val chatDatabase = Firebase.database.reference.child("chat").ref
 
     private var _quoteResponseTO = MutableLiveData<QuoteResponseTO>()
@@ -47,19 +46,29 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
     val kidsList: LiveData<List<ChildTO>>
         get() = _kidsList
 
-    private var _quoteLoaded = MutableLiveData<Boolean>()
-    val quoteLoaded: LiveData<Boolean>
-        get() = _quoteLoaded
-
     private var _chatList = MutableLiveData<List<Triple<String, String, String>>>()
-    val chatList: LiveData<List<Triple<String, String, String>>>
+    private val chatList: LiveData<List<Triple<String, String, String>>>
         get() = _chatList
 
-    private val kidsLoaded = MutableLiveData<Boolean>()
+    private var _screenLoaded = MutableLiveData<Boolean>()
+    val screenLoaded: LiveData<Boolean>
+        get() = _screenLoaded
 
     private var _showLoading = MutableLiveData<Boolean>()
     val showLoading: LiveData<Boolean>
         get() = _showLoading
+
+    private var _displayQuoteImage = MutableLiveData<Boolean>()
+    val displayQuoteImage: LiveData<Boolean>
+        get() = _displayQuoteImage
+
+    private var _insertChatContent = MutableLiveData<Boolean>()
+    val insertChatContent: LiveData<Boolean>
+        get() = _insertChatContent
+
+    private val quoteLoaded = MutableLiveData<Boolean>()
+    private val kidsLoaded = MutableLiveData<Boolean>()
+    private val chatLoaded = MutableLiveData<Boolean>()
 
     private val firebaseUID = MutableLiveData<String>()
 
@@ -69,16 +78,28 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         kidsDatabase.keepSynced(true)
         quoteDatabase.keepSynced(true)
         chatDatabase.keepSynced(true)
-        _quoteLoaded.value = false
-        kidsLoaded.value = false
-        _kidsList.value = mutableListOf()
-        _showLoading.value = true
-        loadQuote()
+        notificationDatabase.keepSynced(true)
     }
 
-    private fun loadQuote() {
+    fun resume() {
+        quoteLoaded.value = false
+        kidsLoaded.value = false
+        chatLoaded.value = false
+        _kidsList.value = mutableListOf()
+        _chatList.value = mutableListOf()
+        _showLoading.value = true
+        _displayQuoteImage.value = false
+        _insertChatContent.value = false
+        loadQuote()
+        loadKids()
+        loadChat()
+    }
+
+    fun loadQuote() {
         if (quoteLoaded.value == true) {
+            Timber.i("Quote already loaded")
             showLoadingCheck()
+            return
         }
         viewModelScope.launch {
             val quoteFinal: QuoteResponseTO
@@ -87,7 +108,7 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
                     val responseJSON = JSONObject(responseString)
                     quoteFinal = parseQuoteJsonResult(responseJSON)
                     _quoteResponseTO.value = quoteFinal
-                    _quoteLoaded.value = true
+                    quoteLoaded.value = true
                     showLoadingCheck()
                     quoteDatabase.setValue(quoteFinal)
                         .addOnSuccessListener {
@@ -100,13 +121,13 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
                     quoteDatabase.get()
                         .addOnSuccessListener {
                             _quoteResponseTO.value = it.getValue(QuoteResponseTO::class.java)
-                            _quoteLoaded.value = true
+                            quoteLoaded.value = true
                             showLoadingCheck()
                             Timber.i("Network error($e), local quote loaded")
                         }
                         .addOnFailureListener {
                             _quoteResponseTO.value = getDefaultQuote()
-                            _quoteLoaded.value = true
+                            quoteLoaded.value = true
                             showLoadingCheck()
                             Timber.i("Network error($e), default quote loaded")
                         }
@@ -123,6 +144,11 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
     }
 
     fun loadChat() {
+        if (chatLoaded.value == true) {
+            Timber.i("Chat already loaded")
+            showLoadingCheck()
+            return
+        }
         viewModelScope.launch {
             chatDatabase.get()
                 .addOnSuccessListener { chatDB ->
@@ -139,14 +165,17 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
                         val chat = Triple(messageId, chatName, chatMessage)
                         chatList.add(chat)
                     }
-                    _chatList.value = chatList.sortedByDescending { it.first }
+                    _chatList.value = chatList.sortedBy { it.first }
+                    Timber.i("Chat saved and loaded")
+                    chatLoaded.value = true
+                    showLoadingCheck()
                 }
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun loadKids() {
         if (kidsLoaded.value == true) {
+            Timber.i("Kids already loaded")
             showLoadingCheck()
             return
         }
@@ -157,22 +186,26 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
                         kidsDB.children.forEach { databaseChild ->
                             val childTO = databaseChild.getValue(ChildTO::class.java) ?: return@forEach
                             if (childTO.id == firebaseUID.value) {
-                                childTO.age = childAge(childTO.birthday)
+                                childTO.age = RetrieveChildAgeFromBirthday.execute(app, childTO.birthday)
                                 kidsList = mutableListOf()
                                 kidsList.add(childTO)
                                 _kidsList.value = kidsList
                                 kidsLoaded.value = true
                                 return@addOnSuccessListener
                             }
-                            childTO.age = childAge(childTO.birthday)
+                            childTO.age = RetrieveChildAgeFromBirthday.execute(app, childTO.birthday)
                             kidsList.add(childTO)
                         }
                         _kidsList.value = kidsList
                         kidsLoaded.value = true
+                        Timber.i("Kids saved and loaded")
+                        showLoadingCheck()
                     }
                     .addOnFailureListener {
                         _kidsList.value = emptyList()
                         kidsLoaded.value = true
+                        Timber.i("Kids failed to load")
+                        showLoadingCheck()
                     }
             }
     }
@@ -193,7 +226,15 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
     }
 
     private fun showLoadingCheck() {
-        _showLoading.value = kidsLoaded.value != true && quoteLoaded.value != true
+        if (kidsLoaded.value == true && quoteLoaded.value == true && chatLoaded.value == true) {
+            _displayQuoteImage.value = true
+            _insertChatContent.value = true
+            _showLoading.value = false
+        } else {
+            _displayQuoteImage.value = false
+            _insertChatContent.value = false
+            _showLoading.value = true
+        }
     }
 
     private fun firebaseConfigRetriever(param: String): String {
@@ -201,18 +242,6 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         return remoteConfig.getString(param)
     }
 
-    private fun totalSpending(child: ChildTO): Double {
-        val format = NumberFormat.getCurrencyInstance(Locale.US)
-        format.maximumFractionDigits = 2
-        var spendingTotal = 0.0
-        child.transactions?.forEach { transactionTO ->
-            val amount = transactionTO.value.spending ?: return@forEach
-            spendingTotal += amount
-        }
-        return spendingTotal
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
     fun setFirebaseUID(userId: String) {
         firebaseUID.value = userId
         chatName = when {
@@ -222,21 +251,18 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
             firebaseConfigRetriever("dad_uid").contains(userId) -> "Dad"
             else -> ""
         }
-        resetKidsLoaded()
-        loadKids()
-    }
-
-    private fun resetKidsLoaded() {
-        kidsLoaded.value = false
     }
 
     fun reset() {
         _quoteResponseTO.value = QuoteResponseTO()
         _kidsList.value = mutableListOf()
         _chatList.value = mutableListOf()
-        _quoteLoaded.value = false
-        _showLoading.value = false
+        quoteLoaded.value = false
+        _showLoading.value = true
+        _insertChatContent.value = false
+        _displayQuoteImage.value = false
         kidsLoaded.value = false
+        chatLoaded.value = false
         firebaseUID.value = ""
     }
 
@@ -244,15 +270,37 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         chatDatabase.child(System.currentTimeMillis().toString()).child(chatName).setValue(message)
     }
 
-    fun saveFCMToken(fcmToken: String) {
-        val currentFirebaseUID = firebaseUID.value ?: return
-        notificationDatabase.child(currentFirebaseUID).setValue(fcmToken)
+    fun insertChatContent(layout: LinearLayout, fragment: Fragment) {
+        layout.removeAllViews()
+        chatList.value?.forEach { chatItem ->
+            val view = fragment.layoutInflater.inflate(R.layout.it_chat, null)
+            val name = view.findViewById(R.id.name) as TextView
+            name.text = chatItem.second
+            name.setTextColor(chooseColorByName(name, chatItem.second))
+
+            val timestamp = view.findViewById(R.id.timestamp) as TextView
+            timestamp.text = chatItem.first.toLong().toTimestamp
+            timestamp.setTextColor(chooseColorByName(name, chatItem.second))
+
+            val chat = view.findViewById(R.id.chat) as TextView
+            chat.text = chatItem.third
+            chat.setTextColor(chooseColorByName(name, chatItem.second))
+
+            layout.addView(view)
+        }
+        layout.invalidate()
+        val scrollView = layout.parent as? NestedScrollView ?: return
+        scrollView.postDelayed({ scrollView.fullScroll(ScrollView.FOCUS_DOWN) }, 400)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun childAge(birthday: String): String {
-        val format = DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.ENGLISH)
-        val date = LocalDate.parse(birthday, format)
-        return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()).age
+    private fun chooseColorByName(view: TextView, name: String) : Int {
+        return when (name) {
+            "Laa" -> view.context.resources.getColor(R.color.laa, view.context.resources.newTheme())
+            "Levi" -> view.context.resources.getColor(R.color.levi, view.context.resources.newTheme())
+            "Mom" -> view.context.resources.getColor(R.color.mom, view.context.resources.newTheme())
+            "Dad" -> view.context.resources.getColor(R.color.dad, view.context.resources.newTheme())
+            "System" -> view.context.resources.getColor(R.color.black, view.context.resources.newTheme())
+            else -> 0
+        }
     }
 }

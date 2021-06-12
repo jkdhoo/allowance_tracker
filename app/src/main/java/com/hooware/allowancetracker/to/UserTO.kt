@@ -10,7 +10,7 @@ import kotlinx.parcelize.Parcelize
  */
 @Keep
 @Parcelize
-class UserTO(
+data class UserTO(
     var firstName: String = "",
     var middleName: String = "",
     var firebaseId: String = "",

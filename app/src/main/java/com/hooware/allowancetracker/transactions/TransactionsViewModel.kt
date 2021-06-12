@@ -245,6 +245,10 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
         _transactionsLoaded.value = false
     }
 
+    fun sendMessage() {
+        // TODO
+    }
+
 //    private fun sendNewTransactionNotification() {
 //        val topic = "1" //topic must match with what the receiver subscribed to
 //
