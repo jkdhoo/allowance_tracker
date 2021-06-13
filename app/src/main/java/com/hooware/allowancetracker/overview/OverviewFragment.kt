@@ -11,11 +11,7 @@ import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import com.firebase.ui.auth.AuthUI
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.hooware.allowancetracker.R
-import com.hooware.allowancetracker.auth.FirebaseUserLiveData
 import com.hooware.allowancetracker.base.BaseFragment
 import com.hooware.allowancetracker.base.NavigationCommand
 import com.hooware.allowancetracker.children.ChildrenListAdapter
@@ -23,18 +19,21 @@ import com.hooware.allowancetracker.databinding.FragmentOverviewBinding
 import com.hooware.allowancetracker.to.ChildTO
 import com.hooware.allowancetracker.utils.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import timber.log.Timber
 import kotlin.math.absoluteValue
 
 class OverviewFragment : BaseFragment() {
 
     override val viewModel: OverviewViewModel by sharedViewModel()
     private lateinit var binding: FragmentOverviewBinding
+    private lateinit var kidsListener: KidsDatabaseListener
+    private lateinit var chatListener: ChatDatabaseListener
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_overview, container, false)
         binding.viewModel = viewModel
+        kidsListener = KidsDatabaseListener(viewModel)
+        chatListener = ChatDatabaseListener(viewModel)
         binding.lifecycleOwner = this
 
         setHasOptionsMenu(true)
@@ -45,43 +44,6 @@ class OverviewFragment : BaseFragment() {
             override fun handleOnBackPressed() {
                 finishAffinity(requireActivity())
             }
-        })
-
-        viewModel.kidsDatabase.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                viewModel.loadKids()
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                Timber.i("loadKids:onCancelled ${databaseError.toException()}")
-            }
-        })
-
-        viewModel.chatDatabase.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                viewModel.chatLoaded.value = false
-                viewModel.loadChat()
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                Timber.i("loadChat:onCancelled ${databaseError.toException()}")
-            }
-        })
-
-        viewModel.insertChatContent.observe(viewLifecycleOwner, { insertContent ->
-            if (insertContent) {
-                viewModel.insertChatContent(binding.chatItemLayout, this)
-            }
-        })
-
-        viewModel.displayQuoteImage.observe(viewLifecycleOwner, { displayImage ->
-            if (displayImage) {
-                viewModel.displayQuoteImage(binding.quoteBackground)
-            }
-        })
-
-        viewModel.showLoading.observe(viewLifecycleOwner, { showLoading ->
-            binding.progressBar.isVisible = showLoading
         })
 
         binding.chatSubmitButton.setOnClickListener {
@@ -116,11 +78,11 @@ class OverviewFragment : BaseFragment() {
 
             val params = view.layoutParams as ViewGroup.MarginLayoutParams
             params.topMargin = startLocation[1] - endLocation[1]
-            params.marginEnd = 22.dpToInt(context)
-            params.marginStart = 22.dpToInt(context)
+            params.marginEnd = 20.dpToInt(context)
+            params.marginStart = 20.dpToInt(context)
             view.layoutParams = params
 
-            val margin = 16F.dpToFloat(context)
+            val margin = 16.dpToFloat(context)
             val animator = ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, endLocation[1].toFloat() - startLocation[1].toFloat() + margin)
             animator.duration = 1000
             animator.addListener(onEnd = {
@@ -155,16 +117,30 @@ class OverviewFragment : BaseFragment() {
 
     override fun onPause() {
         super.onPause()
-        viewModel.reset()
+        viewModel.kidsDatabase.removeEventListener(kidsListener)
+        viewModel.chatDatabase.removeEventListener(chatListener)
+        viewModel.insertChatContent.removeObservers(this)
+        viewModel.displayQuoteImage.removeObservers(this)
+        viewModel.showLoading.removeObservers(this)
     }
 
     override fun onResume() {
         super.onResume()
         viewModel.resume()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        FirebaseUserLiveData().removeObservers(this)
+        viewModel.kidsDatabase.addValueEventListener(kidsListener)
+        viewModel.chatDatabase.addValueEventListener(chatListener)
+        viewModel.insertChatContent.observe(viewLifecycleOwner, { insertContent ->
+            if (insertContent) {
+                viewModel.insertChatContent(binding.chatItemLayout, this)
+            }
+        })
+        viewModel.displayQuoteImage.observe(viewLifecycleOwner, { displayImage ->
+            if (displayImage) {
+                viewModel.displayQuoteImage(binding.quoteBackground)
+            }
+        })
+        viewModel.showLoading.observe(viewLifecycleOwner, { showLoading ->
+            binding.progressBar.isVisible = showLoading
+        })
     }
 }

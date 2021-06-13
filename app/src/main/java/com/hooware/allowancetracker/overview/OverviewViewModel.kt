@@ -29,13 +29,11 @@ import org.json.JSONObject
 import timber.log.Timber
 import java.util.*
 
-
 class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) {
     val app = application
 
     private val quoteDatabase = Firebase.database.reference.child("quote").ref
     val kidsDatabase = Firebase.database.reference.child("kids").ref
-    private val notificationDatabase = Firebase.database.reference.child("notifications").ref
     val chatDatabase = Firebase.database.reference.child("chat").ref
 
     private var _quoteResponseTO = MutableLiveData<QuoteResponseTO>()
@@ -67,10 +65,8 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         get() = _insertChatContent
 
     private val quoteLoaded = MutableLiveData<Boolean>()
-    private val kidsLoaded = MutableLiveData<Boolean>()
+    val kidsLoaded = MutableLiveData<Boolean>()
     val chatLoaded = MutableLiveData<Boolean>()
-
-    private val firebaseUID = MutableLiveData<String>()
 
     private var chatName = ""
 
@@ -78,7 +74,6 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         kidsDatabase.keepSynced(true)
         quoteDatabase.keepSynced(true)
         chatDatabase.keepSynced(true)
-        notificationDatabase.keepSynced(true)
         setFirebaseUID()
     }
 
@@ -252,19 +247,6 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
             firebaseConfigRetriever("dad_uid").contains(userId) -> "Dad"
             else -> ""
         }
-    }
-
-    fun reset() {
-        _quoteResponseTO.value = QuoteResponseTO()
-        _kidsList.value = mutableListOf()
-        _chatList.value = mutableListOf()
-        quoteLoaded.value = false
-        _showLoading.value = true
-        _insertChatContent.value = false
-        _displayQuoteImage.value = false
-        kidsLoaded.value = false
-        chatLoaded.value = false
-        firebaseUID.value = ""
     }
 
     fun saveChatItem(message: String) {

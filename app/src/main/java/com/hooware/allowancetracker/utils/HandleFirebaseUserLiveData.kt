@@ -5,9 +5,11 @@ import android.content.Intent
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.hooware.allowancetracker.AllowanceApp
 import com.hooware.allowancetracker.auth.AuthActivity
 import com.hooware.allowancetracker.overview.OverviewActivity
+import com.hooware.allowancetracker.splash.SplashActivity
 import timber.log.Timber
 
 object HandleFirebaseUserLiveData {
@@ -40,7 +42,27 @@ object HandleFirebaseUserLiveData {
                     activity.startActivity(overviewActivityIntent)
                     activity.finishAffinity()
                 }
+                is SplashActivity -> {
+                    Timber.i("Authenticated, setting AuthType")
+                    val app = activity.application as AllowanceApp
+                    app.firebaseUID.value = user.uid
+                    val mom = firebaseConfigRetriever("mom_uid")
+                    val dad = firebaseConfigRetriever("dad_uid")
+                    val levi = firebaseConfigRetriever("levi_uid")
+                    val laa = firebaseConfigRetriever("laa_uid")
+                    when {
+                        dad.contains(user.uid) -> app.authType.value = AuthType.DAD
+                        mom.contains(user.uid) -> app.authType.value = AuthType.MOM
+                        levi.contains(user.uid) -> app.authType.value = AuthType.LEVI
+                        laa.contains(user.uid) -> app.authType.value = AuthType.LAA
+                    }
+                }
             }
         }
+    }
+
+    private fun firebaseConfigRetriever(param: String): String {
+        val remoteConfig = FirebaseRemoteConfig.getInstance()
+        return remoteConfig.getString(param)
     }
 }

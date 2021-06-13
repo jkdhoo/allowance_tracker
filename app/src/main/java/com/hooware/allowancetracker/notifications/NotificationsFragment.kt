@@ -13,6 +13,7 @@ import com.hooware.allowancetracker.base.NavigationCommand
 import com.hooware.allowancetracker.databinding.FragmentNotificationsBinding
 import com.hooware.allowancetracker.to.FCMRequestInputTO
 import com.hooware.allowancetracker.transactions.TransactionsViewModel
+import com.hooware.allowancetracker.utils.SendFCMNotification
 import com.hooware.allowancetracker.utils.fadeOut
 import com.hooware.allowancetracker.utils.setDisplayHomeAsUpEnabled
 import com.hooware.allowancetracker.utils.setTitle
@@ -37,11 +38,11 @@ class NotificationsFragment : BaseFragment() {
 
         binding.sendNotificationButton.setOnClickListener {
             val body = binding.body.text.toString()
-            val title = binding.title.text.toString()
+            val title = "From ${app.authType.value?.simpleName}: ${binding.title.text}"
             val uid = viewModel.child.value?.id ?: ""
             viewModel.notificationDatabase.child(uid).get().addOnSuccessListener { snapshot ->
                 val token = snapshot.value.toString()
-                viewModel.send(token = token, body = body, title = title)
+                SendFCMNotification.execute(token = token, body = body, title = title)
                 viewModel.navigationCommand.value = NavigationCommand.Back
             }
         }

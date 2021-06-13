@@ -22,13 +22,6 @@ class AuthActivity : AppCompatActivity() {
         val binding: ActivityAuthBinding = DataBindingUtil.setContentView(this, R.layout.activity_auth)
         binding.lifecycleOwner = this
         binding.authButton.setOnClickListener { launchSignInFlow() }
-        FirebaseUserLiveData().observe(this, { user ->
-            if (user != null) {
-                HandleFirebaseUserLiveData.execute(this, user)
-            } else {
-                Timber.i("Unauthenticated")
-            }
-        })
     }
 
     override fun onBackPressed() {
@@ -49,5 +42,21 @@ class AuthActivity : AppCompatActivity() {
                 .setTheme(R.style.Theme_AllowanceTracker_Auth)
                 .build()
         )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        FirebaseUserLiveData().observe(this, { user ->
+            if (user != null) {
+                HandleFirebaseUserLiveData.execute(this, user)
+            } else {
+                Timber.i("Unauthenticated")
+            }
+        })
+    }
+
+    override fun onPause() {
+        FirebaseUserLiveData().removeObservers(this)
+        super.onPause()
     }
 }

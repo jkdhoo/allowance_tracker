@@ -1,22 +1,16 @@
 package com.hooware.allowancetracker.transactions
 
 import android.animation.ObjectAnimator
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.cardview.widget.CardView
 import androidx.core.animation.addListener
 import androidx.core.view.isVisible
-import androidx.core.view.updateLayoutParams
-import androidx.core.view.updateMargins
 import androidx.databinding.DataBindingUtil
 import com.hooware.allowancetracker.AllowanceApp
 import com.hooware.allowancetracker.R
-import com.hooware.allowancetracker.auth.AuthActivity
-import com.hooware.allowancetracker.auth.FirebaseUserLiveData
 import com.hooware.allowancetracker.base.BaseFragment
 import com.hooware.allowancetracker.base.NavigationCommand
 import com.hooware.allowancetracker.databinding.FragmentTransactionsBinding
@@ -60,9 +54,13 @@ class TransactionsFragment : BaseFragment() {
         viewModel.showLoading.observe(viewLifecycleOwner, { showLoading ->
             binding.progressBar.isVisible = showLoading
         })
+
+        binding.resetSavings.setOnClickListener {
+            viewModel.resetSavingsOwed(activity)
+        }
         
         when (app.authType.value) {
-            AuthType.PARENT -> {
+            AuthType.DAD, AuthType.MOM -> {
                 binding.addTransactionFAB.isVisible = true
                 binding.resetSavings.isVisible = true
                 binding.sendMessage.isVisible = true
@@ -96,6 +94,8 @@ class TransactionsFragment : BaseFragment() {
 
                 val params = view.layoutParams as ViewGroup.MarginLayoutParams
                 params.topMargin = startLocation[1] - endLocation[1]
+                params.marginEnd = 16.dpToInt(context)
+                params.marginStart = 16.dpToInt(context)
                 view.layoutParams = params
 
                 binding.transactionsRelativeLayoutPlaceholder.addView(view)
@@ -105,6 +105,7 @@ class TransactionsFragment : BaseFragment() {
                 binding.transactionsRecyclerView.fadeOutInvisible()
                 binding.resetSavings.fadeOutInvisible()
                 binding.reminderCardView.fadeOutInvisible()
+                binding.sendMessage.fadeOutInvisible()
 
                 val margin = 10F * (context?.resources?.displayMetrics?.density ?: 0F)
                 val animator = ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, endLocation[1].toFloat() - startLocation[1].toFloat() + margin)
@@ -150,10 +151,5 @@ class TransactionsFragment : BaseFragment() {
     override fun onPause() {
         super.onPause()
         viewModel.resetTransactionsLoaded()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        FirebaseUserLiveData().removeObservers(this)
     }
 }

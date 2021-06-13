@@ -19,8 +19,7 @@
             android:id="@+id/overview_constraint_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="@dimen/margin_4dp"
-            android:fadeVisible="@{!viewModel.showLoading}">
+            android:layout_margin="@dimen/margin_4dp">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/quote_cardview"
@@ -30,7 +29,8 @@
                 app:cardCornerRadius="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                android:fadeVisible="@{!viewModel.showLoading}">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/quote_card_view_constraint_layout"
@@ -88,6 +88,7 @@
                 android:layout_marginStart="@dimen/margin_normal"
                 android:layout_marginEnd="@dimen/margin_normal"
                 android:liveDataKids="@{viewModel.kidsList}"
+                android:fadeVisible="@{!viewModel.showLoading}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/quote_cardview" />
@@ -98,6 +99,7 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="8dp"
                 android:background="@color/primaryLightColor"
+                android:fadeVisible="@{!viewModel.showLoading}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/childrenRecyclerView" />
@@ -109,6 +111,7 @@
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="4dp"
+                android:fadeVisible="@{!viewModel.showLoading}"
                 app:layout_constraintBottom_toTopOf="@id/chat_enter_constraint_layout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -127,6 +130,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
+                android:fadeVisible="@{!viewModel.showLoading}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -167,14 +171,15 @@
                     app:layout_constraintTop_toBottomOf="@id/divider" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_alignParentBottom="true"
-            android:background="@color/white" />
     </RelativeLayout>
 </layout>

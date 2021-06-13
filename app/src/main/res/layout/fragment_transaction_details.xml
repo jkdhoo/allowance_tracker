@@ -19,14 +19,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/reminderCardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/padding_medium"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="10dp"
+            android:fadeVisible="@{true}"
+            app:cardCornerRadius="@dimen/margin_8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:fadeVisible="@{true}">
+            app:strokeColor="@color/primaryColor"
+            app:strokeWidth="1dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -57,42 +63,42 @@
 
                 <TextView
                     android:id="@+id/total"
-                    android:layout_marginStart="@dimen/padding_small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
+                    android:layout_marginStart="@dimen/padding_small"
                     android:currency="@{item.total}"
-                    android:textSize="@dimen/text_size_normal"
+                    android:gravity="center"
                     android:moneyStyleColor="@{item}"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:textSize="@dimen/text_size_normal"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:text="Location" />
 
                 <TextView
                     android:id="@+id/spending"
-                    android:layout_marginStart="@dimen/padding_small"
                     android:layout_width="wrap_content"
-                    android:layout_marginTop="@dimen/padding_small"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
+                    android:layout_marginStart="@dimen/padding_small"
+                    android:layout_marginTop="@dimen/padding_small"
                     android:currency="@{item.spending}"
-                    android:textSize="@dimen/text_size_small"
+                    android:gravity="center"
                     android:moneyStyleColor="@{item}"
-                    app:layout_constraintTop_toBottomOf="@id/total"
+                    android:textSize="@dimen/text_size_small"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/total"
                     tools:text="Location" />
 
                 <TextView
                     android:id="@+id/savings"
-                    android:layout_marginStart="@dimen/padding_small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
+                    android:layout_marginStart="@dimen/padding_small"
                     android:currency="@{item.savings}"
-                    android:textSize="@dimen/text_size_small"
+                    android:gravity="center"
                     android:moneyStyleColor="@{item}"
-                    app:layout_constraintTop_toBottomOf="@id/spending"
+                    android:textSize="@dimen/text_size_small"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/spending"
                     tools:text="Location" />
 
                 <TextView
@@ -100,24 +106,24 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:moneyStyleColor="@{item}"
                     android:text="@string/total_title"
                     android:textSize="@dimen/text_size_normal"
-                    android:moneyStyleColor="@{item}"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/total"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:text="Location" />
 
                 <TextView
                     android:id="@+id/spending_title"
-                    android:layout_marginTop="@dimen/padding_small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/padding_small"
                     android:gravity="center"
+                    android:moneyStyleColor="@{item}"
                     android:text="@string/spending_title"
                     android:textSize="@dimen/text_size_small"
-                    android:moneyStyleColor="@{item}"
-                    app:layout_constraintTop_toBottomOf="@id/total_title"
                     app:layout_constraintEnd_toStartOf="@id/spending"
+                    app:layout_constraintTop_toBottomOf="@id/total_title"
                     tools:text="Location" />
 
                 <TextView
@@ -125,15 +131,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    android:moneyStyleColor="@{item}"
                     android:text="@string/savings_title_2"
                     android:textSize="@dimen/text_size_small"
-                    android:moneyStyleColor="@{item}"
-                    app:layout_constraintTop_toBottomOf="@id/spending_title"
                     app:layout_constraintEnd_toStartOf="@id/savings"
+                    app:layout_constraintTop_toBottomOf="@id/spending_title"
                     tools:text="Location" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.card.MaterialCardView>
 
         <Button
             android:id="@+id/transaction_delete"
@@ -141,7 +147,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_normal"
             android:layout_marginEnd="@dimen/margin_normal"
-            android:onClick="@{() -> viewModel.deleteTransaction(item)}"
             android:text="@string/delete"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/reminderCardView" />

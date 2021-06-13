@@ -8,8 +8,6 @@ import androidx.databinding.DataBindingUtil
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.auth.FirebaseUserLiveData
 import com.hooware.allowancetracker.databinding.ActivityOverviewBinding
-import com.hooware.allowancetracker.to.ChildTO
-import com.hooware.allowancetracker.to.TransactionTO
 import com.hooware.allowancetracker.utils.HandleFirebaseUserLiveData
 
 class OverviewActivity : AppCompatActivity() {
@@ -24,8 +22,17 @@ class OverviewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding: ActivityOverviewBinding = DataBindingUtil.setContentView(this, R.layout.activity_overview)
         binding.lifecycleOwner = this
+    }
+
+    override fun onResume() {
+        super.onResume()
         FirebaseUserLiveData().observe(this, { user ->
             HandleFirebaseUserLiveData.execute(this, user)
         })
+    }
+
+    override fun onPause() {
+        FirebaseUserLiveData().removeObservers(this)
+        super.onPause()
     }
 }

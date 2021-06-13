@@ -1,36 +1,23 @@
 package com.hooware.allowancetracker.transactions
 
-import android.os.Handler
-import android.os.HandlerThread
-import androidx.annotation.Keep
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.hooware.allowancetracker.AllowanceApp
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.base.BaseViewModel
 import com.hooware.allowancetracker.base.NavigationCommand
-import com.hooware.allowancetracker.overview.OverviewFragmentDirections
 import com.hooware.allowancetracker.to.ChildTO
-import com.hooware.allowancetracker.to.FCMRequestInputTO
 import com.hooware.allowancetracker.to.TransactionTO
 import com.hooware.allowancetracker.utils.currencyFormatter
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.OutputStream
-import java.net.HttpURLConnection
-import java.net.URL
-import kotlin.math.absoluteValue
 
 
-@Keep
 class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(application) {
 
     private val kidsDatabase = Firebase.database.reference.child("kids").ref
@@ -59,8 +46,6 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
     private var _showLoading = MutableLiveData<Boolean>()
     val showLoading: LiveData<Boolean>
         get() = _showLoading
-
-    var firebaseUID = MutableLiveData<String>()
 
     var child = MutableLiveData<ChildTO>()
 
@@ -188,68 +173,88 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
             }
     }
 
-    fun deleteTransaction(transaction: TransactionTO) {
-        _showLoading.value = true
-        val childTO = child.value ?: run {
-            _showLoading.value = false
-            showSnackBarInt.value = R.string.transaction_delete_error
-            return
-        }
-        childTO.transactions?.remove(transaction.id) ?: run {
-            _showLoading.value = false
-            showSnackBarInt.value = R.string.transaction_delete_error
-            return
-        }
-        kidsDatabase.child(childTO.id).child("transactions").child(transaction.id).removeValue()
-            .addOnSuccessListener {
-                if (transaction.total > 0) {
-                    childTO.savingsOwed = childTO.savingsOwed.minus(transaction.savings)
-                    kidsDatabase.child(childTO.id).child("savingsOwed").setValue(childTO.savingsOwed)
-                        .addOnSuccessListener {
-                            _savingsOwedUpdated.value = true
-                        }
-                    childTO.totalSpending = childTO.totalSpending.minus(transaction.spending)
-                    kidsDatabase.child(childTO.id).child("totalSpending").setValue(childTO.totalSpending)
-                        .addOnSuccessListener {
-                            _totalSpendingUpdated.value = true
-                        }
+    @SuppressLint("NullSafeMutableLiveData")
+    fun deleteTransaction(transaction: TransactionTO, activity: FragmentActivity?) {
+        val act = activity ?: return
+        val builder = AlertDialog.Builder(act)
+            .setCancelable(true)
+            .setTitle("Confirm transaction delete")
+            .setMessage("Are you sure you want to delete this transaction?")
+            .setPositiveButton("Confirm") { _, _ ->
+                _showLoading.value = true
+                val childTO = child.value
+                if (childTO != null) {
+                    val transactions = childTO.transactions
+                    if (transactions != null) {
+                        transactions.remove(transaction.id)
+                        kidsDatabase.child(childTO.id).child("transactions").child(transaction.id).removeValue()
+                            .addOnSuccessListener {
+                                if (transaction.total > 0) {
+                                    childTO.savingsOwed = childTO.savingsOwed.minus(transaction.savings)
+                                    kidsDatabase.child(childTO.id).child("savingsOwed").setValue(childTO.savingsOwed)
+                                        .addOnSuccessListener {
+                                            _savingsOwedUpdated.value = true
+                                        }
+                                    childTO.totalSpending = childTO.totalSpending.minus(transaction.spending)
+                                    kidsDatabase.child(childTO.id).child("totalSpending").setValue(childTO.totalSpending)
+                                        .addOnSuccessListener {
+                                            _totalSpendingUpdated.value = true
+                                        }
+                                } else {
+                                    childTO.totalSpending = childTO.totalSpending.minus(transaction.spending)
+                                    kidsDatabase.child(childTO.id).child("totalSpending").setValue(childTO.totalSpending)
+                                        .addOnSuccessListener {
+                                            _totalSpendingUpdated.value = true
+                                        }
+                                }
+                                child.value = childTO
+                                _showLoading.value = false
+                                showSnackBarInt.value = R.string.transaction_deleted
+                                navigationCommand.value = NavigationCommand.Back
+                            }
+                            .addOnFailureListener {
+                                _showLoading.value = false
+                                showSnackBarInt.value = R.string.transaction_delete_error
+                            }
+                    } else {
+                        _showLoading.value = false
+                        showSnackBarInt.value = R.string.transaction_delete_error
+                    }
                 } else {
-                    childTO.totalSpending = childTO.totalSpending.minus(transaction.spending)
-                    kidsDatabase.child(childTO.id).child("totalSpending").setValue(childTO.totalSpending)
-                        .addOnSuccessListener {
-                            _totalSpendingUpdated.value = true
-                        }
+                    _showLoading.value = false
+                    showSnackBarInt.value = R.string.transaction_delete_error
                 }
-                child.value = childTO
-                _showLoading.value = false
-                showSnackBarInt.value = R.string.transaction_deleted
-                navigationCommand.value = NavigationCommand.Back
             }
-            .addOnFailureListener {
-                _showLoading.value = false
-                showSnackBarInt.value = R.string.transaction_delete_error
-            }
+            .setNegativeButton(android.R.string.cancel) { _, _ -> }
+            .create()
+        builder.show()
     }
 
-    fun setFirebaseUID(userId: String) {
-        firebaseUID.value = userId
-    }
-
-    fun resetSavingsOwed() {
-        _showLoading.value = true
-        val childTO = child.value ?: return
-        childTO.savingsOwed = 0.0
-        kidsDatabase.child(childTO.id).child("savingsOwed").setValue(childTO.savingsOwed)
-            .addOnSuccessListener {
-                child.value = childTO
-                _savingsOwedUpdated.value = true
-                _showLoading.value = false
-                showSnackBarInt.value = R.string.savings_reset
+    fun resetSavingsOwed(activity: FragmentActivity?) {
+        val act = activity ?: return
+        val builder = AlertDialog.Builder(act)
+            .setCancelable(true)
+            .setTitle("Confirm savings owed reset")
+            .setMessage("Are you sure you want to reset the savings owed amount?")
+            .setPositiveButton("Confirm") { _, _ ->
+                _showLoading.value = true
+                val childTO = child.value ?: return@setPositiveButton
+                childTO.savingsOwed = 0.0
+                kidsDatabase.child(childTO.id).child("savingsOwed").setValue(childTO.savingsOwed)
+                    .addOnSuccessListener {
+                        child.value = childTO
+                        _savingsOwedUpdated.value = true
+                        _showLoading.value = false
+                        showSnackBarInt.value = R.string.savings_reset
+                    }
+                    .addOnFailureListener {
+                        _showLoading.value = false
+                        showSnackBarInt.value = R.string.savings_reset_error
+                    }
             }
-            .addOnFailureListener {
-                _showLoading.value = false
-                showSnackBarInt.value = R.string.savings_reset_error
-            }
+            .setNegativeButton(android.R.string.cancel) { _, _ -> }
+            .create()
+        builder.show()
     }
 
     fun resetSavingsOwedUpdated() {
@@ -264,63 +269,11 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
         _transactionsLoaded.value = false
     }
 
-    fun sendMessage() {
+    fun navigateToSendNotificationFragment() {
         navigationCommand.postValue(
             NavigationCommand.To(
                 TransactionsFragmentDirections.actionSendNotification()
             )
         )
-    }
-
-    fun send(token: String, body: String, title: String) {
-        val handler = HandlerThread("URLConnection")
-        handler.start()
-        val mainHandler = Handler(handler.looper)
-
-        val myRunnable = Runnable {
-            try {
-                val apiKey = firebaseConfigRetriever("firebase_fcm_key")
-                val url = URL("https://fcm.googleapis.com/fcm/send")
-                val conn: HttpURLConnection = url.openConnection() as HttpURLConnection
-                conn.doOutput = true
-                conn.requestMethod = "POST"
-                conn.setRequestProperty("Content-Type", "application/json")
-                conn.setRequestProperty("Authorization", "key=$apiKey")
-                val message = JSONObject()
-                message.put("to", token)
-                message.put("priority", "high")
-                val notification = JSONObject()
-                notification.put("title", title)
-                notification.put("body", body)
-                message.put("data", notification)
-                val os = conn.outputStream
-                os.write(message.toString().toByteArray())
-                os.flush()
-                os.close()
-                val responseCode: Int = conn.responseCode
-                println("\nSending 'POST' request to URL : $url")
-                println("Post parameters : $message")
-                println("Response Code : $responseCode")
-                println("Response Code : " + conn.responseMessage)
-                val `in` = BufferedReader(InputStreamReader(conn.inputStream))
-                var inputLine: String?
-                val response = StringBuffer()
-                while (`in`.readLine().also { inputLine = it } != null) {
-                    response.append(inputLine)
-                }
-                `in`.close()
-
-                // print result
-                println(response.toString())
-            } catch (e: java.lang.Exception) {
-                e.printStackTrace()
-            }
-        }
-        mainHandler.post(myRunnable)
-    }
-
-    private fun firebaseConfigRetriever(param: String): String {
-        val remoteConfig = FirebaseRemoteConfig.getInstance()
-        return remoteConfig.getString(param)
     }
 }

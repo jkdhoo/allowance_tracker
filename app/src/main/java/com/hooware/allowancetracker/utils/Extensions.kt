@@ -9,8 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hooware.allowancetracker.base.BaseRecyclerViewAdapter
-import com.hooware.allowancetracker.to.TransactionTO
-import com.hooware.allowancetracker.transactions.TransactionsListAdapter
 import timber.log.Timber
 import java.text.DecimalFormat
 import java.text.NumberFormat
@@ -18,9 +16,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-/**
- * Extension function to setup the RecyclerView
- */
 fun <T> RecyclerView.setup(adapter: BaseRecyclerViewAdapter<T>) {
     this.apply {
         layoutManager = LinearLayoutManager(this.context)
@@ -117,6 +112,6 @@ fun Int.dpToInt(context: Context?): Int {
     return this * (context?.resources?.displayMetrics?.density?.toInt() ?: 0)
 }
 
-fun Float.dpToFloat(context: Context?): Float {
-    return this * (context?.resources?.displayMetrics?.density ?: 0F)
+fun Int.dpToFloat(context: Context?): Float {
+    return this.toFloat() * (context?.resources?.displayMetrics?.density ?: 0F)
 }

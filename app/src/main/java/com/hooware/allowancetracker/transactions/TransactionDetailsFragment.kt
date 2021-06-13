@@ -32,16 +32,11 @@ class TransactionDetailsFragment : BaseFragment() {
 
         binding.item = TransactionDetailsFragmentArgs.fromBundle(requireArguments()).transaction
 
-        return binding.root
-    }
+        binding.transactionDelete.setOnClickListener {
+            viewModel.deleteTransaction(TransactionDetailsFragmentArgs.fromBundle(requireArguments()).transaction, activity)
+        }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        FirebaseUserLiveData().observe(viewLifecycleOwner, { user ->
-            if (user != null) {
-                viewModel.setFirebaseUID(user.uid)
-            }
-        })
+        return binding.root
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
