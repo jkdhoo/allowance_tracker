@@ -13,6 +13,8 @@ import timber.log.Timber
 
 class SplashViewModel(application: AllowanceApp) : BaseViewModel(application) {
 
+    val app = application
+
     private companion object {
         private const val SPLASH_TIME_IN_MILLI = 2000L
     }
@@ -37,15 +39,16 @@ class SplashViewModel(application: AllowanceApp) : BaseViewModel(application) {
     }
 
     fun setAuthType(user: FirebaseUser) {
+        app.firebaseUID.value = user.uid
         val parent = firebaseConfigRetriever("parent_uid")
         val levi = firebaseConfigRetriever("levi_uid")
         val laa = firebaseConfigRetriever("laa_uid")
         when {
-            parent.contains(user.uid) -> _authType.value = AuthType.PARENT
-            levi.contains(user.uid) -> _authType.value = AuthType.LEVI
-            laa.contains(user.uid) -> _authType.value = AuthType.LAA
+            parent.contains(user.uid) -> app.authType.value = AuthType.PARENT
+            levi.contains(user.uid) -> app.authType.value = AuthType.LEVI
+            laa.contains(user.uid) -> app.authType.value = AuthType.LAA
         }
-        Timber.i("Auth Type: ${authType.value}")
+        Timber.i("Auth Type: ${app.authType.value}")
     }
 
     private fun startSplashTimer() {

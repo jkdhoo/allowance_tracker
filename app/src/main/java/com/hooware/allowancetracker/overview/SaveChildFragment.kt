@@ -31,19 +31,6 @@ class SaveChildFragment : BaseFragment() {
         setTitle(getString(R.string.new_child))
         setHasOptionsMenu(true)
         binding.viewModel = viewModel
-//        binding.saveChild.setOnClickListener {
-//            val name = viewModel.childName.value
-//            val age = viewModel.childAge.value
-//            val birthday = viewModel.childBirthday.value
-//            viewModel.validateAndSaveChild(
-//                ChildTO(
-//                    name,
-//                    age,
-//                    birthday
-//                )
-//            )
-//            Timber.i("Save Clicked")
-//        }
         binding.lifecycleOwner = this
         return binding.root
     }

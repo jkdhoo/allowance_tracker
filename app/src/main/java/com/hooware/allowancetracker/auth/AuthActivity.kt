@@ -1,6 +1,5 @@
 package com.hooware.allowancetracker.auth
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -8,7 +7,7 @@ import androidx.databinding.DataBindingUtil
 import com.firebase.ui.auth.AuthUI
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.databinding.ActivityAuthBinding
-import com.hooware.allowancetracker.overview.OverviewActivity
+import com.hooware.allowancetracker.utils.HandleFirebaseUserLiveData
 import timber.log.Timber
 
 /**
@@ -25,9 +24,7 @@ class AuthActivity : AppCompatActivity() {
         binding.authButton.setOnClickListener { launchSignInFlow() }
         FirebaseUserLiveData().observe(this, { user ->
             if (user != null) {
-                Timber.i("Authenticated, sending to Overview: ${user.displayName}")
-                val overviewActivityIntent = Intent(applicationContext, OverviewActivity::class.java)
-                startActivity(overviewActivityIntent)
+                HandleFirebaseUserLiveData.execute(this, user)
             } else {
                 Timber.i("Unauthenticated")
             }

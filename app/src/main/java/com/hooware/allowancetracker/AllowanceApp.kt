@@ -1,11 +1,13 @@
 package com.hooware.allowancetracker
 
 import android.app.Application
+import androidx.lifecycle.MutableLiveData
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import com.hooware.allowancetracker.overview.OverviewViewModel
 import com.hooware.allowancetracker.splash.SplashViewModel
 import com.hooware.allowancetracker.transactions.TransactionsViewModel
+import com.hooware.allowancetracker.utils.AuthType
 import com.hooware.allowancetracker.utils.CreateNotificationChannel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -16,11 +18,17 @@ import timber.log.Timber
 
 class AllowanceApp : Application() {
 
+    val authType = MutableLiveData<AuthType?>()
+    val fcmToken = MutableLiveData<String?>()
+    val firebaseUID = MutableLiveData<String?>()
+
     override fun onCreate() {
         super.onCreate()
 
-            Timber.plant(Timber.DebugTree())
-            Timber.i("Timber initialized.")
+        Timber.plant(Timber.DebugTree())
+        Timber.i("Timber initialized.")
+
+        authType.value = AuthType.UNAUTH
 
         initKoin()
         initFirebase()

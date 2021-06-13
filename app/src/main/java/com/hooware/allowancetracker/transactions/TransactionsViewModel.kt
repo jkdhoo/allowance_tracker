@@ -1,21 +1,40 @@
 package com.hooware.allowancetracker.transactions
 
+import android.os.Handler
+import android.os.HandlerThread
+import androidx.annotation.Keep
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.hooware.allowancetracker.AllowanceApp
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.base.BaseViewModel
 import com.hooware.allowancetracker.base.NavigationCommand
+import com.hooware.allowancetracker.overview.OverviewFragmentDirections
 import com.hooware.allowancetracker.to.ChildTO
+import com.hooware.allowancetracker.to.FCMRequestInputTO
 import com.hooware.allowancetracker.to.TransactionTO
 import com.hooware.allowancetracker.utils.currencyFormatter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.io.OutputStream
+import java.net.HttpURLConnection
+import java.net.URL
+import kotlin.math.absoluteValue
 
 
+@Keep
 class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(application) {
 
     private val kidsDatabase = Firebase.database.reference.child("kids").ref
+    val notificationDatabase = Firebase.database.reference.child("notifications").ref
 
     private var _transactionsLoaded = MutableLiveData<Boolean>()
     val transactionsLoaded: LiveData<Boolean>
@@ -31,7 +50,7 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
 
     private var _savingsOwedUpdated = MutableLiveData<Boolean>()
     val savingsOwedUpdated: LiveData<Boolean>
-        get() =_savingsOwedUpdated
+        get() = _savingsOwedUpdated
 
     private var _totalSpendingUpdated = MutableLiveData<Boolean>()
     val totalSpendingUpdated: LiveData<Boolean>
@@ -246,52 +265,62 @@ class TransactionsViewModel(application: AllowanceApp) : BaseViewModel(applicati
     }
 
     fun sendMessage() {
-        // TODO
+        navigationCommand.postValue(
+            NavigationCommand.To(
+                TransactionsFragmentDirections.actionSendNotification()
+            )
+        )
     }
 
-//    private fun sendNewTransactionNotification() {
-//        val topic = "1" //topic must match with what the receiver subscribed to
-//
-//        val notificationTitle = "Test"
-//        val notificationMessage = "Test"
-//
-//        val notification = JSONObject()
-//        val notificationBody = JSONObject()
-//        try {
-//            notificationBody.put("title", notificationTitle)
-//            notificationBody.put("message", notificationMessage)
-//            notification.put("to", topic)
-//            notification.put("data", notificationBody)
-//        } catch (e: JSONException) {
-//            Timber.i("onCreate: ${e.message}")
-//        }
-//        sendNotification(notification)
-//    }
+    fun send(token: String, body: String, title: String) {
+        val handler = HandlerThread("URLConnection")
+        handler.start()
+        val mainHandler = Handler(handler.looper)
 
-//    private fun sendNotification(notification: JSONObject) {
-//        val jsonObjectRequest: JsonObjectRequest = object : JsonObjectRequest(FCM_API, notification,
-//            object : Listener<JSONObject?>() {
-//                fun onResponse(response: JSONObject) {
-//                    Log.i(TAG, "onResponse: $response")
-//                    edtTitle.setText("")
-//                    edtMessage.setText("")
-//                }
-//            },
-//            object : ErrorListener() {
-//                fun onErrorResponse(error: VolleyError?) {
-//                    Toast.makeText(this@MainActivity, "Request error", Toast.LENGTH_LONG).show()
-//                    Log.i(TAG, "onErrorResponse: Didn't work")
-//                }
-//            }) {
-//            @get:Throws(AuthFailureError::class)
-//            val headers: Map<String, String>?
-//                get() {
-//                    val params: MutableMap<String, String> = HashMap()
-//                    params["Authorization"] = serverKey
-//                    params["Content-Type"] = CMSAttributes.contentType
-//                    return params
-//                }
-//        }
-//        MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectRequest)
-//    }
+        val myRunnable = Runnable {
+            try {
+                val apiKey = firebaseConfigRetriever("firebase_fcm_key")
+                val url = URL("https://fcm.googleapis.com/fcm/send")
+                val conn: HttpURLConnection = url.openConnection() as HttpURLConnection
+                conn.doOutput = true
+                conn.requestMethod = "POST"
+                conn.setRequestProperty("Content-Type", "application/json")
+                conn.setRequestProperty("Authorization", "key=$apiKey")
+                val message = JSONObject()
+                message.put("to", token)
+                message.put("priority", "high")
+                val notification = JSONObject()
+                notification.put("title", title)
+                notification.put("body", body)
+                message.put("data", notification)
+                val os = conn.outputStream
+                os.write(message.toString().toByteArray())
+                os.flush()
+                os.close()
+                val responseCode: Int = conn.responseCode
+                println("\nSending 'POST' request to URL : $url")
+                println("Post parameters : $message")
+                println("Response Code : $responseCode")
+                println("Response Code : " + conn.responseMessage)
+                val `in` = BufferedReader(InputStreamReader(conn.inputStream))
+                var inputLine: String?
+                val response = StringBuffer()
+                while (`in`.readLine().also { inputLine = it } != null) {
+                    response.append(inputLine)
+                }
+                `in`.close()
+
+                // print result
+                println(response.toString())
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+        }
+        mainHandler.post(myRunnable)
+    }
+
+    private fun firebaseConfigRetriever(param: String): String {
+        val remoteConfig = FirebaseRemoteConfig.getInstance()
+        return remoteConfig.getString(param)
+    }
 }

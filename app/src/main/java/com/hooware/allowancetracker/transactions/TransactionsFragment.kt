@@ -13,6 +13,7 @@ import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updateMargins
 import androidx.databinding.DataBindingUtil
+import com.hooware.allowancetracker.AllowanceApp
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.auth.AuthActivity
 import com.hooware.allowancetracker.auth.FirebaseUserLiveData
@@ -27,8 +28,10 @@ class TransactionsFragment : BaseFragment() {
 
     override val viewModel by sharedViewModel<TransactionsViewModel>()
     private lateinit var binding: FragmentTransactionsBinding
+    private lateinit var app: AllowanceApp
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        app = requireActivity().application as AllowanceApp
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_transactions, container, false)
         setDisplayHomeAsUpEnabled(true)
         setHasOptionsMenu(true)
@@ -57,19 +60,19 @@ class TransactionsFragment : BaseFragment() {
         viewModel.showLoading.observe(viewLifecycleOwner, { showLoading ->
             binding.progressBar.isVisible = showLoading
         })
-
-        FirebaseUserLiveData().observe(viewLifecycleOwner, { user ->
-            if (user != null) {
-                viewModel.setFirebaseUID(user.uid)
-                binding.addTransactionFAB.isVisible = viewModel.child.value?.id != user.uid
-                binding.resetSavings.isVisible = viewModel.child.value?.id != user.uid
-            } else {
-                Timber.i("Not authenticated. Authenticating...")
-                val intent = Intent(requireActivity(), AuthActivity::class.java)
-                startActivity(intent)
-                this.activity?.finish()
+        
+        when (app.authType.value) {
+            AuthType.PARENT -> {
+                binding.addTransactionFAB.isVisible = true
+                binding.resetSavings.isVisible = true
+                binding.sendMessage.isVisible = true
             }
-        })
+            else -> {
+                binding.addTransactionFAB.isVisible = false
+                binding.resetSavings.isVisible = false
+                binding.sendMessage.isVisible = false
+            }
+        }
 
         return binding.root
     }
@@ -81,7 +84,7 @@ class TransactionsFragment : BaseFragment() {
 
     private fun setupRecyclerView() {
         val adapter = TransactionsListAdapter { selectedTransaction, view: View ->
-            if (viewModel.child.value?.id == viewModel.firebaseUID.value) {
+            if (viewModel.child.value?.id == app.firebaseUID.value) {
                 Timber.i("Not navigating, child")
             } else {
                 val endLocation = IntArray(2)

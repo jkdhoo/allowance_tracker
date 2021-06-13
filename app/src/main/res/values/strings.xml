@@ -39,6 +39,7 @@
     <string name="cd_editChild">Clidk to edit child information</string>
     <string name="cd_quote_background">Inspirational picture</string>
     <string name="transactions_title">Transactions</string>
+    <string name="notifications_title">Send notification</string>
     <string name="transaction_details_title">Transaction Details</string>
     <string name="transaction_save_error">Sorry, we could not save your transaction at this time.</string>
     <string name="transaction_delete_error">Sorry, we could not delete your transaction at this time.</string>
@@ -66,4 +67,7 @@
     <string name="submit">Submit</string>
     <string name="space" />
     <string name="not_available">N/A</string>
+    <string name="title">Title</string>
+    <string name="body">Body</string>
+    <string name="send_notification">Send notification</string>
 </resources>

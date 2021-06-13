@@ -35,7 +35,7 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
 
     private val quoteDatabase = Firebase.database.reference.child("quote").ref
     val kidsDatabase = Firebase.database.reference.child("kids").ref
-    val notificationDatabase = Firebase.database.reference.child("notifications").ref
+    private val notificationDatabase = Firebase.database.reference.child("notifications").ref
     val chatDatabase = Firebase.database.reference.child("chat").ref
 
     private var _quoteResponseTO = MutableLiveData<QuoteResponseTO>()
@@ -68,7 +68,7 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
 
     private val quoteLoaded = MutableLiveData<Boolean>()
     private val kidsLoaded = MutableLiveData<Boolean>()
-    private val chatLoaded = MutableLiveData<Boolean>()
+    val chatLoaded = MutableLiveData<Boolean>()
 
     private val firebaseUID = MutableLiveData<String>()
 
@@ -79,6 +79,7 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         quoteDatabase.keepSynced(true)
         chatDatabase.keepSynced(true)
         notificationDatabase.keepSynced(true)
+        setFirebaseUID()
     }
 
     fun resume() {
@@ -185,7 +186,7 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
                         var kidsList = mutableListOf<ChildTO>()
                         kidsDB.children.forEach { databaseChild ->
                             val childTO = databaseChild.getValue(ChildTO::class.java) ?: return@forEach
-                            if (childTO.id == firebaseUID.value) {
+                            if (childTO.id == app.firebaseUID.value) {
                                 childTO.age = RetrieveChildAgeFromBirthday.execute(app, childTO.birthday)
                                 kidsList = mutableListOf()
                                 kidsList.add(childTO)
@@ -242,8 +243,8 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         return remoteConfig.getString(param)
     }
 
-    fun setFirebaseUID(userId: String) {
-        firebaseUID.value = userId
+    private fun setFirebaseUID() {
+        val userId = app.firebaseUID.value.toString()
         chatName = when {
             firebaseConfigRetriever("laa_uid").contains(userId) -> "Laa"
             firebaseConfigRetriever("levi_uid").contains(userId) -> "Levi"

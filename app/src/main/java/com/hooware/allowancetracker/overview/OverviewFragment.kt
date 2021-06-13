@@ -11,11 +11,9 @@ import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import com.firebase.ui.auth.AuthUI
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.messaging.FirebaseMessaging
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.auth.FirebaseUserLiveData
 import com.hooware.allowancetracker.base.BaseFragment
@@ -61,6 +59,7 @@ class OverviewFragment : BaseFragment() {
 
         viewModel.chatDatabase.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                viewModel.chatLoaded.value = false
                 viewModel.loadChat()
             }
 
@@ -94,19 +93,6 @@ class OverviewFragment : BaseFragment() {
                 binding.editTextChat.text.clear()
             }
         }
-
-        FirebaseUserLiveData().observe(viewLifecycleOwner, { user ->
-            HandleFirebaseUserLiveDataChange.execute(user, activity, viewModel)
-        })
-
-        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Timber.i("Fetching FCM registration token failed: ${task.exception}")
-                return@OnCompleteListener
-            }
-
-            HandleSaveFCMToken.execute(FirebaseUserLiveData().value, task.result, viewModel)
-        })
 
         return binding.root
     }

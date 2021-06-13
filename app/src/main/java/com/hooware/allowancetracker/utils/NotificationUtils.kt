@@ -32,7 +32,7 @@ fun sendNotification(context: Context, child: ChildTO, transaction: TransactionT
         notificationManager.createNotificationChannel(channel)
     }
 
-    val intent = newIntent(context.applicationContext, child, transaction)
+    val intent = newIntent(context.applicationContext)
 
     //create a pending intent that opens ReminderDescriptionActivity when the user clicks on the notification
     val stackBuilder = TaskStackBuilder.create(context)
@@ -43,7 +43,7 @@ fun sendNotification(context: Context, child: ChildTO, transaction: TransactionT
 
 //    build the notification object with the data to be shown
     val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-        .setSmallIcon(R.mipmap.ic_launcher)
+        .setSmallIcon(R.drawable.ic_dollar_sign)
         .setContentTitle("New Transaction")
         .setContentText(child.name)
         .setContentIntent(notificationPendingIntent)

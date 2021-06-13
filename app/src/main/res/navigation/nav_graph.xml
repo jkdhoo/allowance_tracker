@@ -47,6 +47,9 @@
         <action
             android:id="@+id/action_addTransaction"
             app:destination="@id/saveTransactionFragment" />
+        <action
+            android:id="@+id/action_sendNotification"
+            app:destination="@id/notificationsFragment" />
     </fragment>
     <fragment
         android:id="@+id/transactionDetailsFragment"
@@ -60,5 +63,10 @@
         android:id="@+id/saveTransactionFragment"
         android:name="com.hooware.allowancetracker.transactions.SaveTransactionFragment"
         android:label="Transactions">
+    </fragment>
+    <fragment
+        android:id="@+id/notificationsFragment"
+        android:name="com.hooware.allowancetracker.notifications.NotificationsFragment"
+        android:label="Send notification">
     </fragment>
 </navigation>
