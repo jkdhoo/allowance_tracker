@@ -1,4 +1,4 @@
-package com.hooware.allowancetracker.utils
+package com.hooware.allowancetracker.notifications
 
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.ktx.database

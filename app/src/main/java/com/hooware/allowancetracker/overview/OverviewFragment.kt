@@ -19,6 +19,7 @@ import com.hooware.allowancetracker.databinding.FragmentOverviewBinding
 import com.hooware.allowancetracker.to.ChildTO
 import com.hooware.allowancetracker.utils.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import timber.log.Timber
 import kotlin.math.absoluteValue
 
 class OverviewFragment : BaseFragment() {
@@ -27,6 +28,11 @@ class OverviewFragment : BaseFragment() {
     private lateinit var binding: FragmentOverviewBinding
     private lateinit var kidsListener: KidsDatabaseListener
     private lateinit var chatListener: ChatDatabaseListener
+    private var lastClickTime = System.currentTimeMillis()
+
+    private companion object {
+        private const val CLICK_TIME_INTERVAL = 300L
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
 
@@ -67,6 +73,7 @@ class OverviewFragment : BaseFragment() {
 
     private fun setupRecyclerView() {
         val adapter = ChildrenListAdapter { selectedChild: ChildTO, view: View ->
+            view.isEnabled = false
             val endLocation = IntArray(2)
             val startLocation = IntArray(2)
             binding.root.getLocationInWindow(endLocation)
@@ -95,6 +102,11 @@ class OverviewFragment : BaseFragment() {
 
             binding.overviewConstraintLayout.fadeOutInvisible()
 
+            val now = System.currentTimeMillis()
+            if (now - lastClickTime < CLICK_TIME_INTERVAL) {
+                return@ChildrenListAdapter
+            }
+            lastClickTime = now
             animator.start()
         }
 
@@ -105,6 +117,13 @@ class OverviewFragment : BaseFragment() {
         when (item.itemId) {
             R.id.logout -> {
                 AuthUI.getInstance().signOut(requireContext())
+            }
+            R.id.notification_history -> {
+                viewModel.navigationCommand.postValue(
+                    NavigationCommand.To(
+                        OverviewFragmentDirections.actionShowNotificationHistory()
+                    )
+                )
             }
         }
         return super.onOptionsItemSelected(item)
@@ -122,11 +141,12 @@ class OverviewFragment : BaseFragment() {
         viewModel.insertChatContent.removeObservers(this)
         viewModel.displayQuoteImage.removeObservers(this)
         viewModel.showLoading.removeObservers(this)
+        viewModel.isOverviewShowing(false)
     }
 
     override fun onResume() {
         super.onResume()
-        viewModel.resume()
+        viewModel.isOverviewShowing(true)
         viewModel.kidsDatabase.addValueEventListener(kidsListener)
         viewModel.chatDatabase.addValueEventListener(chatListener)
         viewModel.insertChatContent.observe(viewLifecycleOwner, { insertContent ->

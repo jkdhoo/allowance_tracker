@@ -1,52 +1,10 @@
 package com.hooware.allowancetracker.network
 
-import android.os.Parcelable
-import androidx.annotation.Keep
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.coroutines.Deferred
-import kotlinx.parcelize.Parcelize
-import org.json.JSONObject
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-@Keep
-@Parcelize
-class QuoteResponseTO(
-    var quote: String = "",
-    var author: String = "",
-    var backgroundImage: String = ""
-): Parcelable
-
-fun parseQuoteJsonResult(jsonResult: JSONObject): QuoteResponseTO {
-    val resultContents = jsonResult.getJSONObject("contents")
-        .getJSONArray("quotes")
-        .getJSONObject(0)
-    val resultQuote = resultContents.getString("quote")
-    val resultAuthor = resultContents.getString("author")
-    val resultBackground = resultContents.getString("background")
-    return QuoteResponseTO(resultQuote, resultAuthor, resultBackground)
-}
-
 interface QuoteService {
-
     @GET("qod")
-    fun getQuoteAsync(
-        @Query("language") language: String,
-        @Query("category") category: String
-    ): Deferred<String>
-}
-
-object Network {
-
-    private const val BASE_URL = "https://quotes.rest/"
-
-    private val retrofitQuote = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .addConverterFactory(ScalarsConverterFactory.create())
-        .addCallAdapterFactory(CoroutineCallAdapterFactory())
-        .build()
-
-    val quote: QuoteService = retrofitQuote.create(QuoteService::class.java)
+    fun getQuoteAsync(@Query("language") language: String, @Query("category") category: String): Deferred<String>
 }

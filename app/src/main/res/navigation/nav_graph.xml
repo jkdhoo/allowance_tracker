@@ -24,6 +24,9 @@
 <!--        <action-->
 <!--            android:id="@+id/action_showTransactionDetail"-->
 <!--            app:destination="@id/transactionDetailsFragment" />-->
+        <action
+            android:id="@+id/action_showNotificationHistory"
+            app:destination="@id/notificationHistoryFragment" />
     </fragment>
 <!--    <fragment-->
 <!--        android:id="@+id/saveChildFragment"-->
@@ -62,11 +65,13 @@
     <fragment
         android:id="@+id/saveTransactionFragment"
         android:name="com.hooware.allowancetracker.transactions.SaveTransactionFragment"
-        android:label="Transactions">
-    </fragment>
+        android:label="Transactions"/>
     <fragment
         android:id="@+id/notificationsFragment"
         android:name="com.hooware.allowancetracker.notifications.NotificationsFragment"
-        android:label="Send notification">
-    </fragment>
+        android:label="Send notification"/>
+    <fragment
+        android:id="@+id/notificationHistoryFragment"
+        android:name="com.hooware.allowancetracker.notifications.NotificationHistoryFragment"
+        android:label="Notification history"/>
 </navigation>

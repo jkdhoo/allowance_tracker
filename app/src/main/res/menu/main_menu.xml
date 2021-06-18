@@ -4,5 +4,9 @@
     <item
         android:id="@+id/logout"
         android:title="@string/logout"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/notification_history"
+        android:title="@string/notification_history"
+        app:showAsAction="ifRoom" />
 </menu>

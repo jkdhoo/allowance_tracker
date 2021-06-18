@@ -8,6 +8,7 @@ import timber.log.Timber
 class ChatDatabaseListener(var viewModel: OverviewViewModel) : ValueEventListener {
     override fun onDataChange(dataSnapshot: DataSnapshot) {
         viewModel.chatLoaded.value = false
+        Timber.i("loading Chat")
         viewModel.loadChat()
     }
 

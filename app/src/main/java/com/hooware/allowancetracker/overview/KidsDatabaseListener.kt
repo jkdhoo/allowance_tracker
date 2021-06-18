@@ -8,6 +8,7 @@ import timber.log.Timber
 class KidsDatabaseListener(var viewModel: OverviewViewModel) : ValueEventListener {
     override fun onDataChange(dataSnapshot: DataSnapshot) {
         viewModel.kidsLoaded.value = false
+        Timber.i("loading Kids")
         viewModel.loadKids()
     }
 

@@ -20,6 +20,7 @@ fun <T> RecyclerView.setup(adapter: BaseRecyclerViewAdapter<T>) {
     this.apply {
         layoutManager = LinearLayoutManager(this.context)
         this.adapter = adapter
+        isMotionEventSplittingEnabled = false
     }
 }
 

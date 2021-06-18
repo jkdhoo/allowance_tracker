@@ -1,4 +1,4 @@
-package com.hooware.allowancetracker.utils
+package com.hooware.allowancetracker.auth
 
 import android.app.Activity
 import android.content.Intent
@@ -7,9 +7,10 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.hooware.allowancetracker.AllowanceApp
-import com.hooware.allowancetracker.auth.AuthActivity
 import com.hooware.allowancetracker.overview.OverviewActivity
 import com.hooware.allowancetracker.splash.SplashActivity
+import com.hooware.allowancetracker.utils.AuthType
+import com.hooware.allowancetracker.notifications.HandleSaveFCMToken
 import timber.log.Timber
 
 object HandleFirebaseUserLiveData {

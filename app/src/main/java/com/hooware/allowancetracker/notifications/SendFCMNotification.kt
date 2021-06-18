@@ -1,7 +1,9 @@
-package com.hooware.allowancetracker.utils
+package com.hooware.allowancetracker.notifications
 
 import android.os.Handler
 import android.os.HandlerThread
+import com.hooware.allowancetracker.AllowanceApp
+import com.hooware.allowancetracker.utils.FirebaseConfigRetriever
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -10,7 +12,8 @@ import java.net.URL
 
 object SendFCMNotification {
 
-    fun execute(token: String, body: String, title: String) {
+    fun execute(application: AllowanceApp, token: String, body: String, title: String) {
+        SaveNotificationIfNecessary.execute(application, to = token, body = body, title = title)
         val handler = HandlerThread("URLConnection")
         handler.start()
         val mainHandler = Handler(handler.looper)
@@ -28,8 +31,8 @@ object SendFCMNotification {
                 message.put("to", token)
                 message.put("priority", "high")
                 val notification = JSONObject()
-                notification.put("title", title)
-                notification.put("body", body)
+                notification.put("title", "\"$title\"")
+                notification.put("body", "\"$body\"")
                 message.put("data", notification)
                 val os = conn.outputStream
                 os.write(message.toString().toByteArray())

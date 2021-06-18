@@ -10,7 +10,7 @@ import com.hooware.allowancetracker.auth.FirebaseUserLiveData
 import com.hooware.allowancetracker.databinding.ActivitySplashBinding
 import com.hooware.allowancetracker.overview.OverviewActivity
 import com.hooware.allowancetracker.utils.AuthType
-import com.hooware.allowancetracker.utils.HandleFirebaseUserLiveData
+import com.hooware.allowancetracker.auth.HandleFirebaseUserLiveData
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 

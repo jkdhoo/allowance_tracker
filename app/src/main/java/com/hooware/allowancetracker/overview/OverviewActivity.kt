@@ -8,7 +8,7 @@ import androidx.databinding.DataBindingUtil
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.auth.FirebaseUserLiveData
 import com.hooware.allowancetracker.databinding.ActivityOverviewBinding
-import com.hooware.allowancetracker.utils.HandleFirebaseUserLiveData
+import com.hooware.allowancetracker.auth.HandleFirebaseUserLiveData
 
 class OverviewActivity : AppCompatActivity() {
 

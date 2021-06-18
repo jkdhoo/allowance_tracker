@@ -7,7 +7,7 @@
 
         <variable
             name="quoteResponseTO"
-            type="com.hooware.allowancetracker.network.QuoteResponseTO" />
+            type="com.hooware.allowancetracker.to.QuoteResponseTO" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

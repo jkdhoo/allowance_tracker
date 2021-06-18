@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.database.ktx.database
@@ -18,11 +19,12 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.hooware.allowancetracker.AllowanceApp
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.base.BaseViewModel
-import com.hooware.allowancetracker.network.Network
-import com.hooware.allowancetracker.network.QuoteResponseTO
-import com.hooware.allowancetracker.network.parseQuoteJsonResult
+import com.hooware.allowancetracker.network.QuoteNetworkService
 import com.hooware.allowancetracker.to.ChildTO
 import com.hooware.allowancetracker.utils.RetrieveChildAgeFromBirthday
+import com.hooware.allowancetracker.notifications.SendNewMessageNotifications
+import com.hooware.allowancetracker.to.NotificationSaveItemTO
+import com.hooware.allowancetracker.to.QuoteResponseTO
 import com.hooware.allowancetracker.utils.toTimestamp
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -35,6 +37,8 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
     private val quoteDatabase = Firebase.database.reference.child("quote").ref
     val kidsDatabase = Firebase.database.reference.child("kids").ref
     val chatDatabase = Firebase.database.reference.child("chat").ref
+    private val notificationDatabase = Firebase.database.reference.child("notifications").ref
+    private val notificationHistoryDatabase = Firebase.database.reference.child("notificationHistory").ref
 
     private var _quoteResponseTO = MutableLiveData<QuoteResponseTO>()
     val quoteResponseTO: LiveData<QuoteResponseTO>
@@ -47,6 +51,10 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
     private var _chatList = MutableLiveData<List<Triple<String, String, String>>>()
     private val chatList: LiveData<List<Triple<String, String, String>>>
         get() = _chatList
+
+    private var _notificationHistoryList = MutableLiveData<List<Pair<String, NotificationSaveItemTO>>>()
+    val notificationHistoryList: LiveData<List<Pair<String, NotificationSaveItemTO>>>
+        get() = _notificationHistoryList
 
     private var _screenLoaded = MutableLiveData<Boolean>()
     val screenLoaded: LiveData<Boolean>
@@ -67,28 +75,29 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
     private val quoteLoaded = MutableLiveData<Boolean>()
     val kidsLoaded = MutableLiveData<Boolean>()
     val chatLoaded = MutableLiveData<Boolean>()
+    val notificationHistoryLoaded = MutableLiveData<Boolean>()
+    val showNotificationHistoryEmpty = MutableLiveData<Boolean>()
 
-    private var chatName = ""
+    private val chatName = app.authType.value?.simpleName ?: ""
 
     init {
         kidsDatabase.keepSynced(true)
         quoteDatabase.keepSynced(true)
         chatDatabase.keepSynced(true)
-        setFirebaseUID()
-    }
-
-    fun resume() {
+        notificationDatabase.keepSynced(true)
+        notificationHistoryDatabase.keepSynced(true)
         quoteLoaded.value = false
         kidsLoaded.value = false
         chatLoaded.value = false
+        notificationHistoryLoaded.value = false
+        showNotificationHistoryEmpty.value = true
+        _notificationHistoryList.value = mutableListOf()
         _kidsList.value = mutableListOf()
         _chatList.value = mutableListOf()
         _showLoading.value = true
         _displayQuoteImage.value = false
         _insertChatContent.value = false
         loadQuote()
-        loadKids()
-        loadChat()
     }
 
     fun loadQuote() {
@@ -100,7 +109,7 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         viewModelScope.launch {
             val quoteFinal: QuoteResponseTO
                 try {
-                    val responseString = Network.quote.getQuoteAsync("en", "inspire").await()
+                    val responseString = QuoteNetworkService.quote.getQuoteAsync("en", "inspire").await()
                     val responseJSON = JSONObject(responseString)
                     quoteFinal = parseQuoteJsonResult(responseJSON)
                     _quoteResponseTO.value = quoteFinal
@@ -109,6 +118,7 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
                     quoteDatabase.setValue(quoteFinal)
                         .addOnSuccessListener {
                             Timber.i("Quote saved and loaded: $quoteFinal")
+
                         }
                         .addOnFailureListener {
                             Timber.i("Quote not saved but loaded: $quoteFinal")
@@ -148,6 +158,7 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         viewModelScope.launch {
             chatDatabase.get()
                 .addOnSuccessListener { chatDB ->
+                    Timber.i("Received chatDB, adding items")
                     val chatList = mutableListOf<Triple<String, String, String>>()
                     chatDB.children.forEach { chatChild ->
                         val messageId = chatChild.key.toString()
@@ -165,6 +176,27 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
                     Timber.i("Chat saved and loaded")
                     chatLoaded.value = true
                     showLoadingCheck()
+                }
+        }
+    }
+
+    fun loadNotificationHistory() {
+        if (notificationHistoryLoaded.value == true) {
+            Timber.i("Notification history already loaded")
+            return
+        }
+        viewModelScope.launch {
+            notificationHistoryDatabase.get()
+                .addOnSuccessListener { db ->
+                    val historyList = mutableListOf<Pair<String,NotificationSaveItemTO>>()
+                    db.children.forEach { notification ->
+                        val notificationItem = notification.value as? NotificationSaveItemTO ?: return@forEach
+                        historyList.add(Pair(notification.key.toString(), notificationItem))
+                    }
+                    _notificationHistoryList.value = historyList.sortedBy { it.first }
+                    Timber.i("Notification history saved and loaded")
+                    showNotificationHistoryEmpty.value = historyList.isNullOrEmpty()
+                    notificationHistoryLoaded.value = true
                 }
         }
     }
@@ -208,7 +240,8 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
 
     fun displayQuoteImage(imgView: ImageView) {
         viewModelScope.launch {
-            val imgUrl = quoteResponseTO.value?.backgroundImage ?: firebaseConfigRetriever("default_backgroundImage")
+//            val imgUrl = quoteResponseTO.value?.backgroundImage ?: firebaseConfigRetriever("default_backgroundImage")
+            val imgUrl = "picsum.photos/400/200"
             val imgUri = imgUrl.toUri().buildUpon().scheme("https").build()
             Glide.with(imgView.context)
                 .load(imgUri)
@@ -238,19 +271,13 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         return remoteConfig.getString(param)
     }
 
-    private fun setFirebaseUID() {
-        val userId = app.firebaseUID.value.toString()
-        chatName = when {
-            firebaseConfigRetriever("laa_uid").contains(userId) -> "Laa"
-            firebaseConfigRetriever("levi_uid").contains(userId) -> "Levi"
-            firebaseConfigRetriever("mom_uid").contains(userId) -> "Mom"
-            firebaseConfigRetriever("dad_uid").contains(userId) -> "Dad"
-            else -> ""
-        }
-    }
-
     fun saveChatItem(message: String) {
-        chatDatabase.child(System.currentTimeMillis().toString()).child(chatName).setValue(message)
+        chatDatabase.child(System.currentTimeMillis().toString()).child(chatName).setValue(message).addOnSuccessListener {
+            showToast.value = "Message sent!"
+            notificationDatabase.get().addOnSuccessListener { snapshot ->
+                SendNewMessageNotifications.execute(app, snapshot, message)
+            }
+        }
     }
 
     fun insertChatContent(layout: LinearLayout, fragment: Fragment) {
@@ -286,4 +313,38 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
             else -> 0
         }
     }
+
+    private fun parseQuoteJsonResult(jsonResult: JSONObject): QuoteResponseTO {
+        val resultContents = jsonResult.getJSONObject("contents")
+            .getJSONArray("quotes")
+            .getJSONObject(0)
+        val resultQuote = resultContents.getString("quote")
+        val resultAuthor = resultContents.getString("author")
+        val resultBackground = resultContents.getString("background")
+        return QuoteResponseTO(resultQuote, resultAuthor, resultBackground)
+    }
+
+    fun isOverviewShowing(bool: Boolean) {
+        app.isOverviewShowing.value = bool
+    }
+
+    fun resetNotificationHistoryLoaded() {
+        notificationHistoryLoaded.value = false
+        showNotificationHistoryEmpty.value = true
+    }
+
+//    private fun setQuoteLastLoadedTime() {
+//        val pref = PreferenceManager.getDefaultSharedPreferences(app)
+//        val editor = pref.edit()
+//        editor.putString("quoteLastLoaded","Harneet");
+//        editor.apply();
+//        To retrieve values from shared preferences:
+//
+//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        String name = preferences.getString("Name", "");
+//        if(!name.equalsIgnoreCase(""))
+//        {
+//            name = name + "  Sethi";  /* Edit the value here*/
+//        }
+//    }
 }

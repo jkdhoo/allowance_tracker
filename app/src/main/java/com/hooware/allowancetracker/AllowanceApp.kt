@@ -8,7 +8,7 @@ import com.hooware.allowancetracker.overview.OverviewViewModel
 import com.hooware.allowancetracker.splash.SplashViewModel
 import com.hooware.allowancetracker.transactions.TransactionsViewModel
 import com.hooware.allowancetracker.utils.AuthType
-import com.hooware.allowancetracker.utils.CreateNotificationChannel
+import com.hooware.allowancetracker.notifications.CreateNotificationChannel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -21,6 +21,7 @@ class AllowanceApp : Application() {
     val authType = MutableLiveData<AuthType?>()
     val fcmToken = MutableLiveData<String?>()
     val firebaseUID = MutableLiveData<String?>()
+    val isOverviewShowing = MutableLiveData<Boolean>()
 
     override fun onCreate() {
         super.onCreate()

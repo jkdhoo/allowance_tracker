@@ -10,6 +10,7 @@
     <string name="logout">Logout</string>
     <string name="add_a_child">You have not yet added a child.\nClick the + button!</string>
     <string name="add_a_transaction">You have not yet added any allowance.\nClick the + button!</string>
+    <string name="no_notifications">You have not yet received any notifications.</string>
     <string name="cd_add_new_child">Add New Child</string>
     <string name="cd_add_new_transaction">Add New Transaction</string>
     <string name="child_name_title">Name: </string>
@@ -39,6 +40,7 @@
     <string name="cd_editChild">Clidk to edit child information</string>
     <string name="cd_quote_background">Inspirational picture</string>
     <string name="transactions_title">Transactions</string>
+    <string name="notification_history_title">Notification history</string>
     <string name="notifications_title">Send notification</string>
     <string name="transaction_details_title">Transaction Details</string>
     <string name="transaction_save_error">Sorry, we could not save your transaction at this time.</string>
@@ -48,7 +50,7 @@
     <string name="total">Total</string>
     <string name="channel_name">notifications</string>
     <string name="channel_description">Allowance Tracker Notifications</string>
-    <string name="channel_id">"1"</string>
+    <string name="channel_id">"3"</string>
     <string name="savings_title">Savings Owed:</string>
     <string name="total_title">Total:</string>
     <string name="spending_title">Spending:</string>
@@ -70,4 +72,5 @@
     <string name="title">Title</string>
     <string name="body">Body</string>
     <string name="send_notification">Send notification</string>
+    <string name="notification_history">Notification History</string>
 </resources>

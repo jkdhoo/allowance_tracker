@@ -1,6 +1,5 @@
-package com.hooware.allowancetracker.utils
+package com.hooware.allowancetracker.notifications
 
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
@@ -20,6 +19,7 @@ class NotificationHandler : FirebaseMessagingService() {
 
     companion object {
         const val NOTIFICATION_CHANNEL_ID = BuildConfig.APPLICATION_ID + ".channel"
+        private const val NEW_MESSAGE = "New Message!"
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
@@ -32,12 +32,15 @@ class NotificationHandler : FirebaseMessagingService() {
         }
         val body = data.getString("body") ?: return
         val title = data.getString("title") ?: return
+        if (title == NEW_MESSAGE) {
+            val isUserOnOverview = IsUserOnOverview.execute(application as AllowanceApp)
+            if (isUserOnOverview) return
+        }
         showNotification(body = body, title = title)
     }
 
     private fun showNotification(body: String, title: String) {
-        CreateNotificationChannel.execute(application as AllowanceApp)
-
+        Timber.i("Showing notification")
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager ?: return
 
         val intent = OverviewActivity.newIntent(applicationContext)

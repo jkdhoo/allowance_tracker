@@ -7,7 +7,6 @@ import androidx.databinding.DataBindingUtil
 import com.firebase.ui.auth.AuthUI
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.databinding.ActivityAuthBinding
-import com.hooware.allowancetracker.utils.HandleFirebaseUserLiveData
 import timber.log.Timber
 
 /**
