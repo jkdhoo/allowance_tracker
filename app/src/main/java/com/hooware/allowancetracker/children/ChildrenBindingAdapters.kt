@@ -24,6 +24,17 @@ object ChildrenBindingAdapters {
         }
     }
 
+    @BindingAdapter("android:liveDataChat")
+    @JvmStatic
+    fun setRecyclerViewChatData(recyclerView: RecyclerView, chat: LiveData<MutableList<Triple<String, String, String>>>?) {
+        chat?.value?.let { chatList ->
+            (recyclerView.adapter as? ChatListAdapter)?.apply {
+                clear()
+                addData(chatList)
+            }
+        }
+    }
+
     @BindingAdapter("android:currency")
     @JvmStatic
     fun setCurrency(view: TextView, newValue: Double?) {

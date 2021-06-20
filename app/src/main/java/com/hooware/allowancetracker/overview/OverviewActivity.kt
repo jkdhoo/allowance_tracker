@@ -5,10 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.hooware.allowancetracker.AllowanceApp
 import com.hooware.allowancetracker.R
+import com.hooware.allowancetracker.auth.AuthActivity
 import com.hooware.allowancetracker.auth.FirebaseUserLiveData
 import com.hooware.allowancetracker.databinding.ActivityOverviewBinding
-import com.hooware.allowancetracker.auth.HandleFirebaseUserLiveData
+import timber.log.Timber
 
 class OverviewActivity : AppCompatActivity() {
 
@@ -22,17 +24,15 @@ class OverviewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding: ActivityOverviewBinding = DataBindingUtil.setContentView(this, R.layout.activity_overview)
         binding.lifecycleOwner = this
-    }
-
-    override fun onResume() {
-        super.onResume()
         FirebaseUserLiveData().observe(this, { user ->
-            HandleFirebaseUserLiveData.execute(this, user)
+            if (user == null) {
+                val app = application as AllowanceApp
+                app.firebaseUID.value = null
+                Timber.i("Not authenticated. Authenticating...")
+                val intent = Intent(this, AuthActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
         })
-    }
-
-    override fun onPause() {
-        FirebaseUserLiveData().removeObservers(this)
-        super.onPause()
     }
 }

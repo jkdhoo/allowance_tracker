@@ -5,5 +5,6 @@ enum class AuthType(val simpleName: String) {
     DAD("Dad"),
     LAA("Laa"),
     LEVI("Levi"),
-    UNAUTH("")
+    UNAUTH("UNAUTH"),
+    UNKNOWN("UNKNOWN")
 }

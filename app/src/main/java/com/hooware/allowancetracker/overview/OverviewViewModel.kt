@@ -1,8 +1,8 @@
 package com.hooware.allowancetracker.overview
 
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ScrollView
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.core.widget.NestedScrollView
@@ -10,8 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.preference.PreferenceManager
-import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -20,11 +18,13 @@ import com.hooware.allowancetracker.AllowanceApp
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.base.BaseViewModel
 import com.hooware.allowancetracker.network.QuoteNetworkService
-import com.hooware.allowancetracker.to.ChildTO
-import com.hooware.allowancetracker.utils.RetrieveChildAgeFromBirthday
 import com.hooware.allowancetracker.notifications.SendNewMessageNotifications
+import com.hooware.allowancetracker.to.ChildTO
 import com.hooware.allowancetracker.to.NotificationSaveItemTO
 import com.hooware.allowancetracker.to.QuoteResponseTO
+import com.hooware.allowancetracker.utils.GlideApp
+import com.hooware.allowancetracker.utils.HasAlreadyLoadedQuote
+import com.hooware.allowancetracker.utils.RetrieveChildAgeFromBirthday
 import com.hooware.allowancetracker.utils.toTimestamp
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -49,7 +49,7 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         get() = _kidsList
 
     private var _chatList = MutableLiveData<List<Triple<String, String, String>>>()
-    private val chatList: LiveData<List<Triple<String, String, String>>>
+    val chatList: LiveData<List<Triple<String, String, String>>>
         get() = _chatList
 
     private var _notificationHistoryList = MutableLiveData<List<Pair<String, NotificationSaveItemTO>>>()
@@ -64,17 +64,17 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
     val showLoading: LiveData<Boolean>
         get() = _showLoading
 
-    private var _displayQuoteImage = MutableLiveData<Boolean>()
-    val displayQuoteImage: LiveData<Boolean>
-        get() = _displayQuoteImage
+    private var _imageReadyToLoad = MutableLiveData<Boolean>()
+    val imageReadyToLoad: LiveData<Boolean>
+        get() = _imageReadyToLoad
 
     private var _insertChatContent = MutableLiveData<Boolean>()
     val insertChatContent: LiveData<Boolean>
         get() = _insertChatContent
 
-    private val quoteLoaded = MutableLiveData<Boolean>()
     val kidsLoaded = MutableLiveData<Boolean>()
     val chatLoaded = MutableLiveData<Boolean>()
+    val imageLoaded = MutableLiveData<Boolean>()
     val notificationHistoryLoaded = MutableLiveData<Boolean>()
     val showNotificationHistoryEmpty = MutableLiveData<Boolean>()
 
@@ -86,7 +86,11 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         chatDatabase.keepSynced(true)
         notificationDatabase.keepSynced(true)
         notificationHistoryDatabase.keepSynced(true)
-        quoteLoaded.value = false
+    }
+
+    fun setup() {
+        _imageReadyToLoad.value = false
+        imageLoaded.value = false
         kidsLoaded.value = false
         chatLoaded.value = false
         notificationHistoryLoaded.value = false
@@ -95,16 +99,26 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         _kidsList.value = mutableListOf()
         _chatList.value = mutableListOf()
         _showLoading.value = true
-        _displayQuoteImage.value = false
         _insertChatContent.value = false
         loadQuote()
     }
 
     fun loadQuote() {
-        if (quoteLoaded.value == true) {
-            Timber.i("Quote already loaded")
-            showLoadingCheck()
-            return
+        when {
+            imageLoaded.value == true -> {
+                Timber.i("Quote and image already loaded")
+                return
+            }
+            imageReadyToLoad.value == true -> {
+                Timber.i("Quote already loaded")
+                _imageReadyToLoad.value = true
+                return
+            }
+            HasAlreadyLoadedQuote.execute(app) -> {
+                Timber.i("Quote recently retrieved, loading from database")
+                getDatabaseQuote()
+                return
+            }
         }
         viewModelScope.launch {
             val quoteFinal: QuoteResponseTO
@@ -112,40 +126,41 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
                     val responseString = QuoteNetworkService.quote.getQuoteAsync("en", "inspire").await()
                     val responseJSON = JSONObject(responseString)
                     quoteFinal = parseQuoteJsonResult(responseJSON)
-                    _quoteResponseTO.value = quoteFinal
-                    quoteLoaded.value = true
-                    showLoadingCheck()
                     quoteDatabase.setValue(quoteFinal)
                         .addOnSuccessListener {
                             Timber.i("Quote saved and loaded: $quoteFinal")
-
+                            _quoteResponseTO.value = quoteFinal
+                            _imageReadyToLoad.value = true
                         }
                         .addOnFailureListener {
                             Timber.i("Quote not saved but loaded: $quoteFinal")
+                            _quoteResponseTO.value = quoteFinal
+                            _imageReadyToLoad.value = true
                         }
                 } catch (e: Exception) {
-                    quoteDatabase.get()
-                        .addOnSuccessListener {
-                            _quoteResponseTO.value = it.getValue(QuoteResponseTO::class.java)
-                            quoteLoaded.value = true
-                            showLoadingCheck()
-                            Timber.i("Network error($e), local quote loaded")
-                        }
-                        .addOnFailureListener {
-                            _quoteResponseTO.value = getDefaultQuote()
-                            quoteLoaded.value = true
-                            showLoadingCheck()
-                            Timber.i("Network error($e), default quote loaded")
-                        }
+                    getDatabaseQuote()
                 }
         }
+    }
+
+    private fun getDatabaseQuote() {
+        quoteDatabase.get()
+            .addOnSuccessListener {
+                _quoteResponseTO.value = it.getValue(QuoteResponseTO::class.java)
+                _imageReadyToLoad.value = true
+                Timber.i("Local quote loaded")
+            }
+            .addOnFailureListener {
+                _quoteResponseTO.value = getDefaultQuote()
+                _imageReadyToLoad.value = true
+                Timber.i("Default quote loaded")
+            }
     }
 
     private fun getDefaultQuote(): QuoteResponseTO {
         return QuoteResponseTO(
             quote = firebaseConfigRetriever("default_quote"),
-            author = firebaseConfigRetriever("default_author"),
-            backgroundImage = firebaseConfigRetriever("default_backgroundImage")
+            author = firebaseConfigRetriever("default_author")
         )
     }
 
@@ -239,11 +254,14 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
     }
 
     fun displayQuoteImage(imgView: ImageView) {
+        if (imageLoaded.value == true) {
+            Timber.i("Image already loaded")
+            return
+        }
         viewModelScope.launch {
-//            val imgUrl = quoteResponseTO.value?.backgroundImage ?: firebaseConfigRetriever("default_backgroundImage")
             val imgUrl = "picsum.photos/400/200"
             val imgUri = imgUrl.toUri().buildUpon().scheme("https").build()
-            Glide.with(imgView.context)
+            GlideApp.with(imgView.context)
                 .load(imgUri)
                 .apply(
                     RequestOptions()
@@ -251,16 +269,16 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
                 )
                 .into(imgView)
             Timber.i("Image loaded")
+            imageLoaded.value = true
+            showLoadingCheck()
         }
     }
 
     private fun showLoadingCheck() {
-        if (kidsLoaded.value == true && quoteLoaded.value == true && chatLoaded.value == true) {
-            _displayQuoteImage.value = true
+        if (kidsLoaded.value == true && imageLoaded.value == true && chatLoaded.value == true) {
             _insertChatContent.value = true
             _showLoading.value = false
         } else {
-            _displayQuoteImage.value = false
             _insertChatContent.value = false
             _showLoading.value = true
         }
@@ -281,26 +299,27 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
     }
 
     fun insertChatContent(layout: LinearLayout, fragment: Fragment) {
-        layout.removeAllViews()
-        chatList.value?.forEach { chatItem ->
-            val view = fragment.layoutInflater.inflate(R.layout.it_chat, null)
-            val name = view.findViewById(R.id.name) as TextView
-            name.text = chatItem.second
-            name.setTextColor(chooseColorByName(name, chatItem.second))
+        viewModelScope.launch {
+            layout.removeAllViews()
+            chatList.value?.forEach { chatItem ->
+                val view = fragment.layoutInflater.inflate(R.layout.it_chat, null)
+                val name = view.findViewById(R.id.name) as TextView
+                name.text = chatItem.second
+                name.setTextColor(chooseColorByName(name, chatItem.second))
 
-            val timestamp = view.findViewById(R.id.timestamp) as TextView
-            timestamp.text = chatItem.first.toLong().toTimestamp
-            timestamp.setTextColor(chooseColorByName(name, chatItem.second))
+                val timestamp = view.findViewById(R.id.timestamp) as TextView
+                timestamp.text = chatItem.first.toLong().toTimestamp
+                timestamp.setTextColor(chooseColorByName(name, chatItem.second))
 
-            val chat = view.findViewById(R.id.chat) as TextView
-            chat.text = chatItem.third
-            chat.setTextColor(chooseColorByName(name, chatItem.second))
+                val chat = view.findViewById(R.id.chat) as TextView
+                chat.text = chatItem.third
+                chat.setTextColor(chooseColorByName(name, chatItem.second))
 
-            layout.addView(view)
+                layout.addView(view)
+            }
+            val scrollView = layout.parent as? NestedScrollView ?: return@launch
+            scrollView.postDelayed({ scrollView.fullScroll(View.FOCUS_DOWN) }, 1000)
         }
-        layout.invalidate()
-        val scrollView = layout.parent as? NestedScrollView ?: return
-        scrollView.postDelayed({ scrollView.fullScroll(ScrollView.FOCUS_DOWN) }, 400)
     }
 
     private fun chooseColorByName(view: TextView, name: String) : Int {
@@ -320,8 +339,7 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
             .getJSONObject(0)
         val resultQuote = resultContents.getString("quote")
         val resultAuthor = resultContents.getString("author")
-        val resultBackground = resultContents.getString("background")
-        return QuoteResponseTO(resultQuote, resultAuthor, resultBackground)
+        return QuoteResponseTO(resultQuote, resultAuthor)
     }
 
     fun isOverviewShowing(bool: Boolean) {
@@ -333,18 +351,17 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         showNotificationHistoryEmpty.value = true
     }
 
-//    private fun setQuoteLastLoadedTime() {
-//        val pref = PreferenceManager.getDefaultSharedPreferences(app)
-//        val editor = pref.edit()
-//        editor.putString("quoteLastLoaded","Harneet");
-//        editor.apply();
-//        To retrieve values from shared preferences:
-//
-//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        String name = preferences.getString("Name", "");
-//        if(!name.equalsIgnoreCase(""))
-//        {
-//            name = name + "  Sethi";  /* Edit the value here*/
-//        }
-//    }
+    fun reset() {
+        _imageReadyToLoad.value = false
+        imageLoaded.value = false
+        kidsLoaded.value = false
+        chatLoaded.value = false
+        notificationHistoryLoaded.value = false
+        showNotificationHistoryEmpty.value = true
+        _notificationHistoryList.value = mutableListOf()
+        _kidsList.value = mutableListOf()
+        _chatList.value = mutableListOf()
+        _showLoading.value = true
+        _insertChatContent.value = false
+    }
 }

@@ -13,7 +13,7 @@ class SplashViewModel(application: AllowanceApp) : BaseViewModel(application) {
     val app = application
 
     private companion object {
-        private const val SPLASH_TIME_IN_MILLI = 2000L
+        private const val SPLASH_TIME_IN_MILLI = 1000L
     }
 
     private var _splashReady = MutableLiveData<Boolean>()

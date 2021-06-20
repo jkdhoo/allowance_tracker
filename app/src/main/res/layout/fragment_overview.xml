@@ -19,6 +19,7 @@
             android:id="@+id/overview_constraint_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fadeVisible="@{!viewModel.showLoading}"
             android:layout_margin="@dimen/margin_4dp">
 
             <androidx.cardview.widget.CardView
@@ -29,8 +30,7 @@
                 app:cardCornerRadius="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:fadeVisible="@{!viewModel.showLoading}">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/quote_card_view_constraint_layout"
@@ -88,7 +88,6 @@
                 android:layout_marginStart="@dimen/margin_normal"
                 android:layout_marginEnd="@dimen/margin_normal"
                 android:liveDataKids="@{viewModel.kidsList}"
-                android:fadeVisible="@{!viewModel.showLoading}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/quote_cardview" />
@@ -99,42 +98,51 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="8dp"
                 android:background="@color/primaryLightColor"
-                android:fadeVisible="@{!viewModel.showLoading}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/childrenRecyclerView" />
 
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/chat_scrollview_layout"
+<!--            <androidx.core.widget.NestedScrollView-->
+<!--                android:id="@+id/chat_scrollview_layout"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:layout_marginStart="4dp"-->
+<!--                android:layout_marginTop="8dp"-->
+<!--                android:layout_marginEnd="4dp"-->
+<!--                app:layout_constraintBottom_toTopOf="@id/chat_enter_constraint_layout"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/divider_2">-->
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/chatRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="4dp"
-                android:fadeVisible="@{!viewModel.showLoading}"
+                android:layout_marginStart="@dimen/margin_normal"
+                android:layout_marginEnd="@dimen/margin_normal"
+                android:liveDataChat="@{viewModel.chatList}"
                 app:layout_constraintBottom_toTopOf="@id/chat_enter_constraint_layout"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/divider_2">
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/divider_2"/>
 
-                <LinearLayout
-                    android:id="@+id/chat_item_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/chat_item_layout"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="vertical" />-->
 
-            </androidx.core.widget.NestedScrollView>
+<!--            </androidx.core.widget.NestedScrollView>-->
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/chat_enter_constraint_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:fadeVisible="@{!viewModel.showLoading}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/chat_scrollview_layout">
+                app:layout_constraintTop_toBottomOf="@id/chatRecyclerView">
 
                 <View
                     android:id="@+id/divider"
@@ -170,16 +178,14 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/divider" />
             </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:layout_centerInParent="true"
+            android:layout_alignParentBottom="true" />
     </RelativeLayout>
 </layout>

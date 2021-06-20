@@ -1,12 +1,18 @@
 package com.hooware.allowancetracker.auth
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.firebase.ui.auth.AuthUI
+import com.google.firebase.auth.FirebaseAuth
+import com.hooware.allowancetracker.AllowanceApp
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.databinding.ActivityAuthBinding
+import com.hooware.allowancetracker.overview.OverviewActivity
+import com.hooware.allowancetracker.utils.AuthType
 import timber.log.Timber
 
 /**
@@ -14,7 +20,14 @@ import timber.log.Timber
  */
 class AuthActivity : AppCompatActivity() {
 
-    private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
+    private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        Timber.i("${it.resultCode}")
+        if (it.resultCode == Activity.RESULT_OK) {
+            processAuthResult()
+        } else {
+            finish()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,19 +56,23 @@ class AuthActivity : AppCompatActivity() {
         )
     }
 
-    override fun onResume() {
-        super.onResume()
-        FirebaseUserLiveData().observe(this, { user ->
-            if (user != null) {
-                HandleFirebaseUserLiveData.execute(this, user)
-            } else {
-                Timber.i("Unauthenticated")
+    private fun processAuthResult() {
+        val firebaseAuth = FirebaseAuth.getInstance()
+        val userId = firebaseAuth.currentUser?.uid ?: run {
+            finish()
+            return
+        }
+        val app = application as AllowanceApp
+        app.firebaseUID.value = userId
+        SetAuthType.execute(userId, app)
+        when (app.authType.value) {
+            AuthType.LEVI, AuthType.LAA, AuthType.MOM, AuthType.DAD -> {
+                Timber.i("Recognized, routing to Overview")
+                val intent = Intent(this, OverviewActivity::class.java)
+                startActivity(intent)
+                overridePendingTransition(R.xml.slide_up_from_bottom, R.xml.slide_up_and_out)
             }
-        })
-    }
-
-    override fun onPause() {
-        FirebaseUserLiveData().removeObservers(this)
-        super.onPause()
+            else -> finish()
+        }
     }
 }

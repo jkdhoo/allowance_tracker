@@ -66,6 +66,6 @@ class NotificationHandler : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        HandleSaveFCMToken.execute(FirebaseUserLiveData().value, token)
+        HandleSaveFCMToken.execute(application as AllowanceApp, FirebaseUserLiveData().value, token)
     }
 }

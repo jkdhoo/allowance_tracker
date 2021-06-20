@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
 import androidx.core.animation.addListener
@@ -14,6 +15,7 @@ import com.firebase.ui.auth.AuthUI
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.base.BaseFragment
 import com.hooware.allowancetracker.base.NavigationCommand
+import com.hooware.allowancetracker.children.ChatListAdapter
 import com.hooware.allowancetracker.children.ChildrenListAdapter
 import com.hooware.allowancetracker.databinding.FragmentOverviewBinding
 import com.hooware.allowancetracker.to.ChildTO
@@ -21,6 +23,7 @@ import com.hooware.allowancetracker.utils.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import timber.log.Timber
 import kotlin.math.absoluteValue
+
 
 class OverviewFragment : BaseFragment() {
 
@@ -68,7 +71,13 @@ class OverviewFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
+        setupChatView()
         binding.overviewConstraintLayout.fadeIn()
+    }
+
+    private fun setupChatView() {
+        val adapter = ChatListAdapter()
+        binding.chatRecyclerView.setupChat(adapter)
     }
 
     private fun setupRecyclerView() {
@@ -139,27 +148,33 @@ class OverviewFragment : BaseFragment() {
         viewModel.kidsDatabase.removeEventListener(kidsListener)
         viewModel.chatDatabase.removeEventListener(chatListener)
         viewModel.insertChatContent.removeObservers(this)
-        viewModel.displayQuoteImage.removeObservers(this)
+        viewModel.imageReadyToLoad.removeObservers(this)
         viewModel.showLoading.removeObservers(this)
         viewModel.isOverviewShowing(false)
+        viewModel.reset()
     }
 
     override fun onResume() {
         super.onResume()
+        viewModel.setup()
         viewModel.isOverviewShowing(true)
         viewModel.kidsDatabase.addValueEventListener(kidsListener)
         viewModel.chatDatabase.addValueEventListener(chatListener)
-        viewModel.insertChatContent.observe(viewLifecycleOwner, { insertContent ->
-            if (insertContent) {
-                viewModel.insertChatContent(binding.chatItemLayout, this)
-            }
-        })
-        viewModel.displayQuoteImage.observe(viewLifecycleOwner, { displayImage ->
-            if (displayImage) {
+//        viewModel.insertChatContent.observe(this, { insertContent ->
+//            Timber.i("insertChatContent triggered: $insertContent")
+//            if (insertContent) {
+//                viewModel.insertChatContent(binding.chatItemLayout, this)
+//            }
+//        })
+        viewModel.imageReadyToLoad.observe(this, { imageReady ->
+            Timber.i("imageReadyToLoad triggered: $imageReady")
+            if (imageReady && viewModel.imageLoaded.value == false) {
                 viewModel.displayQuoteImage(binding.quoteBackground)
+                viewModel.imageLoaded.value = true
             }
         })
-        viewModel.showLoading.observe(viewLifecycleOwner, { showLoading ->
+        viewModel.showLoading.observe(this, { showLoading ->
+            Timber.i("showLoading triggered: $showLoading")
             binding.progressBar.isVisible = showLoading
         })
     }

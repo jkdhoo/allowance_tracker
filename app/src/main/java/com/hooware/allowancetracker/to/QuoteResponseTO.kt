@@ -6,8 +6,4 @@ import kotlinx.parcelize.Parcelize
 
 @Keep
 @Parcelize
-data class QuoteResponseTO(
-    var quote: String = "",
-    var author: String = "",
-    var backgroundImage: String = ""
-): Parcelable
+data class QuoteResponseTO(var quote: String = "", var author: String = ""): Parcelable

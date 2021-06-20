@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.hooware.allowancetracker.base.BaseRecyclerViewAdapter
+import com.hooware.allowancetracker.children.ChatListAdapter
 import timber.log.Timber
 import java.text.DecimalFormat
 import java.text.NumberFormat
@@ -21,6 +22,17 @@ fun <T> RecyclerView.setup(adapter: BaseRecyclerViewAdapter<T>) {
         layoutManager = LinearLayoutManager(this.context)
         this.adapter = adapter
         isMotionEventSplittingEnabled = false
+    }
+}
+
+fun RecyclerView.setupChat(adapter: ChatListAdapter) {
+    this.apply {
+        layoutManager = LinearLayoutManager(this.context)
+        this.adapter = adapter
+        isMotionEventSplittingEnabled = false
+        viewTreeObserver.addOnGlobalLayoutListener {
+                layoutManager?.smoothScrollToPosition(this, null, this.bottom)
+            }
     }
 }
 
@@ -66,14 +78,6 @@ fun View.fadeOutInvisible() {
             this@fadeOutInvisible.visibility = View.INVISIBLE
         }
     })
-}
-
-fun String.currencyFromStringToDouble(): Double {
-    return if (this.startsWith("$")) {
-        NumberFormat.getInstance(Locale.US).parse(this.drop(1))?.toDouble()!!
-    } else {
-        0 - NumberFormat.getInstance(Locale.US).parse(this.drop(2))?.toDouble()!!
-    }
 }
 
 fun Double.currencyFormatter(): Double? {
