@@ -9,18 +9,19 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.databinding.ItChatBinding
+import com.hooware.allowancetracker.to.ChatTO
 
 class ChatListAdapter : RecyclerView.Adapter<ChatViewHolder>() {
 
     @LayoutRes
     fun getLayoutRes(viewType: Int) = R.layout.it_chat
 
-    private var _items: MutableList<Triple<String, String, String>> = mutableListOf()
+    private var _items: MutableList<ChatTO> = mutableListOf()
 
     /**
      * Returns the _items data
      */
-    private val items: MutableList<Triple<String, String, String>>
+    private val items: MutableList<ChatTO>
         get() = this._items
 
     override fun getItemCount() = _items.size
@@ -47,7 +48,7 @@ class ChatListAdapter : RecyclerView.Adapter<ChatViewHolder>() {
      *
      * @param items to be merged
      */
-    fun addData(items: MutableList<Triple<String, String, String>>) {
+    fun addData(items: MutableList<ChatTO>) {
         _items.addAll(items)
         notifyDataSetChanged()
     }

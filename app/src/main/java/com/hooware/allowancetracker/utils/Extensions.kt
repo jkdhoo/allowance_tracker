@@ -28,11 +28,12 @@ fun <T> RecyclerView.setup(adapter: BaseRecyclerViewAdapter<T>) {
 fun RecyclerView.setupChat(adapter: ChatListAdapter) {
     this.apply {
         layoutManager = LinearLayoutManager(this.context)
+        (layoutManager as LinearLayoutManager).stackFromEnd = true
         this.adapter = adapter
         isMotionEventSplittingEnabled = false
         viewTreeObserver.addOnGlobalLayoutListener {
-                layoutManager?.smoothScrollToPosition(this, null, this.bottom)
-            }
+            layoutManager?.smoothScrollToPosition(this, null, this.bottom)
+        }
     }
 }
 

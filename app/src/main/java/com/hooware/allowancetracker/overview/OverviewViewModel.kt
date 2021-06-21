@@ -1,15 +1,15 @@
 package com.hooware.allowancetracker.overview
 
-import android.view.View
+import android.graphics.drawable.Drawable
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.core.net.toUri
-import androidx.core.widget.NestedScrollView
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
+import com.bumptech.glide.request.target.Target
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -19,9 +19,7 @@ import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.base.BaseViewModel
 import com.hooware.allowancetracker.network.QuoteNetworkService
 import com.hooware.allowancetracker.notifications.SendNewMessageNotifications
-import com.hooware.allowancetracker.to.ChildTO
-import com.hooware.allowancetracker.to.NotificationSaveItemTO
-import com.hooware.allowancetracker.to.QuoteResponseTO
+import com.hooware.allowancetracker.to.*
 import com.hooware.allowancetracker.utils.GlideApp
 import com.hooware.allowancetracker.utils.HasAlreadyLoadedQuote
 import com.hooware.allowancetracker.utils.RetrieveChildAgeFromBirthday
@@ -48,12 +46,12 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
     val kidsList: LiveData<List<ChildTO>>
         get() = _kidsList
 
-    private var _chatList = MutableLiveData<List<Triple<String, String, String>>>()
-    val chatList: LiveData<List<Triple<String, String, String>>>
+    private var _chatList = MutableLiveData<List<ChatTO>>()
+    val chatList: LiveData<List<ChatTO>>
         get() = _chatList
 
-    private var _notificationHistoryList = MutableLiveData<List<Pair<String, NotificationSaveItemTO>>>()
-    val notificationHistoryList: LiveData<List<Pair<String, NotificationSaveItemTO>>>
+    private var _notificationHistoryList = MutableLiveData<List<NotificationItemTO>>()
+    val notificationHistoryList: LiveData<List<NotificationItemTO>>
         get() = _notificationHistoryList
 
     private var _screenLoaded = MutableLiveData<Boolean>()
@@ -144,17 +142,19 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
     }
 
     private fun getDatabaseQuote() {
-        quoteDatabase.get()
-            .addOnSuccessListener {
-                _quoteResponseTO.value = it.getValue(QuoteResponseTO::class.java)
-                _imageReadyToLoad.value = true
-                Timber.i("Local quote loaded")
-            }
-            .addOnFailureListener {
-                _quoteResponseTO.value = getDefaultQuote()
-                _imageReadyToLoad.value = true
-                Timber.i("Default quote loaded")
-            }
+        viewModelScope.launch {
+            quoteDatabase.get()
+                .addOnSuccessListener {
+                    _quoteResponseTO.value = it.getValue(QuoteResponseTO::class.java)
+                    _imageReadyToLoad.value = true
+                    Timber.i("Local quote loaded")
+                }
+                .addOnFailureListener {
+                    _quoteResponseTO.value = getDefaultQuote()
+                    _imageReadyToLoad.value = true
+                    Timber.i("Default quote loaded")
+                }
+        }
     }
 
     private fun getDefaultQuote(): QuoteResponseTO {
@@ -174,7 +174,7 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
             chatDatabase.get()
                 .addOnSuccessListener { chatDB ->
                     Timber.i("Received chatDB, adding items")
-                    val chatList = mutableListOf<Triple<String, String, String>>()
+                    val chatList = mutableListOf<ChatTO>()
                     chatDB.children.forEach { chatChild ->
                         val messageId = chatChild.key.toString()
                         var chatName = ""
@@ -184,10 +184,14 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
                             chatMessage = chatContainer.value.toString()
                         }
                         if (chatName.isEmpty() || chatMessage.isEmpty()) return@addOnSuccessListener
-                        val chat = Triple(messageId, chatName, chatMessage)
+                        val chat = ChatTO(
+                            name = chatName,
+                            message = chatMessage,
+                            time = messageId
+                        )
                         chatList.add(chat)
                     }
-                    _chatList.value = chatList.sortedBy { it.first }
+                    _chatList.value = chatList.sortedBy { it.time }
                     Timber.i("Chat saved and loaded")
                     chatLoaded.value = true
                     showLoadingCheck()
@@ -203,12 +207,15 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
         viewModelScope.launch {
             notificationHistoryDatabase.get()
                 .addOnSuccessListener { db ->
-                    val historyList = mutableListOf<Pair<String,NotificationSaveItemTO>>()
+                    val historyList = mutableListOf<NotificationItemTO>()
                     db.children.forEach { notification ->
-                        val notificationItem = notification.value as? NotificationSaveItemTO ?: return@forEach
-                        historyList.add(Pair(notification.key.toString(), notificationItem))
+                        Timber.i("${notification.key}")
+                        val notificationItem = notification.getValue(NotificationItemTO::class.java) ?: NotificationItemTO()
+                        notificationItem.time = notification.key?.toLong()?.toTimestamp ?: "N/A"
+                        Timber.i("LOG: ${notificationItem.from}")
+                        historyList.add(notificationItem)
                     }
-                    _notificationHistoryList.value = historyList.sortedBy { it.first }
+                    _notificationHistoryList.value = historyList.sortedBy { it.time }.filter { it.to == app.firebaseUID.value || it.from == app.firebaseUID.value }
                     Timber.i("Notification history saved and loaded")
                     showNotificationHistoryEmpty.value = historyList.isNullOrEmpty()
                     notificationHistoryLoaded.value = true
@@ -267,20 +274,30 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
                     RequestOptions()
                         .error(R.drawable.ic_broken_image)
                 )
+                .listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                        return false
+                    }
+                    override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                        Timber.i("Image loaded")
+                        imageLoaded.value = true
+                        showLoadingCheck()
+                        return false
+                    }
+                })
                 .into(imgView)
-            Timber.i("Image loaded")
-            imageLoaded.value = true
-            showLoadingCheck()
         }
     }
 
-    private fun showLoadingCheck() {
-        if (kidsLoaded.value == true && imageLoaded.value == true && chatLoaded.value == true) {
-            _insertChatContent.value = true
-            _showLoading.value = false
-        } else {
-            _insertChatContent.value = false
-            _showLoading.value = true
+    fun showLoadingCheck() {
+        viewModelScope.launch {
+            if (kidsLoaded.value == true && imageLoaded.value == true && chatLoaded.value == true) {
+                _insertChatContent.value = true
+                _showLoading.value = false
+            } else {
+                _insertChatContent.value = false
+                _showLoading.value = true
+            }
         }
     }
 
@@ -290,46 +307,13 @@ class OverviewViewModel(application: AllowanceApp) : BaseViewModel(application) 
     }
 
     fun saveChatItem(message: String) {
-        chatDatabase.child(System.currentTimeMillis().toString()).child(chatName).setValue(message).addOnSuccessListener {
-            showToast.value = "Message sent!"
-            notificationDatabase.get().addOnSuccessListener { snapshot ->
-                SendNewMessageNotifications.execute(app, snapshot, message)
-            }
-        }
-    }
-
-    fun insertChatContent(layout: LinearLayout, fragment: Fragment) {
         viewModelScope.launch {
-            layout.removeAllViews()
-            chatList.value?.forEach { chatItem ->
-                val view = fragment.layoutInflater.inflate(R.layout.it_chat, null)
-                val name = view.findViewById(R.id.name) as TextView
-                name.text = chatItem.second
-                name.setTextColor(chooseColorByName(name, chatItem.second))
-
-                val timestamp = view.findViewById(R.id.timestamp) as TextView
-                timestamp.text = chatItem.first.toLong().toTimestamp
-                timestamp.setTextColor(chooseColorByName(name, chatItem.second))
-
-                val chat = view.findViewById(R.id.chat) as TextView
-                chat.text = chatItem.third
-                chat.setTextColor(chooseColorByName(name, chatItem.second))
-
-                layout.addView(view)
+            chatDatabase.child(System.currentTimeMillis().toString()).child(chatName).setValue(message).addOnSuccessListener {
+                showToast.value = "Message sent!"
+                notificationDatabase.get().addOnSuccessListener { snapshot ->
+                    SendNewMessageNotifications.execute(app, snapshot, message)
+                }
             }
-            val scrollView = layout.parent as? NestedScrollView ?: return@launch
-            scrollView.postDelayed({ scrollView.fullScroll(View.FOCUS_DOWN) }, 1000)
-        }
-    }
-
-    private fun chooseColorByName(view: TextView, name: String) : Int {
-        return when (name) {
-            "Laa" -> view.context.resources.getColor(R.color.laa, view.context.resources.newTheme())
-            "Levi" -> view.context.resources.getColor(R.color.levi, view.context.resources.newTheme())
-            "Mom" -> view.context.resources.getColor(R.color.mom, view.context.resources.newTheme())
-            "Dad" -> view.context.resources.getColor(R.color.dad, view.context.resources.newTheme())
-            "System" -> view.context.resources.getColor(R.color.black, view.context.resources.newTheme())
-            else -> 0
         }
     }
 

@@ -5,6 +5,7 @@ import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.hooware.allowancetracker.base.BaseRecyclerViewAdapter
+import com.hooware.allowancetracker.to.ChatTO
 import java.text.DecimalFormat
 
 object ChildrenBindingAdapters {
@@ -26,7 +27,7 @@ object ChildrenBindingAdapters {
 
     @BindingAdapter("android:liveDataChat")
     @JvmStatic
-    fun setRecyclerViewChatData(recyclerView: RecyclerView, chat: LiveData<MutableList<Triple<String, String, String>>>?) {
+    fun setRecyclerViewChatData(recyclerView: RecyclerView, chat: LiveData<MutableList<ChatTO>>?) {
         chat?.value?.let { chatList ->
             (recyclerView.adapter as? ChatListAdapter)?.apply {
                 clear()

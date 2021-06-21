@@ -5,6 +5,7 @@ import androidx.databinding.library.baseAdapters.BR
 import androidx.recyclerview.widget.RecyclerView
 import com.hooware.allowancetracker.R
 import com.hooware.allowancetracker.databinding.ItChatBinding
+import com.hooware.allowancetracker.to.ChatTO
 import com.hooware.allowancetracker.utils.toTimestamp
 
 /**
@@ -12,14 +13,14 @@ import com.hooware.allowancetracker.utils.toTimestamp
  */
 class ChatViewHolder(private val binding: ItChatBinding) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(item: Triple<String, String, String>) {
+    fun bind(item: ChatTO) {
         binding.setVariable(BR.item, item)
-        binding.name.text = item.second
-        binding.name.setTextColor(chooseColorByName(binding.name, item.second))
-        binding.timestamp.text = item.first.toLong().toTimestamp
-        binding.timestamp.setTextColor(chooseColorByName(binding.timestamp, item.second))
-        binding.chat.text = item.third
-        binding.chat.setTextColor(chooseColorByName(binding.chat, item.second))
+        binding.name.text = item.name
+        binding.name.setTextColor(chooseColorByName(binding.name, item.name))
+        binding.timestamp.text = item.time.toLong().toTimestamp
+        binding.timestamp.setTextColor(chooseColorByName(binding.timestamp, item.name))
+        binding.chat.text = item.message
+        binding.chat.setTextColor(chooseColorByName(binding.chat, item.name))
         binding.executePendingBindings()
     }
 

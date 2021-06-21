@@ -30,14 +30,10 @@ class NotificationHistoryFragment : BaseFragment() {
         app = requireActivity().application as AllowanceApp
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_notification_history, container, false)
         setDisplayHomeAsUpEnabled(true)
-        setHasOptionsMenu(false)
+        setHasOptionsMenu(true)
         setTitle(getString(R.string.notification_history_title))
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-
-        viewModel.notificationHistoryLoaded.observe(viewLifecycleOwner, { showLoading ->
-            binding.progressBar.isVisible = showLoading
-        })
 
         return binding.root
     }
@@ -54,9 +50,7 @@ class NotificationHistoryFragment : BaseFragment() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         android.R.id.home -> {
-
             Timber.i("Navigate back to OverviewFragment")
-            binding.notificationHistoryRelativeLayout.fadeOut()
             viewModel.navigationCommand.value = NavigationCommand.Back
             true
         }

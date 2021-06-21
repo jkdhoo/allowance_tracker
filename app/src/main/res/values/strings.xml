@@ -73,4 +73,7 @@
     <string name="body">Body</string>
     <string name="send_notification">Send notification</string>
     <string name="notification_history">Notification History</string>
+    <string name="received"><b>Received: </b></string>
+    <string name="from"><b>Title: </b></string>
+    <string name="message"><b>Message: </b></string>
 </resources>

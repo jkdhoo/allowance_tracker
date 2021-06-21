@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="kotlin.Pair"/>
+
         <variable
             name="item"
-            type="Pair&lt;String, com.hooware.allowancetracker.to.NotificationSaveItemTO>" />
+            type="com.hooware.allowancetracker.to.NotificationItemTO" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -16,9 +16,9 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/margin_8dp"
         android:fadeVisible="@{true}"
+        app:cardCornerRadius="@dimen/margin_8dp"
         app:strokeColor="@color/primaryColor"
-        app:strokeWidth="1dp"
-        app:cardCornerRadius="@dimen/margin_8dp">
+        app:strokeWidth="1dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -26,28 +26,81 @@
             android:padding="@dimen/padding_medium">
 
             <TextView
-                android:id="@+id/title"
+                android:id="@+id/received_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/padding_small"
-                android:text="@{item.first}"
+                android:text="@string/received"
                 android:textColor="@color/black"
                 android:textSize="@dimen/text_size_normal"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Title" />
+                tools:text="Received:" />
 
             <TextView
-                android:id="@+id/description"
+                android:id="@+id/received_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{item.second.body}"
-                android:textSize="@dimen/text_size_small"
-                app:layout_constraintStart_toStartOf="@id/title"
-                app:layout_constraintTop_toBottomOf="@id/title"
-                tools:text="Description" />
+                android:layout_marginStart="@dimen/padding_small"
+                android:text="@{item.time}"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_normal"
+                app:layout_constraintStart_toEndOf="@id/received_title"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="6/25/21 12:00:00pm" />
+
+            <TextView
+                android:id="@+id/title_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_small"
+                android:text="@string/from"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_normal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/received_title"
+                tools:text="Title:" />
+
+            <TextView
+                android:id="@+id/title_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_small"
+                android:text="@{item.title}"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@id/title_title"
+                app:layout_constraintTop_toBottomOf="@id/received_time"
+                tools:text="From Mom: Hi Son!" />
+
+            <TextView
+                android:id="@+id/message_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_small"
+                android:text="@string/message"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_normal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title_value"
+                tools:text="Message:" />
+
+            <TextView
+                android:id="@+id/message_value"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_small"
+                android:text="@{item.body}"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@id/message_title"
+                app:layout_constraintTop_toBottomOf="@id/title_value"
+                tools:text="From Mom: Hi Son!" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
-    >
 </layout>
